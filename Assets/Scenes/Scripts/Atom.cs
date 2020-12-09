@@ -4,13 +4,25 @@ using UnityEngine;
 
 public class Atom : MonoBehaviour
 {
-    /*
     
-    private float dragSpeed = 0.02f;
+    
+    private float dragSpeed = 0.05f;
     Vector3 lastMousePos;
+
+
+    private void Awake()
+    {
+        renderer = GetComponent<Renderer>();
+        renderer.enabled = true;
+        renderer.sharedMaterial = materials[0];
+        atomsManager = GameObject.FindObjectOfType<AtomsManager>();
+        atomsManager.AddAtom(this);
+    }
+
 
     void OnMouseDown()
     {
+        renderer.sharedMaterial = materials[1];
         lastMousePos = Input.mousePosition;
     }
 
@@ -21,18 +33,20 @@ public class Atom : MonoBehaviour
         pos.z += delta.x * dragSpeed;
         pos.y += delta.y * dragSpeed;
         transform.position = pos;
+        atomsManager.SetMyPosition(this);
         lastMousePos = Input.mousePosition;
-    }*/
+    }
+    public Material[] materials;
+    new Renderer renderer;
 
     AtomsManager atomsManager;
 
-    private void Awake()
+    private void OnMouseUp()
     {
-
-        atomsManager = GameObject.FindObjectOfType<AtomsManager>();
-        atomsManager.AddAtom(this);
+        renderer.sharedMaterial = materials[0];
     }
 
+    /*
     void OnMouseDrag()
     {
         Vector3 mousePosition = new Vector3(Input.mousePosition.x, Input.mousePosition.y, 7f);
@@ -41,5 +55,5 @@ public class Atom : MonoBehaviour
         //objPosition.z = transform.position.z;
         transform.position = objPosition;
         atomsManager.SetMyPosition(this);
-    }
+    }*/
 }

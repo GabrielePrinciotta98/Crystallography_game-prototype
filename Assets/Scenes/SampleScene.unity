@@ -248,8 +248,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   atom: {fileID: 4968323987487669519, guid: c7217618e7aa66d4c80cf652da976612, type: 3}
-  numberOfAtomsPerBlock: 6
-  numberOfBlocks: 4
+  numberOfAtomsPerBlock: 1
+  numberOfBlocks: 2
 --- !u!4 &173854854
 Transform:
   m_ObjectHideFlags: 0
