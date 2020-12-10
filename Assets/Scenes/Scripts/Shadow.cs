@@ -10,6 +10,7 @@ public class Shadow : MonoBehaviour
     public Color color;
     public Color selectedColor;
     private new Renderer renderer;
+    private AtomsManager atomsManager;
 
     private void Awake()
     {
@@ -17,7 +18,7 @@ public class Shadow : MonoBehaviour
         renderer.enabled = true;
         renderer.material.color = color;
         transform.localPosition = new Vector3(0, transform.parent.position.y-0.1f, 0);
-       
+        atomsManager = GameObject.FindObjectOfType<AtomsManager>();
     }
 
     private void Update()
@@ -32,6 +33,7 @@ public class Shadow : MonoBehaviour
 
     void OnMouseDown()
     {
+        atomsManager.SetStopTrue();
         renderer.material.color = selectedColor;
         lastMousePos = Input.mousePosition;
     }
@@ -51,6 +53,7 @@ public class Shadow : MonoBehaviour
 
     private void OnMouseUp()
     {
+        
         renderer.material.color = color;
     }
     /*

@@ -11,7 +11,7 @@ public class Atom : MonoBehaviour
     private Vector3 rotationPoint = new Vector3(10f, 10f, 10f);
     private float dragSpeed = 0.05f;
     Vector3 lastMousePos;
-    private bool dragging = false;
+    
 
     private void Awake()
     {
@@ -21,17 +21,19 @@ public class Atom : MonoBehaviour
         atomsManager = GameObject.FindObjectOfType<AtomsManager>();
         atomsManager.AddAtom(this);
     }
-
+    
     private void Update()
     {
-        while(!dragging)
-            transform.RotateAround(rotationPoint, Vector3.up, 180 * Time.fixedDeltaTime);
+        if (!atomsManager.GetStop())
+            transform.RotateAround(rotationPoint, Vector3.up, 60 * Time.fixedDeltaTime);
         atomsManager.SetMyPosition(this);
     }
-
+    
     void OnMouseDown()
     {
-        dragging = true;
+        
+        atomsManager.SetStopTrue(); 
+
         renderer.sharedMaterial = materials[1];
         lastMousePos = Input.mousePosition;
     }
@@ -52,7 +54,7 @@ public class Atom : MonoBehaviour
 
     private void OnMouseUp()
     {
-        dragging = false;
+        
         renderer.sharedMaterial = materials[0];
     }
 

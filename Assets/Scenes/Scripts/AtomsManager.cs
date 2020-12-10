@@ -10,6 +10,8 @@ public class AtomsManager : MonoBehaviour
     public int numberOfBlocks = 1;
     List<Atom> atoms = new List<Atom>();
     Vector4[] positions = new Vector4[100];
+    private bool stop = true;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -64,4 +66,20 @@ public class AtomsManager : MonoBehaviour
     {
         return positions;
     } 
+
+    public bool GetStop()
+    {
+        return stop;
+    }
+
+    public void SetStopTrue()
+    {
+        stop = true;
+    }
+
+    public void SetStopFalse()
+    {
+        stop = false;
+    }
+
 }
