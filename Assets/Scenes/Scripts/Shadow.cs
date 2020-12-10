@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class Shadow : MonoBehaviour
 {
-    private float dragSpeed = 0.005f;
+    private float dragSpeed = 0.002f;
     Vector3 lastMousePos;
 
     public Color color;
@@ -23,10 +23,13 @@ public class Shadow : MonoBehaviour
     private void Update()
     {
         //impedisci all'ombra di non scendere sotto al pavimento
-        transform.position = new Vector3(transform.position.x, 0.1f,
-                                         transform.position.z);
+        Vector3 clampedPosition = transform.position;
+        clampedPosition.y = 0.1f;
+        //clampedPosition.x = Mathf.Clamp(clampedPosition.x, clampedPosition.x - 2f, clampedPosition.x + 2f);
+        transform.position = clampedPosition;
+
     }
-    
+
     void OnMouseDown()
     {
         renderer.material.color = selectedColor;
@@ -38,8 +41,6 @@ public class Shadow : MonoBehaviour
         Vector3 delta = Input.mousePosition - lastMousePos;
         Vector3 pos = transform.position;
         pos.x -= delta.x * dragSpeed;
-        Debug.Log(pos.x);
-        //pos.x = -pos.x;
         transform.position = pos;
         transform.parent.position = new Vector3(pos.x, 
                                                 transform.parent.position.y,

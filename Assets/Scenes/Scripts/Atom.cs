@@ -4,11 +4,14 @@ using UnityEngine;
 
 public class Atom : MonoBehaviour
 {
-    
-    
+    public Material[] materials;
+    new Renderer renderer;
+
+    AtomsManager atomsManager;
+    private Vector3 rotationPoint = new Vector3(10f, 10f, 10f);
     private float dragSpeed = 0.05f;
     Vector3 lastMousePos;
-
+    private bool dragging = false;
 
     private void Awake()
     {
@@ -19,9 +22,16 @@ public class Atom : MonoBehaviour
         atomsManager.AddAtom(this);
     }
 
+    private void Update()
+    {
+        while(!dragging)
+            transform.RotateAround(rotationPoint, Vector3.up, 180 * Time.fixedDeltaTime);
+        atomsManager.SetMyPosition(this);
+    }
 
     void OnMouseDown()
     {
+        dragging = true;
         renderer.sharedMaterial = materials[1];
         lastMousePos = Input.mousePosition;
     }
@@ -30,19 +40,19 @@ public class Atom : MonoBehaviour
     {
         Vector3 delta = Input.mousePosition - lastMousePos;
         Vector3 pos = transform.position;
+        //pos.y = Mathf.Clamp(pos.y, Mathf.Max(pos.y - 2f, 0.5f), Mathf.Min(pos.y + 2f, 4.5f));
+        //pos.z = Mathf.Clamp(pos.z, Mathf.Max(pos.z - 2f, 5.5f), Mathf.Min(pos.z + 2f, 9.5f));
         pos.z += delta.x * dragSpeed;
         pos.y += delta.y * dragSpeed;
         transform.position = pos;
         atomsManager.SetMyPosition(this);
         lastMousePos = Input.mousePosition;
     }
-    public Material[] materials;
-    new Renderer renderer;
-
-    AtomsManager atomsManager;
+    
 
     private void OnMouseUp()
     {
+        dragging = false;
         renderer.sharedMaterial = materials[0];
     }
 
