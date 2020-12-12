@@ -10,15 +10,18 @@ public class SolutionDetector : MonoBehaviour
     void Awake()
     {
         solutionManager = GameObject.FindObjectOfType<SolutionManager>();
-        Shader.SetGlobalVectorArray("centers", solutionManager.GetPositions());
-        Shader.SetGlobalInt("n_atoms", solutionManager.GetAtoms().Count);
-        Shader.SetGlobalFloat("redd", 1.0f);
+        /*
+        Shader.SetGlobalVectorArray("centerss", solutionManager.GetPositions());
+        Debug.Log(solutionManager.GetAtoms().Count);
+        Shader.SetGlobalInt("nAtoms", solutionManager.GetAtoms().Count);
+        Shader.SetGlobalFloat("redd", 1.0f);*/
     }
 
     // Update is called once per frame
     void Update()
     {
-        
-       
+
+        Shader.SetGlobalVectorArray("centerss", solutionManager.GetPositions());
+        Shader.SetGlobalInt("nAtoms", solutionManager.GetAtoms().Count);
     }
 }

@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 4968323987457538895}
   - component: {fileID: 4968323987457538882}
   - component: {fileID: 510015781726750767}
+  - component: {fileID: 305742180295210280}
   m_Layer: 0
   m_Name: FakeShadow
   m_TagString: Untagged
@@ -97,6 +98,18 @@ CapsuleCollider:
   m_Height: 0.25794926
   m_Direction: 2
   m_Center: {x: 0, y: 0, z: 0.05}
+--- !u!114 &305742180295210280
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4968323987457538894}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2c4ff625a7505804485b9d2e8c1db16d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &4968323987487669519
 GameObject:
   m_ObjectHideFlags: 0

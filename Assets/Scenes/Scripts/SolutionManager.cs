@@ -15,10 +15,11 @@ public class SolutionManager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        
         Vector3[] spawnPositions = new Vector3[numberOfAtomsPerBlock];
         for (int a = 0; a < numberOfAtomsPerBlock; a++)
         {
-            spawnPositions[a] = new Vector3(Random.Range(10f, 14f), Random.Range(0.5f, 4.5f), Random.Range(-22.5f, -18.5f));
+            spawnPositions[a] = new Vector3(Random.Range(10f, 14f), Random.Range(1f, 4.5f), Random.Range(-20.5f, -16.5f));
         }
 
 
@@ -28,10 +29,16 @@ public class SolutionManager : MonoBehaviour
             {
                 for (int k = 0; k < numberOfAtomsPerBlock; k++)
                 {
-                    Instantiate(atom, new Vector3(spawnPositions[k].x, spawnPositions[k].y + i * 6, spawnPositions[k].z + j * 6), Quaternion.identity);
+                    Instantiate(atom, new Vector3(spawnPositions[k].x, spawnPositions[k].y + i * 6, spawnPositions[k].z - j * 6), Quaternion.identity);
                 }
             }
         }
+
+        float degree = Random.Range(0, 360);
+        transform.RotateAround(new Vector3(10f, 10f, 22f), Vector3.up, degree * Time.fixedDeltaTime);
+        //Instantiate(atom, new Vector3(10f, 5f, -21f), Quaternion.identity);
+        //Instantiate(atom, new Vector3(10f, 15f, -18f), Quaternion.identity);
+
     }
 
     public void AddAtom(SolutionAtom atom)
