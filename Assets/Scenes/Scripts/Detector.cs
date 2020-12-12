@@ -10,7 +10,7 @@ public class Detector : MonoBehaviour
     {
         atomsManager = GameObject.FindObjectOfType<AtomsManager>();
     }
-
+    
     private void Update()
     {
         Shader.SetGlobalVectorArray("centers", atomsManager.GetPositions());
@@ -18,6 +18,6 @@ public class Detector : MonoBehaviour
     
 
     }
-
+    
 
 }
