@@ -28,7 +28,7 @@ public class AtomsManager : MonoBehaviour
         Vector3[] spawnPositions = new Vector3[numberOfAtomsPerBlock];
         for (int a = 0; a < numberOfAtomsPerBlock; a++)
         {
-            spawnPositions[a] = new Vector3(UnityEngine.Random.Range(10f, 14f), UnityEngine.Random.Range(1f, 4.5f), UnityEngine.Random.Range(5.5f, 9.5f));
+            spawnPositions[a] = new Vector3(UnityEngine.Random.Range(22f, 30f), UnityEngine.Random.Range(1f, 4.5f), UnityEngine.Random.Range(5.5f, 9.5f));
         }
 
 

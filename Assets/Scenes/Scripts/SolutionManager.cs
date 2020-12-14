@@ -6,6 +6,7 @@ public class SolutionManager : MonoBehaviour
 {
 
     public GameObject atom;
+    [SerializeReference] SolutionDetector solutionDetector;
     public int numberOfAtomsPerBlock = 1;
     public int numberOfBlocks = 1;
 
@@ -19,7 +20,7 @@ public class SolutionManager : MonoBehaviour
         Vector3[] spawnPositions = new Vector3[numberOfAtomsPerBlock];
         for (int a = 0; a < numberOfAtomsPerBlock; a++)
         {
-            spawnPositions[a] = new Vector3(Random.Range(10f, 14f), Random.Range(1f, 4.5f), Random.Range(-20.5f, -16.5f));
+            spawnPositions[a] = new Vector3(Random.Range(22f, 30f), Random.Range(1f, 4.5f), Random.Range(-20.5f, -16.5f));
         }
 
 
@@ -35,10 +36,11 @@ public class SolutionManager : MonoBehaviour
         }
 
         float degree = Random.Range(0, 360);
-        transform.RotateAround(new Vector3(10f, 10f, 22f), Vector3.up, degree * Time.fixedDeltaTime);
-        //Instantiate(atom, new Vector3(10f, 5f, -21f), Quaternion.identity);
+        transform.RotateAround(new Vector3(26f, 10f, 22f), Vector3.up, degree * Time.fixedDeltaTime);
+        
+        //Instantiate(atom, new Vector3(10f, 5f, -15f), Quaternion.identity);
         //Instantiate(atom, new Vector3(10f, 15f, -18f), Quaternion.identity);
-
+        solutionDetector.Project();
     }
 
     public void AddAtom(SolutionAtom atom)

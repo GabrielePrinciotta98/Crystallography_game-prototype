@@ -8,7 +8,7 @@ public class Atom : MonoBehaviour
     new Renderer renderer;
 
     AtomsManager atomsManager;
-    private Vector3 rotationPoint = new Vector3(10f, 10f, 10f);
+    private Vector3 rotationPoint = new Vector3(26f, 10f, 10f);
     private float dragSpeed = 0.05f;
     Vector3 lastMousePos;
     
@@ -27,6 +27,7 @@ public class Atom : MonoBehaviour
         if (!atomsManager.GetStop())
             transform.RotateAround(rotationPoint, Vector3.up, 60 * Time.fixedDeltaTime);
         atomsManager.SetMyPosition(this);
+        //Debug.Log("Atomo: " + transform.position);
     }
     
     void OnMouseDown()

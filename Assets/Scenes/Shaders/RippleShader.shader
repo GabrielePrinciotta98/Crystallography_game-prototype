@@ -30,7 +30,7 @@
             }
 
             for (i = 0; i < n_atoms; i++) {
-                distances[i] = distance(pos, float2 (centers[i].z, centers[i].y)) * 50;
+                distances[i] = distance(pos, float2 (centers[i].z, centers[i].y)) * (1000 / centers[i].x);
             }
 
             float w = 0;

@@ -18,9 +18,8 @@ public class SolutionDetector : MonoBehaviour
     }
 
     // Update is called once per frame
-    void Update()
+    public void Project()
     {
-
         Shader.SetGlobalVectorArray("centerss", solutionManager.GetPositions());
         Shader.SetGlobalInt("nAtoms", solutionManager.GetAtoms().Count);
     }
