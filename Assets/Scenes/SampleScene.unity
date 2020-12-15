@@ -1754,7 +1754,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   atom: {fileID: 4968323987487669519, guid: 7920b2e79464c9e49af665871913cccc, type: 3}
   solutionDetector: {fileID: 1922051214}
-  numberOfAtomsPerBlock: 1
+  numberOfAtomsPerBlock: 5
   numberOfBlocks: 4
 --- !u!4 &2122958236
 Transform:
@@ -1902,6 +1902,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 20601320077952877, guid: f0bf8c9a98a8417479cce3994d6e4e81, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 20601321060503339, guid: f0bf8c9a98a8417479cce3994d6e4e81, type: 3}
       propertyPath: m_LocalScale.x
       value: 112.24753
@@ -2026,11 +2030,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4323790100589642198, guid: aa8b2af32cbd6df4885c2c5868d12177, type: 3}
       propertyPath: numberOfBlocks
-      value: 2
+      value: 4
       objectReference: {fileID: 0}
     - target: {fileID: 4323790100589642198, guid: aa8b2af32cbd6df4885c2c5868d12177, type: 3}
       propertyPath: numberOfAtomsPerBlock
-      value: 1
+      value: 5
       objectReference: {fileID: 0}
     - target: {fileID: 4323790100589642199, guid: aa8b2af32cbd6df4885c2c5868d12177, type: 3}
       propertyPath: m_Name
