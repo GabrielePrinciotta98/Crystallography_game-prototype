@@ -1,12 +1,13 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Runtime.Serialization;
 using UnityEngine;
 
 public class Atom : MonoBehaviour
 {
     public Material[] materials;
     new Renderer renderer;
-
+    private int id;
     AtomsManager atomsManager;
     private Vector3 rotationPoint = new Vector3(26f, 10f, 10f);
     private float dragSpeed = 0.05f;
@@ -19,6 +20,7 @@ public class Atom : MonoBehaviour
         renderer.enabled = true;
         renderer.sharedMaterial = materials[0];
         atomsManager = GameObject.FindObjectOfType<AtomsManager>();
+        
         atomsManager.AddAtom(this);
     }
     

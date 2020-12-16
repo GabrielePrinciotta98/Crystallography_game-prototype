@@ -15,16 +15,9 @@ public class AtomsManager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        //Instantiate(atom, new Vector3(12f, 2.0f, 12.0f), Quaternion.identity);
-        //Instantiate(atom, new Vector3(12f, 8.0f, 12f), Quaternion.identity);
-        /*
-       for (int i=0; i<numberOfAtoms/2; i++)
-        {
-            Instantiate(atom, new Vector3(7.18f, 2.0f, i+5.0f), Quaternion.identity);
-            Instantiate(atom, new Vector3(9.18f, 2.0f, i+5.0f), Quaternion.identity);
-        }
-        */
+        //Instantiate(atom, new Vector3(25f, 2f, 7f), Quaternion.identity);
         
+       
         Vector3[] spawnPositions = new Vector3[numberOfAtomsPerBlock];
         for (int a = 0; a < numberOfAtomsPerBlock; a++)
         {
@@ -42,6 +35,8 @@ public class AtomsManager : MonoBehaviour
                 }
             }
         }
+        
+
     }
 
   

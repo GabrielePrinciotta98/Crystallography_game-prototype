@@ -38,8 +38,7 @@ public class SolutionManager : MonoBehaviour
         float degree = Random.Range(0, 360);
         transform.RotateAround(new Vector3(26f, 10f, 22f), Vector3.up, degree * Time.fixedDeltaTime);
         
-        //Instantiate(atom, new Vector3(10f, 5f, -15f), Quaternion.identity);
-        //Instantiate(atom, new Vector3(10f, 15f, -18f), Quaternion.identity);
+        //Instantiate(atom, new Vector3(25f, 2f, -20f), Quaternion.identity);
         solutionDetector.Project();
     }
 
