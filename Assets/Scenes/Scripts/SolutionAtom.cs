@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -15,4 +16,16 @@ public class SolutionAtom : MonoBehaviour
 
     }
 
+    public void DontShowAtom()
+    {
+        GetComponent<Renderer>().enabled = false;
+        transform.GetChild(0).GetComponent<Renderer>().enabled = false;
+        
+    }
+
+    internal void ShowAtom()
+    {
+        GetComponent<Renderer>().enabled = true;
+        transform.GetChild(0).GetComponent<Renderer>().enabled = true;
+    }
 }

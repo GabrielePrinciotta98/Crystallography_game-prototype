@@ -14,6 +14,7 @@
         //uniform half centerY;
         //uniform half centerZ;
             uniform int n_atoms;
+            
             uniform half4 centers[100];
             half distances[100];
             
@@ -29,7 +30,7 @@
             }
             */
             for (i = 0; i < n_atoms; i++) {
-                distances[i] = distance(pos, half2 (centers[i].z, centers[i].y)) * (1000 / centers[i].x);
+                distances[i] = distance(pos, half2 (centers[i].z, centers[i].y)) * (1500 / centers[i].x);
             }
 
             half w = 0;

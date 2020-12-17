@@ -24,7 +24,7 @@ public class Detector : MonoBehaviour
             }
             Shader.SetGlobalVectorArray("centers", centers);
             Shader.SetGlobalInt("n_atoms", atomsManager.GetAtoms().Count);
-
+            
        
     }
     

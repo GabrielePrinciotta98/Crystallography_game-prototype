@@ -17,7 +17,7 @@ public class AtomsManager : MonoBehaviour
     {
         //Instantiate(atom, new Vector3(25f, 2f, 7f), Quaternion.identity);
         
-       
+        /*
         Vector3[] spawnPositions = new Vector3[numberOfAtomsPerBlock];
         for (int a = 0; a < numberOfAtomsPerBlock; a++)
         {
@@ -35,7 +35,14 @@ public class AtomsManager : MonoBehaviour
                 }
             }
         }
-        
+        */
+        for (int i=0; i<4; i++)
+        {
+            for (int j=0; j<5; j++)
+            {
+                Instantiate(atom, new Vector3(25f, 2f + i*2, 7f + j*2), Quaternion.identity);
+            }
+        }
 
     }
 

@@ -28,7 +28,8 @@ public class GameManager : MonoBehaviour
         {
             if (Vector4.Distance(atomsManager.GetPositions()[i], solutionManager.GetPositions()[i]) < 2)
             {
-                curtain.SetActive(false);
+                //curtain.SetActive(false);
+                solutionManager.ShowAtoms();
                 print("Hai vinto!");
             }
         }
@@ -43,6 +44,7 @@ public class GameManager : MonoBehaviour
 
     public void ShowSolution()
     {
-        curtain.SetActive(false);
+        solutionManager.ShowAtoms();
+
     }
 }
