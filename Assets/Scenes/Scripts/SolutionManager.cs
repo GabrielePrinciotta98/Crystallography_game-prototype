@@ -8,9 +8,12 @@ public class SolutionManager : MonoBehaviour
     public GameObject atom;
     [SerializeReference] SolutionDetector solutionDetector;
     [SerializeReference] QuestionMarkBox box;
-    public int numberOfAtomsPerBlock = 1;
-    public int numberOfBlocks = 1;
+    //public int numberOfAtomsPerBlock = 1;
+    //public int numberOfBlocks = 1;
+    [SerializeField] int rows = 1;
+    [SerializeField] int columns = 1;
 
+    private bool stop = true;
     List<SolutionAtom> atoms = new List<SolutionAtom>();
     Vector4[] positions = new Vector4[100];
 
@@ -18,11 +21,11 @@ public class SolutionManager : MonoBehaviour
     void Start()
     {
 
-        for (int i = 0; i < 4; i++)
+        for (int i = 0; i < rows; i++)
         {
-            for (int j = 0; j < 5; j++)
+            for (int j = 0; j < columns; j++)
             {
-                Instantiate(atom, new Vector3(25f, 2f + i * (Random.Range(2, 4)), -24f + j * (Random.Range(2,4))), Quaternion.identity);
+                Instantiate(atom, new Vector3(22f, 2f + i * (Random.Range(2f, 3f)), -26f + j * (Random.Range(2f,3f))), Quaternion.identity);
             }
         }
 
@@ -48,8 +51,13 @@ public class SolutionManager : MonoBehaviour
         float degree = Random.Range(0, 360);
         transform.RotateAround(new Vector3(26f, 10f, 22f), Vector3.up, degree * Time.fixedDeltaTime);
         */
-        solutionDetector.Project();
-        DontShowAtoms();
+        //solutionDetector.Project();
+        //DontShowAtoms();
+    }
+
+    public bool GetStop()
+    {
+        return stop;
     }
 
     public void AddAtom(SolutionAtom atom)
@@ -74,6 +82,17 @@ public class SolutionManager : MonoBehaviour
         return atoms;
     }
 
+    public void SetStopTrue()
+    {
+        stop = true;
+    }
+
+    public void SetStopFalse()
+    {
+        stop = false;
+    }
+
+    /*
     public void DontShowAtoms()
     {
         foreach (SolutionAtom a in atoms)
@@ -90,5 +109,5 @@ public class SolutionManager : MonoBehaviour
             a.ShowAtom();
         }
     }
-
+    */
 }

@@ -224,3 +224,4 @@ MonoBehaviour:
   materials:
   - {fileID: 2100000, guid: 6987be58cad6d1346acaedd6d1323bd0, type: 2}
   - {fileID: 2100000, guid: 553496eb89ccab143a785b4fa66b09ac, type: 2}
+  atomsManager: {fileID: 4323790100589642198, guid: aa8b2af32cbd6df4885c2c5868d12177, type: 3}

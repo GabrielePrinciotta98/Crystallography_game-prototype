@@ -6,8 +6,10 @@ public class AtomsManager : MonoBehaviour
 {
 
     public GameObject atom;
-    public int numberOfAtomsPerBlock = 1;
-    public int numberOfBlocks = 1;
+    //public int numberOfAtomsPerBlock = 1;
+    //public int numberOfBlocks = 1;
+    [SerializeField] int rows = 1;
+    [SerializeField] int columns = 1;
     List<Atom> atoms = new List<Atom>();
     Vector4[] positions = new Vector4[100];
     private bool stop = true;
@@ -36,11 +38,11 @@ public class AtomsManager : MonoBehaviour
             }
         }
         */
-        for (int i=0; i<4; i++)
+        for (int i=0; i<rows; i++)
         {
-            for (int j=0; j<5; j++)
+            for (int j=0; j<columns; j++)
             {
-                Instantiate(atom, new Vector3(25f, 2f + i*2, 7f + j*2), Quaternion.identity);
+                Instantiate(atom, new Vector3(22f, 2f + i*2, 7f + j*2), Quaternion.identity);
             }
         }
 

@@ -24,11 +24,11 @@
             half2 pos = half2(IN.globalTexcoord.x,
                                 IN.globalTexcoord.y);
             int i;
-            half greeen = nAtoms;
+            /*
             for (i = 0; i < nAtoms; i++) {
                 centerss[i] = half4(centerss[i].x, centerss[i].y / 14.0, 1-((centerss[i].z+10)/-22), 0.0);
             }
-
+            */
             for (i = 0; i < nAtoms; i++) {
                 distances[i] = distance(pos, half2 (centerss[i].z, centerss[i].y)) * (1500 / centerss[i].x);
             }

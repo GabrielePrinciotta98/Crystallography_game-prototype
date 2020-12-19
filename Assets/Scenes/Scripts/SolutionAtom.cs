@@ -5,7 +5,7 @@ using UnityEngine;
 
 public class SolutionAtom : MonoBehaviour
 {
-
+    private Vector3 rotationPoint = new Vector3(22f, 10f, -21f);
     SolutionManager solutionManager;
     // Start is called before the first frame update
     void Awake()
@@ -16,6 +16,13 @@ public class SolutionAtom : MonoBehaviour
 
     }
 
+    private void Update()
+    {
+        if (!solutionManager.GetStop())
+            transform.RotateAround(rotationPoint, Vector3.up, 30 * Time.fixedDeltaTime);
+        solutionManager.SetMyPosition(this);
+    }
+    /*
     public void DontShowAtom()
     {
         GetComponent<Renderer>().enabled = false;
@@ -28,4 +35,5 @@ public class SolutionAtom : MonoBehaviour
         GetComponent<Renderer>().enabled = true;
         transform.GetChild(0).GetComponent<Renderer>().enabled = true;
     }
+    */
 }
