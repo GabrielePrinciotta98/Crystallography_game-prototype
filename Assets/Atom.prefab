@@ -96,7 +96,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3720d35a228998c48ae113bfaeb53d83, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  color: {r: 0.37254903, g: 0.37254903, b: 0.37254903, a: 1}
+  color: {r: 0.6509434, g: 0.6509434, b: 0.6509434, a: 1}
   selectedColor: {r: 1, g: 1, b: 1, a: 1}
 --- !u!136 &510015781726750767
 CapsuleCollider:
@@ -224,4 +224,3 @@ MonoBehaviour:
   materials:
   - {fileID: 2100000, guid: 6987be58cad6d1346acaedd6d1323bd0, type: 2}
   - {fileID: 2100000, guid: 553496eb89ccab143a785b4fa66b09ac, type: 2}
-  atomsManager: {fileID: 4323790100589642198, guid: aa8b2af32cbd6df4885c2c5868d12177, type: 3}
