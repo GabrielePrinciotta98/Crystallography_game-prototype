@@ -130,7 +130,7 @@ public class GameManager : MonoBehaviour
             float ease = easeInOutBack(t);
 
             newScaleX = Mathf.Lerp(curtain.transform.localScale.x, 16f, ease);
-            newScaleZ = Mathf.Lerp( curtain.transform.localScale.z, 3f, ease);
+            newScaleZ = Mathf.Lerp( curtain.transform.localScale.z, 5f, ease);
             curtain.transform.localScale = new Vector3(newScaleX, curtain.transform.localScale.y, newScaleZ);
             newPosX = Mathf.Lerp(curtain.transform.localPosition.x, 33f, ease);
             curtain.transform.localPosition = new Vector3(newPosX, curtain.transform.localPosition.y, curtain.transform.localPosition.z);

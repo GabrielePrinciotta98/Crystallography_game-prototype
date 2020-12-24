@@ -28,7 +28,7 @@ public class Atom : MonoBehaviour
     private void Update()
     {
         if (!atomsManager.GetStop())
-            transform.RotateAround(rotationPoint, Vector3.up, 30 * Time.fixedDeltaTime);
+            transform.RotateAround(rotationPoint, Vector3.up, 10 * Time.fixedDeltaTime);
         atomsManager.SetMyPosition(this);
         //Debug.Log("Atomo: " + transform.position);
     }

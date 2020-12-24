@@ -19,7 +19,7 @@ public class SolutionAtom : MonoBehaviour
     private void Update()
     {
         if (!solutionManager.GetStop())
-            transform.RotateAround(rotationPoint, Vector3.up, 30 * Time.fixedDeltaTime);
+            transform.RotateAround(rotationPoint, Vector3.up, 10 * Time.fixedDeltaTime);
         solutionManager.SetMyPosition(this);
     }
     /*

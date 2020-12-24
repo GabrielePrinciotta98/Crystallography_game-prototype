@@ -29,13 +29,26 @@ public class SolutionDetector : MonoBehaviour
     */
     private void Update()
     {
+        Diffraction();
+    }
+
+    private void Ripple()
+    {
         positions = solutionManager.GetPositions();
 
         for (int i = 0; i < solutionManager.GetAtoms().Count; i++)
         {
-            centers[i] = new Vector4(positions[i].x, positions[i].y / 14f, 1f - ((positions[i].z+ 10f) / -22f), 0f);
+            centers[i] = new Vector4(positions[i].x, positions[i].y / 14f, 1f - ((positions[i].z + 10f) / -22f), 0f);
         }
         Shader.SetGlobalVectorArray("centerss", centers);
+        Shader.SetGlobalInt("nAtoms", solutionManager.GetAtoms().Count);
+    }
+
+    private void Diffraction()
+    {
+        positions = solutionManager.GetPositions();
+        Debug.Log(positions[0]);
+        Shader.SetGlobalVectorArray("atomsPoss", positions);
         Shader.SetGlobalInt("nAtoms", solutionManager.GetAtoms().Count);
     }
 }

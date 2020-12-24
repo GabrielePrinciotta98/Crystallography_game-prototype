@@ -15,18 +15,29 @@ public class Detector : MonoBehaviour
     
     private void Update()
     {
-        
-            positions = atomsManager.GetPositions();
+        Diffraction();
 
-            for (int i = 0; i < atomsManager.GetAtoms().Count; i++)
-            {
-                centers[i] = new Vector4(positions[i].x, positions[i].y / 14f, positions[i].z / 22f, 0f);
-            }
-            Shader.SetGlobalVectorArray("centers", centers);
-            Shader.SetGlobalInt("n_atoms", atomsManager.GetAtoms().Count);
-            
-       
     }
-    
+
+    private void Ripple()
+    {
+        positions = atomsManager.GetPositions();
+
+        for (int i = 0; i < atomsManager.GetAtoms().Count; i++)
+        {
+            centers[i] = new Vector4(positions[i].x, positions[i].y / 14f, positions[i].z / 22f, 0f);
+        }
+        Shader.SetGlobalVectorArray("centers", centers);
+        Shader.SetGlobalInt("n_atoms", atomsManager.GetAtoms().Count);
+    }
+
+
+    private void Diffraction()
+    {
+        positions = atomsManager.GetPositions();
+        Shader.SetGlobalVectorArray("atomsPos", positions);
+        Shader.SetGlobalInt("n_atoms", atomsManager.GetAtoms().Count);
+
+    }
 
 }
