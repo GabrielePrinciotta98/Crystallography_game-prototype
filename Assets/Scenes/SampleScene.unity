@@ -2268,6 +2268,18 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+      - m_Target: {fileID: 2118061491}
+        m_TargetAssemblyTypeName: EmitterCone, Assembly-CSharp
+        m_MethodName: SetXZ
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!1 &1675361907
 GameObject:
   m_ObjectHideFlags: 0
@@ -3010,6 +3022,23 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 9
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &2118061489 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 8516121711535710401, guid: 2679be20b90b54447a1a49d95d330b7d, type: 3}
+  m_PrefabInstance: {fileID: 8858085970793528027}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &2118061491
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2118061489}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7c1577079349936439467162dcafe703, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &2122958234
 GameObject:
   m_ObjectHideFlags: 0
@@ -3277,7 +3306,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4323790100589642198, guid: aa8b2af32cbd6df4885c2c5868d12177, type: 3}
       propertyPath: M
-      value: 27
+      value: 10
       objectReference: {fileID: 0}
     - target: {fileID: 4323790100589642198, guid: aa8b2af32cbd6df4885c2c5868d12177, type: 3}
       propertyPath: N
@@ -3395,6 +3424,14 @@ PrefabInstance:
     - target: {fileID: 8858085972062114039, guid: 2679be20b90b54447a1a49d95d330b7d, type: 3}
       propertyPath: m_LocalPosition.y
       value: -3.62
+      objectReference: {fileID: 0}
+    - target: {fileID: 9035495457377467003, guid: 2679be20b90b54447a1a49d95d330b7d, type: 3}
+      propertyPath: m_LocalScale.x
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 9035495457377467003, guid: 2679be20b90b54447a1a49d95d330b7d, type: 3}
+      propertyPath: m_LocalScale.z
+      value: 4
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 2679be20b90b54447a1a49d95d330b7d, type: 3}

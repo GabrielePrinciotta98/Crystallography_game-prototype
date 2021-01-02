@@ -39,7 +39,6 @@ public class Detector : MonoBehaviour
 
     private void Diffraction()
     {
-        Debug.Log(atomsManager.GetAtoms().Count);
         positions = atomsManager.GetPositions();
         Shader.SetGlobalVectorArray(AtomsPos, positions);
         Shader.SetGlobalInt(NAtoms, atomsManager.GetAtoms().Count);
