@@ -14,10 +14,10 @@ Shader "Custom/DiffractionShaderSol"
             static const half3 k0 = half3(1,0,0);
             static const half PI = 3.14159265;
             static const half lambda = 0.5;
-            uniform half4 atomsPoss[100];
+            uniform half4 atomsPoss[200];
             uniform int nAtoms = 0;
             //half3 pos[100];
-            half phi[100];
+            half phi[200];
             half2 c = half2(1.0, 0.0);
 
 

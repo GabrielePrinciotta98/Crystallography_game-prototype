@@ -7,15 +7,15 @@ public class Atom : MonoBehaviour
 {
     public Material[] materials;
     new Renderer renderer;
-    private int id;
     AtomsManager atomsManager;
     SolutionManager solutionManager;
-    private Vector3 rotationPoint = new Vector3(22f, 10f, 11f);
+    private Vector3 rotationPoint = new Vector3(20f, 6.6f, 10f);
     private float dragSpeed = 0.05f;
     Vector3 lastMousePos;
-    
+    private AtomRep[] rep;
+    private bool selected = false;
 
-    private void Awake()
+    private void Start()
     {
         renderer = GetComponent<Renderer>();
         renderer.enabled = true;
@@ -33,15 +33,17 @@ public class Atom : MonoBehaviour
         //Debug.Log("Atomo: " + transform.position);
     }
     
-    void OnMouseDown()
+    private void OnMouseDown()
     {
         
         atomsManager.SetStopTrue();
         solutionManager.SetStopTrue();
         renderer.sharedMaterial = materials[1];
+        SetSelected(true);
         lastMousePos = Input.mousePosition;
-    }
 
+    }
+    
     void OnMouseDrag()
     {
         Vector3 delta = Input.mousePosition - lastMousePos;
@@ -50,16 +52,16 @@ public class Atom : MonoBehaviour
         //pos.z = Mathf.Clamp(pos.z, Mathf.Max(pos.z - 2f, 5.5f), Mathf.Min(pos.z + 2f, 9.5f));
         pos.z += delta.x * dragSpeed;
         pos.y += delta.y * dragSpeed;
+        pos.x -= Input.mouseScrollDelta.y * dragSpeed * 8;
         transform.position = pos;
         atomsManager.SetMyPosition(this);
         lastMousePos = Input.mousePosition;
     }
-    
-
     private void OnMouseUp()
     {
-        
+        SetSelected(false);
         renderer.sharedMaterial = materials[0];
+        
     }
 
     /*
@@ -72,4 +74,14 @@ public class Atom : MonoBehaviour
         transform.position = objPosition;
         atomsManager.SetMyPosition(this);
     }*/
+    
+    public void SetSelected(bool flag)
+    {
+        selected = flag;
+    }
+
+    public bool GetSelected()
+    {
+        return selected;
+    }
 }

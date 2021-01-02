@@ -7,6 +7,11 @@ public class Detector : MonoBehaviour
     private AtomsManager atomsManager;
     private Vector4[] positions;
     private Vector4[] centers = new Vector4[100];
+    private float zoom = 4.0f; 
+    private static readonly int AtomsPos = Shader.PropertyToID("atomsPos");
+    private static readonly int NAtoms = Shader.PropertyToID("n_atoms");
+    private static readonly int Zoom = Shader.PropertyToID("zoom");
+    private static readonly int K = Shader.PropertyToID("K");
 
     private void Awake()
     {
@@ -34,10 +39,17 @@ public class Detector : MonoBehaviour
 
     private void Diffraction()
     {
+        Debug.Log(atomsManager.GetAtoms().Count);
         positions = atomsManager.GetPositions();
-        Shader.SetGlobalVectorArray("atomsPos", positions);
-        Shader.SetGlobalInt("n_atoms", atomsManager.GetAtoms().Count);
-
+        Shader.SetGlobalVectorArray(AtomsPos, positions);
+        Shader.SetGlobalInt(NAtoms, atomsManager.GetAtoms().Count);
+        Shader.SetGlobalFloat(Zoom, zoom);
+        Shader.SetGlobalInt(K, atomsManager.GetK());
     }
 
+    public void SetZoom(float z)
+    {
+        zoom = z;
+    }
+    
 }

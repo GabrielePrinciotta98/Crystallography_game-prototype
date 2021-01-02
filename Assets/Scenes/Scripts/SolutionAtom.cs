@@ -5,7 +5,7 @@ using UnityEngine;
 
 public class SolutionAtom : MonoBehaviour
 {
-    private Vector3 rotationPoint = new Vector3(22f, 10f, -21f);
+    private Vector3 rotationPoint = new Vector3(20f, 10f, -20f);
     SolutionManager solutionManager;
     // Start is called before the first frame update
     void Awake()

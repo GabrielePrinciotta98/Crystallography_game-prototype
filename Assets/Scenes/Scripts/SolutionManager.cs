@@ -6,29 +6,33 @@ public class SolutionManager : MonoBehaviour
 {
 
     public GameObject atom;
-    [SerializeReference] SolutionDetector solutionDetector;
+    //[SerializeReference] SolutionDetector solutionDetector;
+    [SerializeReference] GameObject pivot;
     //[SerializeReference] QuestionMarkBox box;
-    [SerializeField] int numberOfAtomsPerBlock = 1;
-    [SerializeField] int numberOfBlocks = 1;
-    //[SerializeField] int rows = 1;
-    //[SerializeField] int columns = 1;
+    //[SerializeField] int numberOfAtomsPerBlock = 1;
+    //[SerializeField] int numberOfBlocks = 1;
+    [SerializeField] int rows = 1;
+    [SerializeField] int columns = 1;
+    [SerializeField] int depth = 1;
 
     private bool stop = true;
     List<SolutionAtom> atoms = new List<SolutionAtom>();
-    Vector4[] positions = new Vector4[100];
+    Vector4[] positions = new Vector4[200];
 
     // Start is called before the first frame update
     void Start()
     {
-        /*
+        
         for (int i = 0; i < rows; i++)
         {
             for (int j = 0; j < columns; j++)
             {
-                Instantiate(atom, new Vector3(22f, 2f + i * (Random.Range(2f, 3f)), -26f + j * (Random.Range(2f,3f))), Quaternion.identity);
+                for (int k=0; k<depth; k++)
+                    (Instantiate(atom, new Vector3(22f+ k * (Random.Range(2f, 3.5f)), 2f + i * (Random.Range(2f, 3.5f)), -26f + j * (Random.Range(2f,3.5f))), Quaternion.identity) as GameObject).transform.parent = pivot.transform;
             }
         }
-        */
+        
+        /*
         int a;
         Vector3[] spawnPositions = new Vector3[numberOfAtomsPerBlock];
         for (a = 0; a < numberOfAtomsPerBlock; a++)
@@ -53,7 +57,7 @@ public class SolutionManager : MonoBehaviour
 
         float degree = Random.Range(0, 360);
         transform.RotateAround(new Vector3(26f, 10f, 22f), Vector3.up, degree * Time.fixedDeltaTime);
-        
+        */
         //solutionDetector.Project();
         //DontShowAtoms();
     }
