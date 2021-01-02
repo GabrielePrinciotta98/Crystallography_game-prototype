@@ -23,9 +23,8 @@ public class Cell : MonoBehaviour
             for (float y = -1.5f; y < 2f; y+=1.5f)
             {
                 if (x != 0 || y != 0)
-                {
                     atomsSpawnPositions.Add(new Vector3(0, y, x));
-                }
+                
             }
     }
     
@@ -39,10 +38,10 @@ public class Cell : MonoBehaviour
         for (int i = 0; i < atomManager.GetN()-1; i++)
         {
             if (atomsSpawnPositions[i] != Vector3.zero)
-                Instantiate(atom, pivotPos + atomsSpawnPositions[i], 
-                            Quaternion.identity, centralCellAtoms[i].transform);
-            
-                
+                Instantiate(atom, pivotPos + atomsSpawnPositions[i],
+                    Quaternion.identity, centralCellAtoms[i].transform);
+
+
         }
         //pivotRep = Instantiate(pivotRep, pivotPos, Quaternion.identity);
         //InstantiateAtoms();
