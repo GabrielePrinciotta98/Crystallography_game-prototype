@@ -1,0 +1,48 @@
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
+public class CellSolution : MonoBehaviour
+{
+    private List<Vector3> atomsSpawnPositions = new List<Vector3>();
+    private SolutionManager solutionManager;
+    public AtomRepSolution atom;
+    public GameObject pivotRep;
+    public GameObject pivot;
+    public CentralCellSolution centralCell;
+    private Vector3 pivotPos;
+    private SolutionAtom[] centralCellAtoms;
+    
+    void Awake()
+    {
+        solutionManager = GameObject.FindObjectOfType<SolutionManager>();
+        centralCell = GameObject.FindObjectOfType<CentralCellSolution>();
+        for (float x = -1.5f; x < 2f; x+=1.5f)
+        for (float y = -1.5f; y < 2f; y+=1.5f)
+            if (x != 0 || y != 0)
+                atomsSpawnPositions.Add(solutionManager.GetK() > 5
+                    ? new Vector3(0, y * (solutionManager.GetK() - 5), x * (solutionManager.GetK() - 5))
+                    : new Vector3(0, y, x));
+    }
+    
+    private void Start()
+    {
+        pivotPos = this.transform.position;
+        pivot = centralCell.GetPivot();
+        centralCellAtoms = centralCell.GetAtoms();
+        
+        Instantiate(pivotRep, pivotPos, Quaternion.identity, centralCell.transform).transform.localScale /= solutionManager.GetK();
+        InstantiateAtoms();
+    }
+
+    public void InstantiateAtoms()
+    {
+        //Debug.Log(pivot.transform);
+        for (int i = 0; i < solutionManager.GetN()-1; i++)
+        {
+            if (atomsSpawnPositions[i] != Vector3.zero)
+                Instantiate(atom, pivotPos + atomsSpawnPositions[i],
+                    Quaternion.identity, centralCellAtoms[i].transform);
+        }
+    }
+}
