@@ -5,12 +5,12 @@ using UnityEngine.UI;
 
 public class HUDManager : MonoBehaviour
 {
-    [SerializeReference] private Slider zoom; 
-    [SerializeReference] private Slider lambda; 
-    [SerializeReference] private Slider power; 
-    [SerializeReference] private Slider rotationSlider; 
-    [SerializeReference] private Button rotateButton; 
-    [SerializeReference] private Button stopRotationButton;
+    [SerializeReference] private Button zoom; 
+    [SerializeReference] private Button lambda; 
+    [SerializeReference] private Button power; 
+    [SerializeReference] private Button rotation; 
+    //[SerializeReference] private Button rotateButton; 
+    //[SerializeReference] private Button stopRotationButton;
 
     void Start()
     {
@@ -30,16 +30,22 @@ public class HUDManager : MonoBehaviour
             Instantiate(zoom);
         }
 
-        if (PowerUpsManger.RotationSliderUnlocked)
+        if (PowerUpsManger.RotationUnlocked)
         {
-            Instantiate(rotationSlider);
+            Instantiate(rotation);
         }
-
+        /*
         if (PowerUpsManger.RotationButtonUnlocked)
         {
             Instantiate(rotateButton);
             Instantiate(stopRotationButton);
         }
+        */
+    }
+
+    public void DisplaySlider(Button powerUp)
+    {
+        //powerUp.
     }
 
 }

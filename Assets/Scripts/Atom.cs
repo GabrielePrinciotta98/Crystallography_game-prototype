@@ -7,10 +7,15 @@ using UnityEngine;
 public class Atom : MonoBehaviour
 {
     public Material[] materials;
+    [SerializeReference] private GameObject controlPlane;
+    private GameObject newControlPlane;
+    [SerializeReference] private GameObject dottedLine;
+    private GameObject newDottedLine;
+    private Vector3 controlPlanePosition;
     new Renderer renderer;
     AtomsManager atomsManager;
     SolutionManager solutionManager;
-    private Vector3 rotationPoint = new Vector3(25f, 6.6f, 10f);
+    private readonly Vector3 rotationPoint = new Vector3(25f, 6.6f, 10f);
     private float dragSpeed = 0.05f;
     Vector3 lastMousePos;
     private AtomRep[] rep;
@@ -20,7 +25,7 @@ public class Atom : MonoBehaviour
 
     private void Start()
     {
-        
+        controlPlanePosition = controlPlane.transform.position;
         renderer = GetComponent<Renderer>();
         renderer.enabled = true;
         ChangeMaterial(0);
@@ -34,6 +39,7 @@ public class Atom : MonoBehaviour
         if (!atomsManager.GetStop())
             transform.RotateAround(rotationPoint, Vector3.up, 10 * Time.deltaTime);
         atomsManager.SetMyPosition(this);
+        
     }
 
     private void OnMouseOver()
@@ -51,7 +57,9 @@ public class Atom : MonoBehaviour
     private void OnMouseDown()
     {
         if (solved) return;
-        
+        newControlPlane = Instantiate(controlPlane, this.transform);
+        newControlPlane.transform.position = new Vector3(this.transform.position.x, controlPlanePosition.y, controlPlanePosition.z);
+        newDottedLine = Instantiate(dottedLine, this.transform.position, dottedLine.transform.rotation * Quaternion.Euler(90,0,90), this.transform);
         atomsManager.SetStopTrue();
         solutionManager.SetStopTrue();
         ChangeMaterial(2);
@@ -69,7 +77,16 @@ public class Atom : MonoBehaviour
         //pos.z = Mathf.Clamp(pos.z, Mathf.Max(pos.z - 2f, 5.5f), Mathf.Min(pos.z + 2f, 9.5f));
         pos.z += delta.x * dragSpeed;
         pos.y += delta.y * dragSpeed;
-        pos.x -= Input.mouseScrollDelta.y * dragSpeed * 8;
+        var mouseScroll = Input.mouseScrollDelta.y;
+        if (mouseScroll != 0)
+        {
+            pos.x -= mouseScroll * dragSpeed * 8;
+            //newDottedLine = Instantiate(dottedLine, this.transform.position, dottedLine.transform.rotation * Quaternion.Euler(90,0,90));
+        }
+        else
+        {
+            //Destroy(newDottedLine);
+        }
         transform.position = pos;
         atomsManager.SetMyPosition(this);
         atomsManager.SetDraggingAtom(this);
@@ -78,6 +95,9 @@ public class Atom : MonoBehaviour
     private void OnMouseUp()
     {
         SetSelected(false);
+        //Destroy(newControlPlane);
+        Destroy(newDottedLine);
+
         if (!solved)
             ChangeMaterial(0);
     }

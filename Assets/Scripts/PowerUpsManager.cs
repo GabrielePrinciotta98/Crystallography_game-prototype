@@ -7,8 +7,8 @@ public static class PowerUpsManger
     private static bool zoomUnlocked;
     private static bool lambdaUnlocked;
     private static bool powerUnlocked;
-    private static bool rotationSliderUnlocked;
-    private static bool rotationButtonUnlocked;
+    private static bool rotationUnlocked;
+    //private static bool rotationButtonUnlocked;
     
     public static bool ZoomUnlocked
     {
@@ -28,15 +28,16 @@ public static class PowerUpsManger
         set => powerUnlocked = value;
     }
 
-    public static bool RotationSliderUnlocked
+    public static bool RotationUnlocked
     {
-        get => rotationSliderUnlocked;
-        set => rotationSliderUnlocked = value;
+        get => rotationUnlocked;
+        set => rotationUnlocked = value;
     }
-
+    /*
     public static bool RotationButtonUnlocked
     {
         get => rotationButtonUnlocked;
         set => rotationButtonUnlocked = value;
     }
+    */
 }
