@@ -48,3 +48,6 @@ MonoBehaviour:
   solutionManager: {fileID: 7036924550722588422, guid: 4a012981ae663b346bbc5f8e2dd25720, type: 3}
   youWonUI: {fileID: 0}
   curtain: {fileID: 0}
+  youWonBackGroundUI: {fileID: 0}
+  addedScoreText: {fileID: 0}
+  rotationSlider: {fileID: 0}

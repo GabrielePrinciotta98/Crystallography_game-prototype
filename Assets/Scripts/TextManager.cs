@@ -5,36 +5,50 @@ using UnityEngine.UI;
 public class TextManager : MonoBehaviour
 {
     // Start is called before the first frame update
-    [SerializeReference] private Text zoom;
-    [SerializeReference] private Text power;
-    [SerializeReference] private Text rotation;
-    [SerializeReference] private Text repetitions;
-    [SerializeReference] private Text lambda;
+    private Text zoom;
+    private Text power;
+    private Text rotation;
+    private Text lambda;
 
+
+    public void SetZoomTextReference(Text text)
+    {
+        zoom = text;
+    }
     
     public void SetZoomText(float zoom)
     {
-        this.zoom.text = zoom.ToString();
+        this.zoom.text = zoom.ToString("F2");
     }
 
+    public void SetPowerTextReference(Text text)
+    {
+        power = text;
+    }
+    
     public void SetPowerText(float pwr)
     {
-        power.text = pwr.ToString();
+        power.text = Mathf.Pow(2, pwr).ToString("F2");
     }
 
+    public void SetRotationTextReference(Text text)
+    {
+        rotation = text;
+    }
+    
     public void SetRotationText(float rotation)
     {
-        this.rotation.text = rotation.ToString();
+        this.rotation.text = rotation.ToString("F2");
     }
 
-    public void SetRepsText(float reps)
+    public void SetLambdaTextReference(Text text)
     {
-        repetitions.text = reps.ToString();
+        lambda = text;
     }
-
+    
     public void SetLambdaText(float l)
     {
-        lambda.text = l.ToString();
+        lambda.text = l.ToString("F2");
     }
 
 }

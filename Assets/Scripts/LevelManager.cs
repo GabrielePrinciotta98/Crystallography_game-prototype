@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
@@ -11,33 +12,47 @@ public class LevelManager : MonoBehaviour
     [SerializeReference] private GameObject curtain;
     [SerializeReference] private GameObject youWonBackGroundUI;
     [SerializeReference] private GameObject addedScoreText;
-    [SerializeReference] private Slider rotationSlider;
+    [SerializeReference] private GameObject controlPlane;
+    [SerializeReference] private GameObject dottedLine;
+    [SerializeReference] private GameObject levelIndicatorBackGroundUI;
+    [SerializeReference] private GameObject levelIndicatorText;
+    [SerializeReference] private GameObject nextLevelButton;
+    [SerializeReference] private GameObject backButton;
+
     private int frames;
     private Vector3 atomPos;
     private Vector3[] solAtomPos;
     private bool[] markedSolAtomPos;
     private int n;
     private bool over = false;
+   
+
     // Start is called before the first frame update
     void Start()
     {
-        Instantiate(hudManager);
         //Debug.Log("Scena corrente:" + (SceneManager.GetActiveScene().buildIndex-1));
         Debug.Log("Lv counter: " + LevelLoader.LevelCounter);
-        Level lv = LevelData.SetLevels[LevelLoader.LevelCounter-1];
-        
+        Level lv = LevelData.Levels[LevelLoader.LevelCounter-1];
+        //Debug.Log(lv.SolPositions);
         InstantiateAtomsManager(lv.R,lv.M,lv.N, lv.IsCrystal);
         InstantiateSolutionManager(lv.R,lv.M,lv.N, lv.IsCrystal, lv.SolPositions);
-        
+        Instantiate(hudManager);
+
         FindObjectOfType<Detector>().SetAtomsManager(atomsManager);
         FindObjectOfType<SolutionDetector>().SetSolutionManager(solutionManager);
-        rotationSlider.onValueChanged.AddListener(delegate {atomsManager.Rotate(1f);});
-        rotationSlider.onValueChanged.AddListener(delegate {solutionManager.Rotate(1f);});
+        
         solAtomPos = lv.SolPositions;
         markedSolAtomPos = new bool[solAtomPos.Length];
         for (int i = 0; i < markedSolAtomPos.Length; i++)
             markedSolAtomPos[i] = false;
         n = lv.N-1; // n sono gli atomi ancora da risolvere
+
+        Instantiate(controlPlane);
+        Instantiate(dottedLine);
+        levelIndicatorText.GetComponent<Text>().text = lv.Description;
+        nextLevelButton.GetComponent<Button>().onClick.AddListener(LevelLoader.LoadNextLevel);
+        backButton.GetComponent<Button>().onClick.AddListener(LevelLoader.LoadMenu);
+        StartCoroutine(StartLevel());
     }
 
     private void InstantiateSolutionManager(int r, int m, int n, bool isCrystal, Vector3[] listPos)
@@ -72,14 +87,12 @@ public class LevelManager : MonoBehaviour
             bool atomSolved = false;
             for (int i = 0; i < atomsManager.GetAtoms().Count; i++)
             {
-
-                if (Vector3.Distance(atom.transform.localPosition, solAtomPos[i]) <= 1f && !markedSolAtomPos[i])
-                {
-                    j = i;
-                    markedSolAtomPos[i] = true;
-                    atomSolved = true;
-                    break;
-                }
+                if (!(Vector3.Distance(atom.transform.localPosition, solAtomPos[i]) <= 1f) || markedSolAtomPos[i]) 
+                    continue;
+                j = i;
+                markedSolAtomPos[i] = true;
+                atomSolved = true;
+                break;
             }
             
             
@@ -93,7 +106,7 @@ public class LevelManager : MonoBehaviour
                 atomsManager.SetDraggingAtom(null);
                 n--;
             }
-            Debug.Log(n);
+            //Debug.Log(n);
 
             if (n == 0) 
             {
@@ -110,6 +123,55 @@ public class LevelManager : MonoBehaviour
         frames++;
     }
 
+    IEnumerator StartLevel()
+    {
+        yield return new WaitForSeconds(0.8f);
+        levelIndicatorBackGroundUI.SetActive(true);
+        //StartCoroutine(EnterLevelIndicator(levelIndicatorText));
+        //yield return new WaitForSeconds(2);
+        yield return StartCoroutine(ExitLevelIndicator(levelIndicatorText));
+        
+        //yield return new WaitForSeconds(1);
+        levelIndicatorBackGroundUI.SetActive(false);
+    }
+
+    IEnumerator EnterLevelIndicator(GameObject levelIndicatorText)
+    {
+        
+        float t = 0;
+        float ease, newPosX;
+        while (t <= 1f)
+        {
+            ease = EaseOutQuartic(t);
+            newPosX = Mathf.Lerp(-1916, 0, ease);
+            this.levelIndicatorText.transform.localPosition = new Vector3(newPosX, levelIndicatorText.transform.localPosition.y);    
+            t += 0.015f;
+            yield return new WaitForFixedUpdate();
+        }
+        //yield return new WaitForFixedUpdate();
+
+    }
+
+    IEnumerator ExitLevelIndicator(GameObject levelIndicatorText)
+    {
+        yield return EnterLevelIndicator(levelIndicatorText);
+        yield return new WaitForSeconds(0.5f);
+        float t = 0;
+        float ease, newPosX;
+        while (t <= 1f)
+        {
+            ease = EaseInQuartic(t);
+            newPosX = Mathf.Lerp(0, 1916, ease);
+            this.levelIndicatorText.transform.localPosition = new Vector3(newPosX, levelIndicatorText.transform.localPosition.y);    
+            t += 0.02f;
+            yield return new WaitForFixedUpdate();
+        }
+        //yield return new WaitForFixedUpdate();
+
+    }
+    
+    
+    
     IEnumerator Victory()
     {
         yield return new WaitForSeconds(1.5f);
@@ -174,12 +236,12 @@ public class LevelManager : MonoBehaviour
         }
     }
 
-    public float EaseInCubic(float x)
+    private float EaseInCubic(float x)
     {
         return x * x * x;
     }
-    
-    public float EaseOutBounce(float x) 
+
+    private float EaseOutBounce(float x) 
     {
         const float n1 = 7.5625f;
         const float d1 = 2.75f;
@@ -202,11 +264,20 @@ public class LevelManager : MonoBehaviour
         return n1 * (x -= 2.625f / d1) * x + 0.984375f;
     }
 
-    public float ZoomInZoomOut(float x)
+    private float ZoomInZoomOut(float x)
     {
         return -4 * x * x + 4 * x;
     }
+
+    private float EaseOutQuartic(float x)
+    {
+        return 1 - Mathf.Pow(1 - x, 4);
+    }
     
+    private float EaseInQuartic(float x)
+    {
+        return x * x * x * x;
+    }
     
     public bool GetOver()
     {

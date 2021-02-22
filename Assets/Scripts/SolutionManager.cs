@@ -19,19 +19,26 @@ public class SolutionManager : MonoBehaviour
     //[SerializeField] int depth = 1;
     [SerializeField] int N = 1;
     [SerializeField] int M = 1;
-    [SerializeField] int K = 1;
+    [SerializeField] int K = 5;
     [SerializeField] int R = 4;
     private List<Vector3> cellsSpawnPositions = new List<Vector3>();
     private Vector3 centralCellSpawnPos;
     private Vector3[] atomSpawnPositions = new Vector3[8];
     private bool stop = true;
     List<SolutionAtom> atoms = new List<SolutionAtom>();
-    Vector4[] positions = new Vector4[20];
+    Vector4[] positions = new Vector4[200];
+    private bool anAtomIsMoving;
 
+    public bool AnAtomIsMoving
+    {
+        get => anAtomIsMoving;
+        set => anAtomIsMoving = value;
+    }
     
     private void Awake()
     {
         centralCellSpawnPos = pivot.transform.position;
+        /*
         if (K > 5)
         {
             for (int x = -K; x < 2*K; x+=K)
@@ -48,6 +55,7 @@ public class SolutionManager : MonoBehaviour
                 if (x != 0 || y != 0 || z != 0)
                     cellsSpawnPositions.Add(new Vector3(x, y, z));
         }
+        */
         
     }
     
@@ -64,6 +72,44 @@ public class SolutionManager : MonoBehaviour
             }
         }
         */
+        if (K > 5)
+        {
+            for (int x = -K; x < 2 * K; x += K)
+            for (int y = -K; y < 2 * K; y += K)
+            for (int z = -K; z < 2 * K; z += K)
+                if (x != 0 || y != 0 || z != 0)
+                    cellsSpawnPositions.Add(new Vector3(x, y, z));
+        }
+        else
+        {
+            //Debug.Log(R);
+
+            if (R == 3)
+            {
+                for (float x = -5f; x < 10f; x += 5f)
+                for (float y = -5f; y < 10f; y += 5f)
+                for (float z = -5f; z < 10f; z += 5f)
+                    if (x != 0 || y != 0 || z != 0)
+                        cellsSpawnPositions.Add(new Vector3(x, y, z));
+            }
+            if (R == 5)
+            {
+                for (float x = -10f; x < 15f; x += 5f)
+                for (float y = -10f; y < 15f; y += 5f)
+                for (float z = -10f; z < 15f; z += 5f)
+                    if (x != 0 || y != 0 || z != 0)
+                        cellsSpawnPositions.Add(new Vector3(x, y, z));
+            }
+            if (R == 7)
+            {
+                for (float x = -15f; x < 20f; x += 5f)
+                for (float y = -15f; y < 20f; y += 5f)
+                for (float z = -15f; z < 20f; z += 5f)
+                    if (x != 0 || y != 0 || z != 0)
+                        cellsSpawnPositions.Add(new Vector3(x, y, z));
+            }
+        }
+        
         if (isCrystal)
         {
             centralCell = Instantiate(centralCell, centralCellSpawnPos, Quaternion.identity);
@@ -197,6 +243,11 @@ public class SolutionManager : MonoBehaviour
     public void SetAtomSpawnPositions(Vector3[] listPos)
     {
         this.atomSpawnPositions = listPos;
+    }
+
+    public Vector3[] GetAtomSpawnPositions()
+    {
+        return atomSpawnPositions;
     }
     
 }

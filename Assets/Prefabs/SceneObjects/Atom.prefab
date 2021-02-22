@@ -226,5 +226,3 @@ MonoBehaviour:
   - {fileID: 2100000, guid: 553496eb89ccab143a785b4fa66b09ac, type: 2}
   - {fileID: 2100000, guid: 90fadeb162462d8468661d4582f8aac5, type: 2}
   - {fileID: 2100000, guid: c485360be9d220a46b5cdb417cbdb8b6, type: 2}
-  controlPlane: {fileID: 6685877480695593931, guid: 31232d330bf55434789fd5ec499334f5, type: 3}
-  dottedLine: {fileID: 3421961755772950661, guid: 0d138a957a61b654cb78de08f681e7c9, type: 3}

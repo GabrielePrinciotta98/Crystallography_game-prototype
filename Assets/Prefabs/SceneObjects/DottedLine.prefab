@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 3421961755772950657}
   - component: {fileID: 3421961755772950656}
   - component: {fileID: 3421961755772950659}
-  - component: {fileID: 3421961755772950658}
+  - component: {fileID: 4450294115303091377}
   m_Layer: 0
   m_Name: DottedLine
   m_TagString: Untagged
@@ -28,7 +28,7 @@ Transform:
   m_GameObject: {fileID: 3421961755772950661}
   m_LocalRotation: {x: 0.7071068, y: 0, z: 0, w: 0.7071068}
   m_LocalPosition: {x: 24.92048, y: 7.7233057, z: 4.0089126}
-  m_LocalScale: {x: 0.28838685, y: 120, z: 1}
+  m_LocalScale: {x: 0.2, y: 25, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 0
@@ -82,17 +82,15 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!64 &3421961755772950658
-MeshCollider:
+--- !u!114 &4450294115303091377
+MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3421961755772950661}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 0
   m_Enabled: 1
-  serializedVersion: 4
-  m_Convex: 0
-  m_CookingOptions: 30
-  m_Mesh: {fileID: 10210, guid: 0000000000000000e000000000000000, type: 0}
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dae4033cc50ba4f4788196c605a9a069, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 

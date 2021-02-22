@@ -5,12 +5,16 @@ using UnityEngine;
 
 public class Detector : MonoBehaviour
 {
+    private Renderer _renderer;
     private AtomsManager atomsManager;
+    private EmitterCone emitter;
     private Vector4[] positions;
     private readonly Vector4[] centers = new Vector4[100];
     private float zoom = 4f;
-    private float pwr = 1f;
+    private float pwr = -3f;
+    private bool pwrSetted;
     private float lambda = 0.5f;
+    private CustomRenderTexture crt;
     private Vector3 a, c;
     private static readonly int AtomsPos = Shader.PropertyToID("atomsPos");
     private static readonly int NAtoms = Shader.PropertyToID("n_atoms");
@@ -23,25 +27,37 @@ public class Detector : MonoBehaviour
     private static readonly int R = Shader.PropertyToID("R");
     private static readonly int M = Shader.PropertyToID("M");
     private static readonly int Lambda = Shader.PropertyToID("lambda");
+    private static readonly int MainTex = Shader.PropertyToID("_MainTex");
 
     private void Awake()
     {
-        atomsManager = GameObject.FindObjectOfType<AtomsManager>();
+        atomsManager = FindObjectOfType<AtomsManager>();
+        emitter = FindObjectOfType<EmitterCone>();
     }
 
     private void Start()
     {
-        
-        //atomsManager = GameObject.FindObjectOfType<AtomsManager>();
-
-        //atomsManager.GetCubeVectors(0);
-        //atomsManager.GetCubeVectors(1);
+        _renderer = GetComponent<Renderer>();
+        _renderer.enabled = false;
+        crt = (CustomRenderTexture) _renderer.material.GetTexture(MainTex);
+        crt.Initialize();
     }
-
 
     private void Update()
     {
+        if (!emitter.GetPowerOn()) return;
+        _renderer.enabled = true; 
+        
+        if (pwr < 0 && !pwrSetted)
+        {
+            pwr += 0.02f;
+            Diffraction();
+            crt.Update();
+        }
+
+        if (!atomsManager.AnAtomIsMoving) return;
         Diffraction();
+        crt.Update();
 
     }
     
@@ -60,6 +76,9 @@ public class Detector : MonoBehaviour
 
     private void Diffraction()
     {
+        
+        
+        
         positions = atomsManager.GetPositions();
         //Debug.Log(positions[0]);
         a = atomsManager.GetCellRight() * atomsManager.GetK();
@@ -69,18 +88,21 @@ public class Detector : MonoBehaviour
         Shader.SetGlobalInt(NAtoms, atomsManager.GetAtoms().Count);
         Shader.SetGlobalFloat(Zoom, zoom);
         Shader.SetGlobalInt(K, atomsManager.GetK());
-        Shader.SetGlobalFloat(Pwr, pwr);
+        Shader.SetGlobalFloat(Pwr, Mathf.Pow(2, pwr));
         Shader.SetGlobalVector(A, a);
         Shader.SetGlobalVector(C, c);
         Shader.SetGlobalInt(R, atomsManager.GetR());
         Shader.SetGlobalInt(M, atomsManager.GetM());
         Shader.SetGlobalFloat(Lambda, lambda);
 
+
     }
 
     public void SetZoom(float z)
     {
         zoom = z;
+        Diffraction();
+        crt.Update();
     }
 
     public float GetZoom()
@@ -91,6 +113,9 @@ public class Detector : MonoBehaviour
     public void SetPwr(float p)
     {
         pwr = p;
+        pwrSetted = true;
+        Diffraction();
+        crt.Update();
     }
 
     public float GetPwr()
@@ -101,6 +126,8 @@ public class Detector : MonoBehaviour
     public void SetLambda(float l)
     {
         lambda = l;
+        Diffraction();
+        crt.Update();
     }
 
     public void SetAtomsManager(AtomsManager am)

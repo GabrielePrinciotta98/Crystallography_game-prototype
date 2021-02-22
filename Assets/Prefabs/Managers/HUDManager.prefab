@@ -43,9 +43,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 81e1009d50c274e4fbac6fbdc314cd08, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  zoom: {fileID: 7664735930043721586, guid: 99a995935093f0947a09c09ca8486951, type: 3}
-  lambda: {fileID: 4553358341157796841, guid: e2280d8664491a444b6957358d788ce1, type: 3}
-  power: {fileID: 7662498202812466465, guid: cd5a4c4b81721bc4895ef17e4eba44c8, type: 3}
-  rotationSlider: {fileID: 9036660121389705759, guid: f57039cfd03c91d40a84f1d6a58eff29, type: 3}
-  rotateButton: {fileID: 3932111615797337516, guid: 59646c2a673c67c43a47f010c4efe62d, type: 3}
-  stopRotationButton: {fileID: 5176715220592002105, guid: 19d0e17e79428784eb5a388a0bf57399, type: 3}
+  zoom: {fileID: 9122564486138684743, guid: d70e108ee021b1c4298752ac5ed651ff, type: 3}
+  lambda: {fileID: 5779861530515566403, guid: 4426913d509d92e40baab365c24bc36e, type: 3}
+  power: {fileID: 1981010693554859553, guid: 5946e4efd85ab3147a00ffc33befc9fa, type: 3}
+  rotation: {fileID: 442465426168867116, guid: ee60a1776eec1584c9996720a023fc9a, type: 3}
+  textManager: {fileID: 6273631944732598851, guid: bde7273f3efb4064db2d49c8e5cb5f0c, type: 3}

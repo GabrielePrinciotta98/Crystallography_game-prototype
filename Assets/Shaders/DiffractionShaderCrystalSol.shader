@@ -1,6 +1,5 @@
 Shader "Custom/DiffractionShaderCrystalSol"
 {
-    
     SubShader
     {
          Pass
@@ -10,7 +9,7 @@ Shader "Custom/DiffractionShaderCrystalSol"
             #include "UnityCustomRenderTexture.cginc"
             #pragma vertex CustomRenderTextureVertexShader
             #pragma fragment frag
-
+ 
             static const half3 k0 = half3(1,0,0);
             static const half PI = 3.14159265;
             uniform half _lambda = 0.5;
@@ -28,7 +27,7 @@ Shader "Custom/DiffractionShaderCrystalSol"
 
             half3 ks(half2 screenCoords)
             {
-                return normalize(half3(screenCoords*_zoom, 1.0));
+                return normalize(half3(screenCoords*16/_zoom, 1.0));
             }
 
             half2 e_Pow_ix(half x)
@@ -42,6 +41,9 @@ Shader "Custom/DiffractionShaderCrystalSol"
                 //mapping delle coordinate texture da [0,1] a [-1.+1]
                 const half2 screenCoords = 2.0 * (half2(IN.globalTexcoord.x, IN.globalTexcoord.y) - half2(0.5,0.5));
                 int i;
+                const half2 center = half2(0,0);
+                half d = distance(screenCoords, center);
+                
                 half2 I = half2(1.0, 0.0);
                 half3 s = (ks(screenCoords)-k0)/_lambda;
                 
@@ -56,11 +58,15 @@ Shader "Custom/DiffractionShaderCrystalSol"
                 I *= sin(PI * _R * dot(_a, s)) / sin(PI * dot(_a,s)) *
                      sin(PI * _R * dot(_b, s)) / sin(PI * dot(_b,s)) *
                      sin(PI * _R * dot(_c, s)) / sin(PI * dot(_c,s));
-                
-                return half4(1,1,1,2) - half4(dot(I,I)/((nAtoms+1)*_M*(nAtoms+1)*_M)*_pwr,
-                                            dot(I, I)/((nAtoms+1)*_M*(nAtoms+1)*_M)*_pwr,
-                                            dot(I, I)/((nAtoms+1)*_M*(nAtoms+1)*_M)*_pwr,
-                                            1);
+
+               
+                const float vign = 1 - smoothstep(0.50, 1.1, d);
+                _pwr *= vign;
+
+                return half4(1,1,1,2) - half4(dot(I,I)/((nAtoms+1)*_M*(nAtoms+1)*_M),
+                                            dot(I, I)/((nAtoms+1)*_M*(nAtoms+1)*_M),
+                                            dot(I, I)/((nAtoms+1)*_M*(nAtoms+1)*_M),
+                                            1) * _pwr;
                                             
                 //return half4(1, 0, 0, 1);
 

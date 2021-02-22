@@ -7,10 +7,13 @@ using UnityEngine;
 public class Atom : MonoBehaviour
 {
     public Material[] materials;
-    [SerializeReference] private GameObject controlPlane;
-    private GameObject newControlPlane;
-    [SerializeReference] private GameObject dottedLine;
-    private GameObject newDottedLine;
+    private ControlPlane controlPlane;
+    private Renderer controlPlaneRenderer;
+    //private GameObject newControlPlane;
+    private DottedLine dottedLine;
+    private Renderer dottedLineRenderer;
+ 
+    //private GameObject newDottedLine;
     private Vector3 controlPlanePosition;
     new Renderer renderer;
     AtomsManager atomsManager;
@@ -23,14 +26,26 @@ public class Atom : MonoBehaviour
     private Vector3 curPos;
     private bool solved = false;
 
+    
     private void Start()
     {
-        controlPlanePosition = controlPlane.transform.position;
+        
         renderer = GetComponent<Renderer>();
         renderer.enabled = true;
         ChangeMaterial(0);
-        atomsManager = GameObject.FindObjectOfType<AtomsManager>();
-        solutionManager = GameObject.FindObjectOfType<SolutionManager>();
+        
+        atomsManager = FindObjectOfType<AtomsManager>();
+        solutionManager = FindObjectOfType<SolutionManager>();
+        
+        controlPlane = FindObjectOfType<ControlPlane>();
+        controlPlaneRenderer = controlPlane.GetComponent<Renderer>();
+        controlPlaneRenderer.enabled = false;
+        controlPlanePosition = controlPlane.transform.position;
+        
+        dottedLine = FindObjectOfType<DottedLine>();
+        dottedLineRenderer = dottedLine.GetComponent<Renderer>();
+        dottedLineRenderer.enabled = false;
+
         atomsManager.AddAtom(this);
     }
     
@@ -39,7 +54,7 @@ public class Atom : MonoBehaviour
         if (!atomsManager.GetStop())
             transform.RotateAround(rotationPoint, Vector3.up, 10 * Time.deltaTime);
         atomsManager.SetMyPosition(this);
-        
+        Debug.Log(SystemInfo.graphicsDeviceType);
     }
 
     private void OnMouseOver()
@@ -57,13 +72,15 @@ public class Atom : MonoBehaviour
     private void OnMouseDown()
     {
         if (solved) return;
-        newControlPlane = Instantiate(controlPlane, this.transform);
-        newControlPlane.transform.position = new Vector3(this.transform.position.x, controlPlanePosition.y, controlPlanePosition.z);
-        newDottedLine = Instantiate(dottedLine, this.transform.position, dottedLine.transform.rotation * Quaternion.Euler(90,0,90), this.transform);
+        controlPlane.SetAtom(this, true);
+        
+        controlPlaneRenderer.enabled = true;
+        //newDottedLine = Instantiate(dottedLine, this.transform.position, dottedLine.transform.rotation * Quaternion.Euler(90,0,90), this.transform);
         atomsManager.SetStopTrue();
         solutionManager.SetStopTrue();
         ChangeMaterial(2);
         SetSelected(true);
+        atomsManager.AnAtomIsMoving = true;
         lastMousePos = Input.mousePosition;
 
     }
@@ -78,15 +95,20 @@ public class Atom : MonoBehaviour
         pos.z += delta.x * dragSpeed;
         pos.y += delta.y * dragSpeed;
         var mouseScroll = Input.mouseScrollDelta.y;
+        //Debug.Log(mouseScroll);
         if (mouseScroll != 0)
         {
             pos.x -= mouseScroll * dragSpeed * 8;
-            //newDottedLine = Instantiate(dottedLine, this.transform.position, dottedLine.transform.rotation * Quaternion.Euler(90,0,90));
+            dottedLine.SetAtom(this, true);
+            dottedLineRenderer.enabled = true;
+            //newDottedLine = Instantiate(dottedLine, this.transform.position, dottedLine.transform.rotation * Quaternion.Euler(90,0,90), this.transform);
         }
         else
         {
-            //Destroy(newDottedLine);
+            dottedLine.SetAtom(null, false);
+
         }
+        
         transform.position = pos;
         atomsManager.SetMyPosition(this);
         atomsManager.SetDraggingAtom(this);
@@ -95,8 +117,12 @@ public class Atom : MonoBehaviour
     private void OnMouseUp()
     {
         SetSelected(false);
+        atomsManager.AnAtomIsMoving = false;
+        controlPlaneRenderer.enabled = false;
+        controlPlane.SetAtom(null, false);
+
         //Destroy(newControlPlane);
-        Destroy(newDottedLine);
+        //Destroy(newDottedLine);
 
         if (!solved)
             ChangeMaterial(0);
@@ -127,7 +153,7 @@ public class Atom : MonoBehaviour
     public void Rotate(float angle)
     {
         transform.RotateAround(rotationPoint, Vector3.up, angle);
-        Debug.Log(angle);
+        atomsManager.AnAtomIsMoving = true;
     }
 
     public void ChangeMaterial(int i)

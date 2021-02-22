@@ -4,7 +4,7 @@ using UnityEngine;
 
 public static class ScoreManager
 {
-    private static int score = 0;
+    private static int score = 5000;
 
     public static int Score
     {

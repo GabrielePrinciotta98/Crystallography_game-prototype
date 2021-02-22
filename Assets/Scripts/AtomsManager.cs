@@ -12,7 +12,7 @@ public class AtomsManager : MonoBehaviour
     [SerializeReference] GameObject cell;
     [SerializeField] int N = 1;
     [SerializeField] int M = 1;
-    [SerializeField] int K = 1;
+    [SerializeField] int K = 5;
     [SerializeField] int R = 4;
     //[SerializeField] int rows = 1;
     //[SerializeField] int columns = 1;
@@ -24,13 +24,21 @@ public class AtomsManager : MonoBehaviour
     private Vector3 centralCellSpawnPos;
     private List<Vector3> atomsSpawnPositions = new List<Vector3>();
     private Atom draggingAtom;
-    
+    private bool anAtomIsMoving;
+
+    public bool AnAtomIsMoving
+    {
+        get => anAtomIsMoving;
+        set => anAtomIsMoving = value;
+    }
+
     private void Awake()
     {
         centralCellSpawnPos = pivot.transform.position;
 
-        if (isCrystal)
+        //if (isCrystal)
         {
+            /*
             if (K > 5)
             {
                 for (int x = -K; x < 2 * K; x += K)
@@ -41,14 +49,27 @@ public class AtomsManager : MonoBehaviour
             }
             else
             {
-                for (float x = -5f; x < 10f; x += 5f)
-                for (float y = -5f; y < 10f; y += 5f)
-                for (float z = -5f; z < 10f; z += 5f)
-                    if (x != 0 || y != 0 || z != 0)
-                        cellsSpawnPositions.Add(new Vector3(x, y, z));
-            }
+                Debug.Log(R);
+
+                if (R == 3)
+                {
+                    for (float x = -5f; x < 10f; x += 5f)
+                    for (float y = -5f; y < 10f; y += 5f)
+                    for (float z = -5f; z < 10f; z += 5f)
+                        if (x != 0 || y != 0 || z != 0)
+                            cellsSpawnPositions.Add(new Vector3(x, y, z));
+                }
+                if (R == 5)
+                {
+                    for (float x = -10f; x < 15f; x += 5f)
+                    for (float y = -10f; y < 15f; y += 5f)
+                    for (float z = -10f; z < 15f; z += 5f)
+                        if (x != 0 || y != 0 || z != 0)
+                            cellsSpawnPositions.Add(new Vector3(x, y, z));
+                }
+            }*/
         }
-        else
+        //else
         {
             for (float x = -1.5f; x < 2f; x+=1.5f)
             for (float y = -1.5f; y < 2f; y+=1.5f)
@@ -58,10 +79,7 @@ public class AtomsManager : MonoBehaviour
 
     }
 
-    private void Call(float arg0)
-    {
-        throw new NotImplementedException();
-    }
+    
 
     // Start is called before the first frame update
     void Start()
@@ -76,6 +94,46 @@ public class AtomsManager : MonoBehaviour
             }
         }
         */
+        if (K > 5)
+        {
+            for (int x = -K; x < 2 * K; x += K)
+            for (int y = -K; y < 2 * K; y += K)
+            for (int z = -K; z < 2 * K; z += K)
+                if (x != 0 || y != 0 || z != 0)
+                    cellsSpawnPositions.Add(new Vector3(x, y, z));
+        }
+        else
+        {
+            Debug.Log("R: " + R);
+
+            if (R == 3)
+            {
+                for (float x = -5f; x < 10f; x += 5f)
+                for (float y = -5f; y < 10f; y += 5f)
+                for (float z = -5f; z < 10f; z += 5f)
+                    if (x != 0 || y != 0 || z != 0)
+                        cellsSpawnPositions.Add(new Vector3(x, y, z));
+            }
+            if (R == 5)
+            {
+                for (float x = -10f; x < 15f; x += 5f)
+                for (float y = -10f; y < 15f; y += 5f)
+                for (float z = -10f; z < 15f; z += 5f)
+                    if (x != 0 || y != 0 || z != 0)
+                        cellsSpawnPositions.Add(new Vector3(x, y, z));
+            }
+            if (R == 7)
+            {
+                for (float x = -15f; x < 20f; x += 5f)
+                for (float y = -15f; y < 20f; y += 5f)
+                for (float z = -15f; z < 20f; z += 5f)
+                    if (x != 0 || y != 0 || z != 0)
+                        cellsSpawnPositions.Add(new Vector3(x, y, z));
+            }
+        }
+        
+        
+        
         if (isCrystal)
         {
             // SPAWN CELLA CENTRALE
@@ -86,6 +144,8 @@ public class AtomsManager : MonoBehaviour
                 centralCell.transform.localScale *= 5;
 
             // SPAWN CELLE RIPETUTE
+            //Debug.Log(M);
+            
             for (int i = 0; i < M - 1; i++)
                 Instantiate(cell, centralCellSpawnPos + cellsSpawnPositions[i], Quaternion.identity,
                     centralCell.transform);
@@ -195,15 +255,13 @@ public class AtomsManager : MonoBehaviour
     
     public void Rotate(float angle)
     {
-        Debug.Log("ciao");
         foreach (var a in atoms)
         {
             
-            Debug.Log("mamma");
             a.Rotate((int)angle);
         }
         
-        //centralCell.GetComponent<CentralCell>().Rotate(angle);
+        centralCell.GetComponent<CentralCell>().Rotate(angle);
     }
 
 

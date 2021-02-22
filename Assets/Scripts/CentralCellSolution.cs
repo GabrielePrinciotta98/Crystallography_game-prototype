@@ -4,13 +4,14 @@ using UnityEngine;
 
 public class CentralCellSolution : MonoBehaviour
 {
-    private List<Vector3> atomsSpawnPositions = new List<Vector3>();
+    //private List<Vector3> atomsSpawnPositions = new List<Vector3>();
     private SolutionManager solutionManager;
     public GameObject pivot;
     public SolutionAtom atom;
     private Vector3 pivotPos;
     private SolutionAtom[] centralCellAtoms = new SolutionAtom[9];
     private Vector3 curPos;
+    private Vector3[] atomSpawnPositions = new Vector3[8];
 
     void Awake()
     {
@@ -18,6 +19,7 @@ public class CentralCellSolution : MonoBehaviour
         
         pivotPos = pivot.transform.position;
         solutionManager = FindObjectOfType<SolutionManager>();
+        /*
         for (float x = -1.5f; x < 2f; x+=1.5f)
         for (float y = -1.5f; y < 2f; y+=1.5f)
         {
@@ -28,6 +30,7 @@ public class CentralCellSolution : MonoBehaviour
                     : new Vector3(0, y, x));
             }
         }
+        */
     }
 
     void Start()
@@ -38,10 +41,10 @@ public class CentralCellSolution : MonoBehaviour
 
     public void InstantiateAtoms()
     {
-        
+        atomSpawnPositions = solutionManager.GetAtomSpawnPositions();
         for (int i = 0; i < solutionManager.GetN()-1; i++)
         {
-            centralCellAtoms[i] = Instantiate(atom, pivotPos + atomsSpawnPositions[i], Quaternion.identity, pivot.transform);
+            centralCellAtoms[i] = Instantiate(atom, pivotPos + atomSpawnPositions[i], Quaternion.identity, pivot.transform);
             
         }
     }
@@ -65,7 +68,7 @@ public class CentralCellSolution : MonoBehaviour
     public void Rotate(float angle)
     {
         transform.position = curPos;
-        transform.RotateAround(pivotPos, Vector3.up, angle * Time.deltaTime);
+        transform.RotateAround(pivotPos, Vector3.up, angle);
         curPos = transform.position;
     }
 }

@@ -7,12 +7,10 @@ public class SolutionAtom : MonoBehaviour
 {
     private Vector3 rotationPoint = new Vector3(25f, 10f, -20f);
     SolutionManager solutionManager;
-    private Vector3 curPos;
 
     // Start is called before the first frame update
     void Awake()
     {
-        curPos = transform.position;
         solutionManager = GameObject.FindObjectOfType<SolutionManager>();
         solutionManager.AddAtom(this);
        // Debug.Log("Soluzione: " + transform.position);
@@ -28,10 +26,8 @@ public class SolutionAtom : MonoBehaviour
     
     public void Rotate(float angle)
     {
-        transform.position = curPos;
         transform.RotateAround(rotationPoint, Vector3.up, angle);
-        curPos = transform.position;
-        //Debug.Log(angle);
+        solutionManager.AnAtomIsMoving = true;
     }
     
     

@@ -61,8 +61,9 @@ public class CentralCell : MonoBehaviour
 
     public void Rotate(float angle)
     {
+        
         transform.position = curPos;
-        transform.RotateAround(pivotPos, Vector3.up, angle * Time.deltaTime);
+        transform.RotateAround(pivotPos, Vector3.up, angle);
         curPos = transform.position;
     }
 }

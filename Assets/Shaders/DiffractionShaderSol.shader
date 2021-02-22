@@ -46,7 +46,7 @@ Shader "Custom/DiffractionShaderSol"
                     I += e_Pow_ix(phi[i]);
                 }
 
-                return half4(1,1,1,2) - half4(dot(I,I) / ((nAtoms) * (nAtoms)), dot(I, I) / ((nAtoms) * (nAtoms)), dot(I, I) / ((nAtoms) * (nAtoms)),1);
+                return half4(1,1,1,2) - half4(dot(I,I) / ((nAtoms+1) * (nAtoms+1)), dot(I, I) / ((nAtoms+1) * (nAtoms+1)), dot(I, I) / ((nAtoms+1) * (nAtoms+1)),1);
                 //c = half2(1, 0);
                 //return half4(atomsPos[i].x/1, atomsPos[i].y / 10, atomsPos[i].z / 10, 1);
             }
