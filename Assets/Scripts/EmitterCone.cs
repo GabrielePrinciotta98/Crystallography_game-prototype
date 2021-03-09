@@ -6,10 +6,13 @@ using UnityEngine;
 
 public class EmitterCone : MonoBehaviour
 {
+    public bool GameStart { get; set; }
+
     private Vector3 newScale, newPos;
     private float zoom = 4f, power = 1f, lambda = 0.5f;
     private static readonly int EmissionColor = Shader.PropertyToID("_EmissionColor");
     private Renderer _renderer;
+    private Collider _collider;
     private static readonly int _Color = Shader.PropertyToID("_Color");
     private bool PowerOn = false;
     private float PowerLevel;
@@ -20,7 +23,10 @@ public class EmitterCone : MonoBehaviour
         
         _renderer = GetComponentInChildren<Renderer>();
         _renderer.enabled = false;
-        
+
+        _collider = GetComponent<Collider>();
+        _collider.enabled = false;
+
     }
 
     public void SetZoom(float z)
@@ -41,6 +47,11 @@ public class EmitterCone : MonoBehaviour
     
     private void Update()
     {
+        if (GameStart)
+        {
+            _collider.enabled = true;
+        }
+        
         if (!PowerOn) return;
         if (Math.Abs(PowerLevel - 0.5f) > 0.0001f)
         {

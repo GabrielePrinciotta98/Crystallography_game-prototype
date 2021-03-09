@@ -1,17 +1,5 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!114 &9113553887766167535
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8884293049075325609}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: cf31eea7eb95fbc48b46a43b253caaec, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &442465426168867118
 GameObject:
   m_ObjectHideFlags: 0
@@ -49,7 +37,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -905, y: 186}
+  m_AnchoredPosition: {x: -905, y: 86}
   m_SizeDelta: {x: 90, y: 90}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &442465426168867106
@@ -225,6 +213,18 @@ MonoBehaviour:
     m_VerticalOverflow: 0
     m_LineSpacing: 1
   m_Text: 0
+--- !u!114 &9113553887766167535
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8884293049075325609}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cf31eea7eb95fbc48b46a43b253caaec, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &442465424383439028
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -325,6 +325,14 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 9036660121389705759, guid: f57039cfd03c91d40a84f1d6a58eff29, type: 3}
+      propertyPath: m_MaxValue
+      value: 360
+      objectReference: {fileID: 0}
+    - target: {fileID: 9036660121389705759, guid: f57039cfd03c91d40a84f1d6a58eff29, type: 3}
+      propertyPath: m_MinValue
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 9036660121389705759, guid: f57039cfd03c91d40a84f1d6a58eff29, type: 3}
       propertyPath: m_OnValueChanged.m_PersistentCalls.m_Calls.Array.size
       value: 0
       objectReference: {fileID: 0}
@@ -335,6 +343,14 @@ PrefabInstance:
     - target: {fileID: 9036660121748974522, guid: f57039cfd03c91d40a84f1d6a58eff29, type: 3}
       propertyPath: m_AnchorMax.y
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 9036660122552223735, guid: f57039cfd03c91d40a84f1d6a58eff29, type: 3}
+      propertyPath: m_RaycastTarget
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 9036660122695601208, guid: f57039cfd03c91d40a84f1d6a58eff29, type: 3}
+      propertyPath: m_RaycastTarget
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 9036660122695601209, guid: f57039cfd03c91d40a84f1d6a58eff29, type: 3}
       propertyPath: m_AnchorMax.y

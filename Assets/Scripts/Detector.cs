@@ -7,6 +7,7 @@ public class Detector : MonoBehaviour
 {
     private Renderer _renderer;
     private AtomsManager atomsManager;
+    private LevelManager2 levelManager2;
     private EmitterCone emitter;
     private Vector4[] positions;
     private readonly Vector4[] centers = new Vector4[100];
@@ -32,6 +33,7 @@ public class Detector : MonoBehaviour
     private void Awake()
     {
         atomsManager = FindObjectOfType<AtomsManager>();
+        levelManager2 = FindObjectOfType<LevelManager2>();
         emitter = FindObjectOfType<EmitterCone>();
     }
 
@@ -54,11 +56,10 @@ public class Detector : MonoBehaviour
             Diffraction();
             crt.Update();
         }
-
-        if (!atomsManager.AnAtomIsMoving) return;
+        //Debug.Log("move: " + atomsManager.AnAtomIsMoving);
+        if (!atomsManager.AnAtomIsMoving && !levelManager2.GetOver()) return;
         Diffraction();
         crt.Update();
-
     }
     
     private void Ripple()
@@ -76,9 +77,6 @@ public class Detector : MonoBehaviour
 
     private void Diffraction()
     {
-        
-        
-        
         positions = atomsManager.GetPositions();
         //Debug.Log(positions[0]);
         a = atomsManager.GetCellRight() * atomsManager.GetK();
@@ -94,8 +92,6 @@ public class Detector : MonoBehaviour
         Shader.SetGlobalInt(R, atomsManager.GetR());
         Shader.SetGlobalInt(M, atomsManager.GetM());
         Shader.SetGlobalFloat(Lambda, lambda);
-
-
     }
 
     public void SetZoom(float z)

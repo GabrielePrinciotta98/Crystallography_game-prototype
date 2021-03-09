@@ -11,7 +11,7 @@ public class Level
     private bool levelCompleted;
     private Vector3[] solPositions;
     private string description;
-
+    private string plane;
     
 
     public int R
@@ -55,16 +55,21 @@ public class Level
         get => description;
         set => description = value;
     }
-    
-    
 
-    public Level(int r, int m, int n, bool isCrystal, string desc)
+    public string Plane
+    {
+        get => plane;
+        set => plane = value;
+    }
+
+    public Level(int r, int m, int n, bool isCrystal, string desc , string plane)
     {
         this.r = r;
         this.m = m;
         this.n = n;
         this.isCrystal = isCrystal;
         this.description = desc;
+        this.plane = plane;
     }
     
     

@@ -125,7 +125,7 @@ GameObject:
   - component: {fileID: 4968323987487669505}
   - component: {fileID: -4255410873414822321}
   - component: {fileID: 4968323987487669504}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: AtomRep
   m_TagString: Untagged
   m_Icon: {fileID: 0}

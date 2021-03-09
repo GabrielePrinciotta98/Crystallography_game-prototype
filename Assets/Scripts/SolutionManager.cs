@@ -26,9 +26,16 @@ public class SolutionManager : MonoBehaviour
     private Vector3[] atomSpawnPositions = new Vector3[8];
     private bool stop = true;
     List<SolutionAtom> atoms = new List<SolutionAtom>();
-    Vector4[] positions = new Vector4[200];
-    private bool anAtomIsMoving;
+    Vector4[] positions = new Vector4[20];
+    private List<Vector3> positions3 = new List<Vector3>();
 
+    public List<Vector3> Positions3 => positions3;
+
+
+    private bool anAtomIsMoving;
+    
+    
+    
     public bool AnAtomIsMoving
     {
         get => anAtomIsMoving;
@@ -148,15 +155,18 @@ public class SolutionManager : MonoBehaviour
     public void AddAtom(SolutionAtom atom)
     {
         atoms.Add(atom);
+        positions3.Add(atom.transform.localPosition);
         positions[atoms.IndexOf(atom)] = atom.transform.localPosition;
+        
     }
 
     public void SetMyPosition(SolutionAtom atom)
     {
         positions[atoms.IndexOf(atom)] = atom.transform.localPosition;
-      
+        positions3[atoms.IndexOf(atom)] = atom.transform.localPosition;
     }
-
+    
+    
     public Vector4[] GetPositions()
     {
         return positions;
@@ -170,11 +180,15 @@ public class SolutionManager : MonoBehaviour
     public void SetStopTrue()
     {
         stop = true;
+        AnAtomIsMoving = false;
+
     }
 
     public void SetStopFalse()
     {
         stop = false;
+        AnAtomIsMoving = true;
+
     }
 
     public int GetN()
@@ -222,12 +236,14 @@ public class SolutionManager : MonoBehaviour
     
     public void Rotate(float angle)
     {
+        //SetStopFalse();
         foreach (var a in atoms)
         {
-            a.Rotate(angle);
+            a.RotationAngle = (int)angle;
         }
         
-        centralCell.GetComponent<CentralCellSolution>().Rotate(angle);
+        centralCell.GetComponent<CentralCellSolution>().RotationAngle = (int) angle;
+
     }
     
     public bool GetCrystal()
@@ -248,6 +264,15 @@ public class SolutionManager : MonoBehaviour
     public Vector3[] GetAtomSpawnPositions()
     {
         return atomSpawnPositions;
+    }
+
+    public void ChangeToSymmetric()
+    {
+        foreach (var atom in atoms)
+            atom.transform.localPosition *= -1;
+
+        for (var i = 0; i < positions.Length; i++)
+            positions[i] *= -1;
     }
     
 }

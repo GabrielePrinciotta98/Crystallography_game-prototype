@@ -7,6 +7,14 @@ public class SolutionAtom : MonoBehaviour
 {
     private Vector3 rotationPoint = new Vector3(25f, 10f, -20f);
     SolutionManager solutionManager;
+    private Vector3 curPos;
+    private float rotationAngle;
+
+    public float RotationAngle
+    {
+        get => rotationAngle;
+        set => rotationAngle = value;
+    }
 
     // Start is called before the first frame update
     void Awake()
@@ -17,32 +25,26 @@ public class SolutionAtom : MonoBehaviour
 
     }
 
+    private void Start()
+    {
+        curPos = transform.localPosition;
+    }
+
     private void Update()
     {
         if (!solutionManager.GetStop())
-            transform.RotateAround(rotationPoint, Vector3.up, 10 * Time.deltaTime);
+        {
+            Quaternion rotation = Quaternion.Euler(0, rotationAngle, 0);
+            transform.localPosition = Matrix4x4.Rotate(rotation).MultiplyPoint3x4(curPos);
+        }
+        else
+        {
+            curPos = transform.localPosition;
+        }
         solutionManager.SetMyPosition(this);
     }
     
-    public void Rotate(float angle)
-    {
-        transform.RotateAround(rotationPoint, Vector3.up, angle);
-        solutionManager.AnAtomIsMoving = true;
-    }
     
     
-    /*
-    public void DontShowAtom()
-    {
-        GetComponent<Renderer>().enabled = false;
-        transform.GetChild(0).GetComponent<Renderer>().enabled = false;
-        
-    }
-
-    internal void ShowAtom()
-    {
-        GetComponent<Renderer>().enabled = true;
-        transform.GetChild(0).GetComponent<Renderer>().enabled = true;
-    }
-    */
+    
 }

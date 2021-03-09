@@ -125,7 +125,7 @@ GameObject:
   - component: {fileID: 4968323987487669505}
   - component: {fileID: 4968323987487669504}
   - component: {fileID: 4968323987487669508}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Atom
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -226,3 +226,6 @@ MonoBehaviour:
   - {fileID: 2100000, guid: 553496eb89ccab143a785b4fa66b09ac, type: 2}
   - {fileID: 2100000, guid: 90fadeb162462d8468661d4582f8aac5, type: 2}
   - {fileID: 2100000, guid: c485360be9d220a46b5cdb417cbdb8b6, type: 2}
+  layerMask:
+    serializedVersion: 2
+    m_Bits: 128

@@ -49,7 +49,7 @@ public class CellSolution : MonoBehaviour
         for (int i = 0; i < solutionManager.GetN()-1; i++)
         {
             if (atomSpawnPositions[i] != Vector3.zero)
-                Instantiate(atom, pivotPos + atomSpawnPositions[i], Quaternion.identity, pivot.transform/*centralCellAtoms[i].transform*/);
+                Instantiate(atom, pivotPos + atomSpawnPositions[i], Quaternion.identity, centralCellAtoms[i].transform);
         }
     }
 }

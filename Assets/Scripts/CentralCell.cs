@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Drawing;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.UI;
@@ -14,9 +15,16 @@ public class CentralCell : MonoBehaviour
     private Vector3 pivotPos;
     private Atom[] centralCellAtoms = new Atom[9];
     private Vector3 curPos;
+    private float rotationAngle;
+
+    public float RotationAngle
+    {
+        get => rotationAngle;
+        set => rotationAngle = value;
+    }
+    
     void Awake()
     {
-        curPos = transform.position;
 
         pivotPos = pivot.transform.position; 
         atomManager = FindObjectOfType<AtomsManager>();
@@ -34,6 +42,8 @@ public class CentralCell : MonoBehaviour
 
     void Start()
     {
+        curPos = transform.localPosition;
+
         pivot = Instantiate(pivot, pivotPos, Quaternion.identity);
         InstantiateAtoms();
     }
@@ -50,8 +60,14 @@ public class CentralCell : MonoBehaviour
     
     private void Update()
     {
-        if (!atomManager.GetStop())
-            transform.RotateAround(pivotPos, Vector3.up, 10 * Time.deltaTime);
+        if (atomManager.GetStop()) return;
+        Quaternion rotation = Quaternion.Euler(0, rotationAngle, 0);
+        transform.rotation = rotation;
+    }
+
+    private Vector3 RotatePointAroundPivot(Vector3 point, Vector3 pivot, float angle)
+    {
+        return Quaternion.Euler(0, angle, 0) * (point - pivot) + pivot;
     }
 
     public Atom[] GetAtoms()

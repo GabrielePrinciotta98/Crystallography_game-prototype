@@ -9,12 +9,17 @@ using UnityEngine.UI;
 public class GameStart : MonoBehaviour
 {
     public Button startGameButton;
-    public Button shopButton;
     public Button quitButton;
     public int debugLevelCounter = -1;
+    public bool zoomUnlocked;
+    public bool lambdaUnlocked;
+    public bool powerUnlocked;
+    public bool rotationUnlocked;
+    
     
     void Awake()
     {
+        print("build 1.1");
         // Inizializza i livelli
         if (LevelLoader.LoadedData == false)
         {
@@ -24,8 +29,6 @@ public class GameStart : MonoBehaviour
         }
 
         LevelLoader.LoadedData = true;
-        if (shopButton)
-            shopButton.onClick.AddListener(LevelLoader.LoadShop);
         if (quitButton)
             quitButton.onClick.AddListener(LevelLoader.QuitGame);
         switch (debugLevelCounter)
@@ -40,6 +43,15 @@ public class GameStart : MonoBehaviour
                 LevelLoader.LevelCounter = debugLevelCounter;
                 break;
         }
+
+        if (zoomUnlocked)
+            PowerUpsManger.ZoomUnlocked = true;
+        if (lambdaUnlocked)
+            PowerUpsManger.LambdaUnlocked = true;
+        if (powerUnlocked)
+            PowerUpsManger.PowerUnlocked = true;
+        if (rotationUnlocked)
+            PowerUpsManger.RotationUnlocked = true;
     }
 
     void LoadLevelSelection()

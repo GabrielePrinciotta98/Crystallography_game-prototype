@@ -1,3 +1,5 @@
+using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Threading;
 using UnityEngine;
@@ -19,6 +21,8 @@ public class HUDManager : MonoBehaviour
     [SerializeReference] private Button rotation;
     [SerializeReference] private TextManager textManager;
 
+    private bool mapDisplayed;
+    private GameObject minimapButton;
     private GameObject zoomLocked;
     private GameObject lambdaLocked;
     private GameObject powerLocked;
@@ -28,18 +32,15 @@ public class HUDManager : MonoBehaviour
     //[SerializeReference] private Button rotateButton; 
     //[SerializeReference] private Button stopRotationButton;
 
-    void Start()
+    private void Awake()
     {
-        buttons = new List<Button>();
-        
-        //INSTANZIO I BOTTONI E I RELATIVI LISTENER
+        minimapButton = GameObject.Find("MimimapButton");
         zoomLocked = GameObject.Find("ZoomButtonLocked");
         lambdaLocked = GameObject.Find("LambdaButtonLocked");
         powerLocked = GameObject.Find("PowerButtonLocked");
         rotationLocked = GameObject.Find("RotationButtonLocked");
         
         canvas = GameObject.Find("Canvas");
-        textManager = Instantiate(textManager);
 
         detector = FindObjectOfType<Detector>();
         solutionDetector = FindObjectOfType<SolutionDetector>();
@@ -47,6 +48,17 @@ public class HUDManager : MonoBehaviour
         emitterConeSol = FindObjectOfType<EmitterConeSol>();
         atomsManager = FindObjectOfType<AtomsManager>();
         solutionManager = FindObjectOfType<SolutionManager>();
+    }
+
+    void Start()
+    {
+        buttons = new List<Button>();
+        
+        textManager = Instantiate(textManager);
+
+        //INSTANZIO I BOTTONI E I RELATIVI LISTENER
+        //minimapButton.GetComponent<Button>().onClick.AddListener(DisplayMap);
+        
         
         if (PowerUpsManger.ZoomUnlocked)
         {
@@ -72,7 +84,6 @@ public class HUDManager : MonoBehaviour
         {
             zoomLocked.GetComponent<Button>().onClick.AddListener(LevelLoader.LoadShop);
         }
-        
         
         if (PowerUpsManger.LambdaUnlocked)
         {
@@ -135,10 +146,13 @@ public class HUDManager : MonoBehaviour
             
             Slider rotationSlider = rotation.transform.GetChild(0).gameObject.GetComponent<Slider>();
             rotationSlider.onValueChanged.RemoveAllListeners();
-            rotationSlider.onValueChanged.AddListener(delegate {atomsManager.Rotate(1f);});
-            rotationSlider.onValueChanged.AddListener(delegate {solutionManager.Rotate(1f);});
+            //rotationSlider.onValueChanged.AddListener(delegate {atomsManager.Rotate(1f);});
+            //rotationSlider.onValueChanged.AddListener(delegate {solutionManager.Rotate(1f);});
+            rotationSlider.onValueChanged.AddListener(delegate {atomsManager.Rotate(rotationSlider.value);  });
+            rotationSlider.onValueChanged.AddListener(delegate {solutionManager.Rotate(rotationSlider.value);  });
+
             rotationSlider.onValueChanged.AddListener(delegate {textManager.SetRotationText(rotationSlider.value);});
-            
+            rotationSlider.onValueChanged.AddListener(delegate {rotationSlider.GetComponent<RotationSlider>().ChangeHandleColor45();});
             textManager.SetRotationTextReference(rotation.transform.GetChild(1).gameObject.GetComponent<Text>());
 
         }
@@ -150,9 +164,13 @@ public class HUDManager : MonoBehaviour
         
     public void DisplaySlider(Button powerUp)
     {
-      
-
         powerUp.transform.GetChild(0).gameObject.SetActive(true);
+        if (mapDisplayed && powerUp != rotation)
+        {
+            StartCoroutine(CloseMinimap());
+            mapDisplayed = false;
+        }
+
 
         const float textPosXMax = 453;
         const float textPosXMin = 160;
@@ -168,6 +186,81 @@ public class HUDManager : MonoBehaviour
             textPos = new Vector3(textPosXMin, textPos.y, textPos.z);
             b.transform.GetChild(1).localPosition = textPos;
         }
+    }
+
+    private void DisplayMap()
+    {
+        Debug.Log("map");
+        
+        if (mapDisplayed)
+        {
+            StartCoroutine(CloseMinimap());
+            mapDisplayed = false;
+        }
+        else
+        {
+            foreach (var b in buttons)
+            {
+                if (b == rotation) continue;
+                if (!b.transform.GetChild(0).gameObject.activeSelf) continue;
+                b.transform.GetChild(0).gameObject.SetActive(false);
+                Vector3 textPos = b.transform.GetChild(1).localPosition;
+                textPos = new Vector3(160, textPos.y, textPos.z);
+                b.transform.GetChild(1).localPosition = textPos;
+
+            }
+            StartCoroutine(OpenMinimap());
+            mapDisplayed = true;
+        }
+    }
+
+    IEnumerator OpenMinimap()
+    {
+        float t = 0;
+        float ease;
+        float newPosY;
+        Vector3 minimapPos = minimapButton.transform.localPosition;
+        float posY = minimapPos.y;
+        while (t <= 10)
+        {
+
+            ease = EaseOutQuartic(t / 10);
+            newPosY = Mathf.Lerp(posY, 240, ease);
+            
+            minimapButton.transform.localPosition = new Vector3(minimapPos.x, newPosY, minimapPos.z);
+            t += 1;
+            yield return new WaitForFixedUpdate();
+
+        }
+    }
+
+    IEnumerator CloseMinimap()
+    {
+        float t = 0;
+        float ease;
+        float newPosY;
+        Vector3 minimapPos = minimapButton.transform.localPosition;
+
+        float posY = minimapPos.y;
+        while (t <= 10)
+        {
+            ease = EaseInQuartic(t / 10);
+            newPosY = Mathf.Lerp(posY, 518, ease);
+            minimapButton.transform.localPosition = new Vector3(minimapPos.x, newPosY, minimapPos.z);
+            t += 1;
+            yield return new WaitForFixedUpdate();
+
+        }
+    }
+    
+    private float EaseOutQuartic(float x)
+    {
+        return 1 - Mathf.Pow(1 - x, 4);
+    }
+    
+    private float EaseInQuartic(float x)
+    {
+        return x * x * x * x;
     }
 
     

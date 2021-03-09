@@ -6,6 +6,9 @@ using UnityEngine.UI;
 public class AtomsManager : MonoBehaviour
 {
     private bool isCrystal;
+
+    public bool GameStart { get; set; }
+
     [SerializeReference] GameObject atom;
     [SerializeReference] GameObject pivot;
     [SerializeReference] GameObject centralCell;
@@ -19,64 +22,23 @@ public class AtomsManager : MonoBehaviour
     //[SerializeField] int depth = 1;
     List<Atom> atoms = new List<Atom>();
     Vector4[] positions = new Vector4[20];
+    private Vector4 sumPos;
+
+    public Vector4 SumPos => sumPos;
+
     private bool stop = true;
     private List<Vector3> cellsSpawnPositions = new List<Vector3>();
     private Vector3 centralCellSpawnPos;
     private List<Vector3> atomsSpawnPositions = new List<Vector3>();
     private Atom draggingAtom;
-    private bool anAtomIsMoving;
 
-    public bool AnAtomIsMoving
-    {
-        get => anAtomIsMoving;
-        set => anAtomIsMoving = value;
-    }
+    public string Plane { get; set; }
+
+    public bool AnAtomIsMoving { get; set; }
 
     private void Awake()
     {
         centralCellSpawnPos = pivot.transform.position;
-
-        //if (isCrystal)
-        {
-            /*
-            if (K > 5)
-            {
-                for (int x = -K; x < 2 * K; x += K)
-                for (int y = -K; y < 2 * K; y += K)
-                for (int z = -K; z < 2 * K; z += K)
-                    if (x != 0 || y != 0 || z != 0)
-                        cellsSpawnPositions.Add(new Vector3(x, y, z));
-            }
-            else
-            {
-                Debug.Log(R);
-
-                if (R == 3)
-                {
-                    for (float x = -5f; x < 10f; x += 5f)
-                    for (float y = -5f; y < 10f; y += 5f)
-                    for (float z = -5f; z < 10f; z += 5f)
-                        if (x != 0 || y != 0 || z != 0)
-                            cellsSpawnPositions.Add(new Vector3(x, y, z));
-                }
-                if (R == 5)
-                {
-                    for (float x = -10f; x < 15f; x += 5f)
-                    for (float y = -10f; y < 15f; y += 5f)
-                    for (float z = -10f; z < 15f; z += 5f)
-                        if (x != 0 || y != 0 || z != 0)
-                            cellsSpawnPositions.Add(new Vector3(x, y, z));
-                }
-            }*/
-        }
-        //else
-        {
-            for (float x = -1.5f; x < 2f; x+=1.5f)
-            for (float y = -1.5f; y < 2f; y+=1.5f)
-                if (x != 0 || y != 0)
-                    atomsSpawnPositions.Add(new Vector3(0, y, x));
-        }
-
     }
 
     
@@ -84,16 +46,23 @@ public class AtomsManager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        /*
-        for (int i=0; i<rows; i++)
+        // POSIZIONI DI SPAWN DEGLI ATOMI
+        if (!Plane.Equals("XZ"))
         {
-            for (int j=0; j<columns; j++)
-            {
-                for (int k=0; k<depth; k++)
-                    (Instantiate(atom, new Vector3(22f + k*3, 1f + i*3, 4f + j*3), Quaternion.identity) as GameObject).transform.parent = pivot.transform;
-            }
+            for (float x = -1.5f; x < 2f; x+=1.5f)
+            for (float y = -1.5f; y < 2f; y+=1.5f)
+                if (x != 0 || y != 0)
+                    atomsSpawnPositions.Add(new Vector3(0, y, x));
         }
-        */
+        else
+        {
+            for (float x = -1.5f; x < 2f; x+=1.5f)
+            for (float y = -1.5f; y < 2f; y+=1.5f)
+                if (x != 0 || y != 0)
+                    atomsSpawnPositions.Add(new Vector3(y, 0, x));
+        }
+        
+        //POSIZIONI DI SPAWN DELLE CELLE 
         if (K > 5)
         {
             for (int x = -K; x < 2 * K; x += K)
@@ -186,7 +155,16 @@ public class AtomsManager : MonoBehaviour
     public void SetMyPosition(Atom atom)
     {
         positions[atoms.IndexOf(atom)] = atom.transform.localPosition;
-        //Debug.Log(positions[atoms.IndexOf(atom)]);
+        SetSumPos();
+    }
+    
+    private void SetSumPos()
+    {
+        sumPos = Vector4.zero;
+        foreach (var p in positions)
+        {
+            sumPos += p;
+        }
     }
 
     public Vector4[] GetPositions()
@@ -202,11 +180,14 @@ public class AtomsManager : MonoBehaviour
     public void SetStopTrue()
     {
         stop = true;
+        AnAtomIsMoving = false;
     }
 
     public void SetStopFalse()
     {
         stop = false;
+        AnAtomIsMoving = true;
+
     }
 
     public int GetN()
@@ -255,13 +236,13 @@ public class AtomsManager : MonoBehaviour
     
     public void Rotate(float angle)
     {
+        //SetStopFalse();
         foreach (var a in atoms)
         {
-            
-            a.Rotate((int)angle);
+            a.RotationAngle = (int)angle;
         }
-        
-        centralCell.GetComponent<CentralCell>().Rotate(angle);
+
+        centralCell.GetComponent<CentralCell>().RotationAngle = (int) angle;
     }
 
 

@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 1628565725700111231}
   - component: {fileID: 1628565725700111228}
   - component: {fileID: 1628565725700111229}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: PivotAtom
   m_TagString: Untagged
   m_Icon: {fileID: 0}

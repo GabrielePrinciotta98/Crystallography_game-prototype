@@ -7,9 +7,17 @@ public class AtomRep : MonoBehaviour
     public Material[] materials;
     new Renderer renderer;
     private Atom parent;
+    private AtomsManager atomsManager;
+    private CentralCell centralCell;
+    private Vector3 originPos;
+    private Transform atomFather;
     // Start is called before the first frame update
     void Start()
     {
+        atomFather = transform.parent;
+        atomsManager = FindObjectOfType<AtomsManager>();
+        centralCell = FindObjectOfType<CentralCell>();
+        originPos = transform.position;
         renderer = GetComponent<Renderer>();
         renderer.enabled = true;
         renderer.sharedMaterial = materials[0];
@@ -21,10 +29,16 @@ public class AtomRep : MonoBehaviour
     
     void Update()
     {
-        if (parent.GetSelected())
-            renderer.sharedMaterial = materials[1];
+        renderer.sharedMaterial = parent.GetSelected() ? materials[1] : materials[0];
+        if (!atomsManager.GetCrystal()) return;
+        if (!atomsManager.GetStop())
+        {
+            transform.parent = centralCell.transform;
+        }
         else
-            renderer.sharedMaterial = materials[0];
+        {
+            transform.parent = atomFather;
+        }
     }
 
     

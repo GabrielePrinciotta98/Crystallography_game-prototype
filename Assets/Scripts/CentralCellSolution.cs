@@ -11,11 +11,17 @@ public class CentralCellSolution : MonoBehaviour
     private Vector3 pivotPos;
     private SolutionAtom[] centralCellAtoms = new SolutionAtom[9];
     private Vector3 curPos;
+    private float rotationAngle;
+    public float RotationAngle
+    {
+        get => rotationAngle;
+        set => rotationAngle = value;
+    }
     private Vector3[] atomSpawnPositions = new Vector3[8];
 
     void Awake()
     {
-        curPos = transform.position;
+        
         
         pivotPos = pivot.transform.position;
         solutionManager = FindObjectOfType<SolutionManager>();
@@ -35,6 +41,7 @@ public class CentralCellSolution : MonoBehaviour
 
     void Start()
     {
+        curPos = transform.localPosition;
         pivot = Instantiate(pivot, pivotPos, Quaternion.identity);
         InstantiateAtoms();
     }
@@ -51,8 +58,10 @@ public class CentralCellSolution : MonoBehaviour
     
     private void Update()
     {
-        if (!solutionManager.GetStop())
-            transform.RotateAround(pivotPos, Vector3.up, 10 * Time.deltaTime);
+        if (solutionManager.GetStop()) return;
+        Quaternion rotation = Quaternion.Euler(0, rotationAngle, 0);
+        transform.rotation = rotation;
+
     }
 
     public SolutionAtom[] GetAtoms()
