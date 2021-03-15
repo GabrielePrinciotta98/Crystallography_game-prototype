@@ -5,6 +5,8 @@ using UnityEngine;
 
 public class Detector : MonoBehaviour
 {
+    public Material[] materials;
+    private bool swapped;
     private Renderer _renderer;
     private AtomsManager atomsManager;
     private LevelManager2 levelManager2;
@@ -17,6 +19,8 @@ public class Detector : MonoBehaviour
     private float lambda = 0.5f;
     private CustomRenderTexture crt;
     private Vector3 a, c;
+    private GameObject arrows;
+    
     private static readonly int AtomsPos = Shader.PropertyToID("atomsPos");
     private static readonly int NAtoms = Shader.PropertyToID("n_atoms");
     private static readonly int Zoom = Shader.PropertyToID("zoom");
@@ -35,10 +39,13 @@ public class Detector : MonoBehaviour
         atomsManager = FindObjectOfType<AtomsManager>();
         levelManager2 = FindObjectOfType<LevelManager2>();
         emitter = FindObjectOfType<EmitterCone>();
+        arrows = GameObject.Find("Arrows");
     }
 
     private void Start()
     {
+        arrows.SetActive(false);
+
         _renderer = GetComponent<Renderer>();
         _renderer.enabled = false;
         crt = (CustomRenderTexture) _renderer.material.GetTexture(MainTex);
@@ -60,6 +67,8 @@ public class Detector : MonoBehaviour
         if (!atomsManager.AnAtomIsMoving && !levelManager2.GetOver()) return;
         Diffraction();
         crt.Update();
+        
+        
     }
     
     private void Ripple()
@@ -129,5 +138,32 @@ public class Detector : MonoBehaviour
     public void SetAtomsManager(AtomsManager am)
     {
         this.atomsManager = am;
+    }
+
+    public void Compare()
+    {
+        if (swapped)
+            UnSwap();
+        else
+            Swap();
+    }
+
+    public void Swap()
+    {
+        _renderer.sharedMaterial = materials[1];
+        Debug.Log("Swap: " + _renderer.sharedMaterial);
+        arrows.SetActive(true);
+        emitter.gameObject.SetActive(false);
+        swapped = true;
+    }
+    
+    public void UnSwap()
+    {
+        _renderer.sharedMaterial = materials[0];
+        Debug.Log(_renderer.sharedMaterial);
+        arrows.SetActive(false);
+        emitter.gameObject.SetActive(true);
+        swapped = false;
+
     }
 }

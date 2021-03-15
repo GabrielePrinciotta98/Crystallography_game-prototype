@@ -7,13 +7,15 @@ public class LevelSelectionManager : MonoBehaviour
 {
     private int levelButtonsCounter;
     //private int levelButtonsNumber = 20;
-    private const int ActiveLevels = 9;
+    
+
     private GameObject canvas;
     [SerializeReference] private GameObject levelButton;
     private Vector3 originPos = new Vector3(-500, -600, 0);
     private GameObject backButton;
     private GameObject shopButton;
     private GameObject score;
+    private List<GameObject> levelButtons = new List<GameObject>();
     public int LevelButtonsCounter
     {
         get => levelButtonsCounter;
@@ -34,8 +36,9 @@ public class LevelSelectionManager : MonoBehaviour
         for (int j = 0; j < 6; j++)
         {
             var cur = Instantiate(levelButton, canvas.transform);
+            levelButtons.Add(cur);
             cur.transform.localPosition = originPos + new Vector3(200 * j, 200 * i, 0);
-            if (c == ActiveLevels)
+            if (c == LevelsUnlocked.NumberOfLevelsUnlocked)
                 cur.GetComponent<Button>().interactable = false;
             else
                 c++;
@@ -46,9 +49,19 @@ public class LevelSelectionManager : MonoBehaviour
     // Start is called before the first frame update
 
     // Update is called once per frame
-    void Update()
+    public void UpdateInteractable()
     {
-        
+        int c = 0;
+        foreach (var button in levelButtons)
+        {
+            if (c == LevelsUnlocked.NumberOfLevelsUnlocked)
+                button.GetComponent<Button>().interactable = false;
+            else
+            {
+                button.GetComponent<Button>().interactable = true;
+                c++;
+            }
+        }
     }
     
     public void UpdateLevelButtonsCounter()

@@ -40,27 +40,26 @@ public class ScoreDisplay : MonoBehaviour
     {
         
         yield return AddBasicScoreEffect(a);
-        Debug.Log("Bonus Score Effect: " + CurScore);
+        //Debug.Log("Bonus Score Effect: " + CurScore);
 
         scoreText.color = Color.red; //rosso: FF0707
-        for (int i = CurScore; i < CurScore + b + 1; i++)
+        for (int i = CurScore + 1; i < CurScore + b + 1; i++)
         {
-            scoreText.text = (i+1).ToString();
-            yield return new WaitForFixedUpdate();
+            scoreText.text = i.ToString();
+            yield return new WaitForSeconds(0.000001f);
         }
         scoreText.color = Color.yellow; //giallo: F4E257
-        Debug.Log("here");
     }
     
     IEnumerator AddBasicScoreEffect(int a)
     {
         int cur = CurScore;
-        Debug.Log("Basic score effect: " + CurScore);
-        for (int i = cur; i < cur + a; i++)
+        //Debug.Log("Basic score effect: " + CurScore);
+        for (int i = cur+1; i < cur + a + 1; i++)
         {
-            scoreText.text = (i+1).ToString();
+            scoreText.text = i.ToString();
             CurScore = i;
-            yield return new WaitForFixedUpdate();
+            yield return new WaitForSeconds(0.000001f);
         }
     }
     

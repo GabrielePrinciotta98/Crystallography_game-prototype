@@ -28,7 +28,7 @@ public class LevelManager2 : MonoBehaviour
     private int n;
     private bool over = false;
     private bool isSymmetric;
-    private float haussdorfThreshold = 0.9f;
+    private float haussdorfThreshold = 0.8f;
 
     private ScoreDisplay scoreDisplay;
     
@@ -49,7 +49,7 @@ public class LevelManager2 : MonoBehaviour
 
         FindObjectOfType<Detector>().SetAtomsManager(atomsManager);
         FindObjectOfType<SolutionDetector>().SetSolutionManager(solutionManager);
-        
+        //GameObject.Find("SolutionDetectorSwap").GetComponent<SolutionDetector>().SetSolutionManager(solutionManager);
         solAtomPos = lv.SolPositions;
         markedSolAtomPos = new bool[solAtomPos.Length];
         for (int i = 0; i < markedSolAtomPos.Length; i++)
@@ -57,7 +57,11 @@ public class LevelManager2 : MonoBehaviour
         n = lv.N-1; // n sono gli atomi ancora da risolvere
 
         Instantiate(controlPlane);
-        Instantiate(dottedLine);
+        Instantiate(dottedLine).gameObject.name = "DottedLineHoriz";
+        var dottedLineVert = Instantiate(dottedLine);
+        dottedLineVert.gameObject.name = "DottedLineVert";
+        dottedLineVert.GetComponent<DottedLine>().Vertical = true;
+        dottedLineVert.transform.Rotate(0,90,0);
         levelIndicatorText.GetComponent<Text>().text = lv.Description;
         nextLevelButton.GetComponent<Button>().onClick.AddListener(LevelLoader.LoadNextLevel);
         backButton.GetComponent<Button>().onClick.AddListener(LevelLoader.LoadMenu);
@@ -68,7 +72,6 @@ public class LevelManager2 : MonoBehaviour
         scoreDisplay = FindObjectOfType<ScoreDisplay>();
         scoreDisplay.DisplayScore();
         
-        Timer timer = FindObjectOfType<Timer>();
         Timer.Time = time;
 
         StartCoroutine(StartLevel());
@@ -127,9 +130,12 @@ public class LevelManager2 : MonoBehaviour
                 //atomsManager.AnAtomIsMoving = true;
                 StartCoroutine(Victory());
                 ScoreDisplay.CurScore = ScoreManager.Score;
-                ScoreManager.TimeBonus += (int)time;
+                //Debug.Log("time remaining: " + time);
+                ScoreManager.TimeBonus += Mathf.RoundToInt(time);
+                //Debug.Log(ScoreManager.TimeBonus);
                 ScoreManager.Score += 100;
-                
+                if (FindObjectOfType<CheatCode>().AlreadyActivated != true)
+                    LevelsUnlocked.NumberOfLevelsUnlocked++;
                 print("hai vinto");
             }
             
@@ -234,7 +240,7 @@ public class LevelManager2 : MonoBehaviour
         yield return new WaitForSeconds(1.5f);
         
         StartCoroutine(ShowAddedBonusScore(addedBonusScoreText));
-        scoreDisplay.UpdateScore(100, (int)time);
+        scoreDisplay.UpdateScore(100, Mathf.RoundToInt(time));
 
         //atomsManager.GetAtoms()[0].GetComponent<Atom>().ChangeMaterial(0);
 

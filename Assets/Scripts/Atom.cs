@@ -9,8 +9,11 @@ public class Atom : MonoBehaviour
     public Material[] materials;
     private ControlPlane controlPlane;
     private Renderer controlPlaneRenderer;
-    private DottedLine dottedLine;
-    private Renderer dottedLineRenderer;
+    private DottedLine dottedLineHoriz;
+    private DottedLine dottedLineVert;
+    private Renderer dottedLineHorizRenderer;
+    private Renderer dottedLineVertRenderer;
+    private Material dottedLineVertMaterial;
     private Vector3 controlPlanePosition;
     new Renderer renderer;
     AtomsManager atomsManager;
@@ -41,7 +44,11 @@ public class Atom : MonoBehaviour
 
     private bool solved = false;
     private bool dragged = false;
-    
+
+    public bool LastHovered { get; set; }
+
+    private static readonly int _EmissionColor = Shader.PropertyToID("_EmissionColor");
+
     private void Start()
     {
         
@@ -63,22 +70,30 @@ public class Atom : MonoBehaviour
         controlPlaneRenderer = controlPlane.GetComponent<Renderer>();
         controlPlaneRenderer.enabled = false;
         controlPlanePosition = controlPlane.transform.position;
-        
-        dottedLine = FindObjectOfType<DottedLine>();
-        dottedLineRenderer = dottedLine.GetComponent<Renderer>();
-        dottedLineRenderer.enabled = false;
 
-        atomsManager.AddAtom(this);
+        dottedLineHoriz = GameObject.Find("DottedLineHoriz").GetComponent<DottedLine>();
+        dottedLineHorizRenderer = dottedLineHoriz.GetComponent<Renderer>();
+        dottedLineHorizRenderer.enabled = false;
+
+        dottedLineVert = GameObject.Find("DottedLineVert").GetComponent<DottedLine>();
+        dottedLineVertRenderer = dottedLineVert.GetComponent<Renderer>();
+        dottedLineVertMaterial = dottedLineVertRenderer.material;
+        dottedLineVertMaterial.SetColor(_EmissionColor, Color.red);
+
+        dottedLineVertRenderer.enabled = false;
+
+        atomsManager.AddAtom(this); 
     }
     
     private void Update()
     {
+
         if (atomsManager.GameStart)
             _collider.enabled = true;
-        if (isColliding())
-        {
+        
+        
             
-        }
+        
         if (!atomsManager.GetStop())
         {
             Quaternion rotation = Quaternion.Euler(0, rotationAngle, 0);
@@ -86,8 +101,31 @@ public class Atom : MonoBehaviour
         }
         else
             curPos = transform.localPosition;
-        //CLAMP DELLA POSIZIONE DEGLI ATOMI
+
         var pos = transform.localPosition;
+        // CODICE PER USARE LA MOUSE WHEEL SULL'ULTIMO ATOMO HOVERED
+        /*
+        if (atomsManager.Plane.Equals("XYZ"))
+        {
+
+            var mouseScroll = Input.mouseScrollDelta.y;
+            if (mouseScroll != 0 && LastHovered)
+            {
+                atomsManager.AnAtomIsMoving = true;
+                pos.x -= mouseScroll * dragSpeed * 8;
+                if (!atomsManager.Plane.Equals("XZ"))
+                    dottedLineHoriz.SetAtom(this, true);
+                dottedLineHorizRenderer.enabled = true;
+            }
+            else
+            {
+                dottedLineHoriz.SetAtom(null, false);
+                atomsManager.AnAtomIsMoving = false;
+            }
+        }
+        */
+        //CLAMP DELLA POSIZIONE DEGLI ATOMI
+
         pos = new Vector3(Mathf.Clamp(pos.x, -9, 9),
                         Mathf.Clamp(pos.y, -9, 9),
                         Mathf.Clamp(pos.z, -9, 9));
@@ -111,6 +149,8 @@ public class Atom : MonoBehaviour
     {
         if (!dragged)
             ChangeMaterial(2);
+        LastHovered = true;
+        atomsManager.UnsetHoveredAtom(this);
     }
 
     private void OnMouseExit()
@@ -122,6 +162,11 @@ public class Atom : MonoBehaviour
     private void OnMouseDown()
     {
         if (solved) return;
+        atomsManager.SetDraggingAtom(this);
+
+        //blocca la posizione di tutti gli atomi eccetto quello che si sta trascinando
+        atomsManager.FreezeAtoms();
+        
         controlPlane.SetAtom(this, true);
         if (atomsManager.Plane.Equals("XZ"))
         {   
@@ -132,7 +177,9 @@ public class Atom : MonoBehaviour
         }
         
         controlPlaneRenderer.enabled = true;
-        
+        dottedLineVert.SetAtom(this, true);
+
+        dottedLineVertRenderer.enabled = true;
         ChangeMaterial(2);
         SetSelected(true);
         atomsManager.AnAtomIsMoving = true;
@@ -170,18 +217,17 @@ public class Atom : MonoBehaviour
             {
                 pos.x -= mouseScroll * dragSpeed * 8;
                 if (!atomsManager.Plane.Equals("XZ"))
-                    dottedLine.SetAtom(this, true);
-                dottedLineRenderer.enabled = true;
+                    dottedLineHoriz.SetAtom(this, true);
+                dottedLineHorizRenderer.enabled = true;
             }
             else
             {
-                dottedLine.SetAtom(null, false);
+                dottedLineHoriz.SetAtom(null, false);
             }
         }
 
         transform.position = pos;
         //atomsManager.SetMyPosition(this);
-        atomsManager.SetDraggingAtom(this);
         lastMousePos = Input.mousePosition;
     }
     
@@ -193,8 +239,13 @@ public class Atom : MonoBehaviour
         SetSelected(false);
         dragged = false;
         atomsManager.AnAtomIsMoving = false;
+        dottedLineVert.SetAtom(null, false);
+        dottedLineVertRenderer.enabled = false;
+        
         controlPlaneRenderer.enabled = false;
         controlPlane.SetAtom(null, false);
+        //SBLOCCA LA POSIZIONE DI TUTTI GLI ATOMI PERCHè SI HA SMESSO DI TRASCINARE
+        atomsManager.UnFreezeAtoms();
 
 
         if (!solved)

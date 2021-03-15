@@ -27,6 +27,6 @@ public class LevelButton : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        
+        transform.GetChild(1).gameObject.SetActive(!GetComponent<Button>().interactable);
     }
 }

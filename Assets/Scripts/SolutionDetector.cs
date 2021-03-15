@@ -31,7 +31,6 @@ public class SolutionDetector : MonoBehaviour
     // Start is called before the first frame update
     void Awake()
     {
-        solutionManager = GameObject.FindObjectOfType<SolutionManager>();
         emitter = FindObjectOfType<EmitterConeSol>();
 
     }
@@ -41,10 +40,13 @@ public class SolutionDetector : MonoBehaviour
         _renderer = GetComponent<Renderer>();
         _renderer.enabled = false;
         crt = (CustomRenderTexture) _renderer.material.GetTexture(MainTexx);
+        //solutionManager = GameObject.FindObjectOfType<SolutionManager>();
+        //Debug.Log(solutionManager);
     }
     
     private void Update()
     {
+        //Debug.Log("solmanag:" + solutionManager);
         if (!emitter.GetPowerOn()) return;
         _renderer.enabled = true; 
         if (pwr < 0 && !pwrSetted)

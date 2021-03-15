@@ -7,8 +7,8 @@ using UnityEngine.UI;
 
 public class ShopManager : MonoBehaviour
 {
-    
 
+    private GameObject score;
     private GameObject backButton;
     private GameObject textBG;
     private ShopItem[] items;
@@ -40,7 +40,8 @@ public class ShopManager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-
+        score = GameObject.Find("Score");
+        score.GetComponent<ScoreDisplay>().DisplayScore();
         backButton = GameObject.Find("BackButton");
         backButton.GetComponent<Button>().onClick.AddListener(LevelLoader.LoadPrevScene);
         buyButton = GameObject.Find("BuyButton");
@@ -58,6 +59,9 @@ public class ShopManager : MonoBehaviour
         infoPanel.SetActive(false);
         textBG = GameObject.Find("TextBG");
         textBG.transform.GetChild(1).gameObject.SetActive(false);
+        textBG.transform.GetChild(3).gameObject.SetActive(false);
+        textBG.transform.GetChild(4).gameObject.SetActive(false);
+
         // INIZIALIZZO I POWER UP DA COMPRARE   
 
         items = ShopItemsData.ShopItems.ToArray();
@@ -217,7 +221,8 @@ public class ShopManager : MonoBehaviour
         textBG.transform.GetChild(0).GetComponent<Text>().text = items[id].Description;
         textBG.transform.GetChild(1).gameObject.SetActive(true);
         textBG.transform.GetChild(1).GetComponent<Text>().text = items[id].Price.ToString();
-        
+        textBG.transform.GetChild(3).gameObject.SetActive(true);
+        textBG.transform.GetChild(4).gameObject.SetActive(true);
     }
 
     public void Buy()
@@ -235,6 +240,7 @@ public class ShopManager : MonoBehaviour
             return;
         }
         ScoreManager.Score -= items[currentItem].Price;
+        score.GetComponent<ScoreDisplay>().DisplayScore();
         switch (currentItem)
         {
             case 0: buttons[0].GetComponent<Image>().sprite = zoomSprites[1];

@@ -15,6 +15,7 @@ public class HUDManager : MonoBehaviour
     private EmitterConeSol emitterConeSol;
     private AtomsManager atomsManager;
     private SolutionManager solutionManager;
+    private Wave wave;
     [SerializeReference] private Button zoom; 
     [SerializeReference] private Button lambda; 
     [SerializeReference] private Button power; 
@@ -48,6 +49,7 @@ public class HUDManager : MonoBehaviour
         emitterConeSol = FindObjectOfType<EmitterConeSol>();
         atomsManager = FindObjectOfType<AtomsManager>();
         solutionManager = FindObjectOfType<SolutionManager>();
+        wave = FindObjectOfType<Wave>();
     }
 
     void Start()
@@ -101,7 +103,7 @@ public class HUDManager : MonoBehaviour
             lambdaSlider.onValueChanged.AddListener(delegate { solutionDetector.SetLambda(lambdaSlider.value); });
             lambdaSlider.onValueChanged.AddListener(delegate { emitterCone.SetLambda(lambdaSlider.value); });
             lambdaSlider.onValueChanged.AddListener(delegate { emitterConeSol.SetLambda(lambdaSlider.value); });
-            
+            lambdaSlider.onValueChanged.AddListener(delegate { wave.SetLambda(lambdaSlider.value); });
             textManager.SetLambdaTextReference(lambda.transform.GetChild(1).gameObject.GetComponent<Text>());
 
         }
@@ -126,7 +128,7 @@ public class HUDManager : MonoBehaviour
             powerSlider.onValueChanged.AddListener(delegate { solutionDetector.SetPwr(powerSlider.value); });
             powerSlider.onValueChanged.AddListener(delegate { emitterCone.SetPwr(powerSlider.value); });
             powerSlider.onValueChanged.AddListener(delegate { emitterConeSol.SetPwr(powerSlider.value); });
-            
+            powerSlider.onValueChanged.AddListener(delegate { wave.SetPwr(powerSlider.value); });
             textManager.SetPowerTextReference(power.transform.GetChild(1).gameObject.GetComponent<Text>());
 
         }

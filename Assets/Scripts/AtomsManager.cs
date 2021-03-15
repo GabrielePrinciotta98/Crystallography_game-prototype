@@ -24,7 +24,6 @@ public class AtomsManager : MonoBehaviour
     Vector4[] positions = new Vector4[20];
     private Vector4 sumPos;
 
-    public Vector4 SumPos => sumPos;
 
     private bool stop = true;
     private List<Vector3> cellsSpawnPositions = new List<Vector3>();
@@ -131,6 +130,33 @@ public class AtomsManager : MonoBehaviour
         }
     }
 
+    public void UnsetHoveredAtom(Atom hovered)
+    {
+        foreach (var atom in atoms)
+        {
+            if (atom != hovered)
+                atom.LastHovered = false;
+        }
+    }
+    
+    public void FreezeAtoms()
+    {
+        foreach (var atom in atoms)
+        {
+            if (atom != draggingAtom)
+                atom.GetComponent<Rigidbody>().constraints = RigidbodyConstraints.FreezeAll;
+        }
+    }
+
+    public void UnFreezeAtoms()
+    {
+        foreach (var atom in atoms)
+        {
+            atom.GetComponent<Rigidbody>().constraints = RigidbodyConstraints.None;
+            atom.GetComponent<Rigidbody>().constraints = RigidbodyConstraints.FreezeRotation;
+        }
+    }
+
     public void SetDraggingAtom(Atom atom)
     {
         draggingAtom = atom;
@@ -155,17 +181,8 @@ public class AtomsManager : MonoBehaviour
     public void SetMyPosition(Atom atom)
     {
         positions[atoms.IndexOf(atom)] = atom.transform.localPosition;
-        SetSumPos();
     }
     
-    private void SetSumPos()
-    {
-        sumPos = Vector4.zero;
-        foreach (var p in positions)
-        {
-            sumPos += p;
-        }
-    }
 
     public Vector4[] GetPositions()
     {

@@ -66,12 +66,7 @@ public static class LevelData
             
             // LV 4
             levels.Add(new Level(1, 1, 3, false, Desc4, YZ));
-            //lvPositions = RandomPositions(YZ, 2);
-            lvPositions = new[]
-            {
-                new Vector3(1, 2, 3),
-                new Vector3(1, 2, 3)
-            };
+            lvPositions = RandomPositions(YZ, 2);
             levels[3].SolPositions = lvPositions;
 
             // Lv 5
@@ -133,6 +128,7 @@ public static class LevelData
         {
             bool isEqual = false;
             bool isSpawn = false;
+            bool isPivot = false;
             Vector3 newPos = plane switch
             {
                 "YZ" => new Vector3(0, Random.Range(-5f, 5f), Random.Range(-5f, 5f)),
@@ -166,7 +162,10 @@ public static class LevelData
                 }
             }
 
-            if (isEqual || isSpawn)
+            if (Vector3.Distance(newPos, Vector3.zero) <= 1)
+                isPivot = true;
+            
+            if (isEqual || isSpawn || isPivot)
             {
                 i--;
                 continue;

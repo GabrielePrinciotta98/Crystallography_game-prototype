@@ -19,7 +19,7 @@ public class GameStart : MonoBehaviour
     
     void Awake()
     {
-        print("build 1.1");
+        print("build 1.2");
         // Inizializza i livelli
         if (LevelLoader.LoadedData == false)
         {
