@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 3184064519747410917}
   - component: {fileID: 3184064519747410916}
   - component: {fileID: 3184064519747410915}
+  - component: {fileID: 4417618717199158790}
   m_Layer: 5
   m_Name: SwapButton
   m_TagString: Untagged
@@ -66,7 +67,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 4cb86e8e8ee85b146970f9b22f11d735, type: 3}
+  m_Sprite: {fileID: -3234225103710254962, guid: e9731da9da673304b8f43e33d3a61b9e, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -120,3 +121,15 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls: []
+--- !u!114 &4417618717199158790
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3184064519747410913}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4ff79d727c679b447abfb1e7ad5a25f5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 

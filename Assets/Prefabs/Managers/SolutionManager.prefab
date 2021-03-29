@@ -47,6 +47,9 @@ MonoBehaviour:
   pivot: {fileID: 1628565725700111226, guid: 6bdb1ab6d03175d479e64da54f979d7f, type: 3}
   centralCell: {fileID: 5119748466361776041, guid: 034c92043f5eea44b898afc92b60357a, type: 3}
   cell: {fileID: 8391587818080462847, guid: 255db14bc5b283b4cb6f31c24e8c8e9a, type: 3}
+  platforms:
+  - {fileID: 7073983200943947328, guid: 925808fd595cbde4f8aee60bd65b7292, type: 3}
+  - {fileID: 3048076628391050855, guid: 023c62a7853acef4299cf569ac3f203e, type: 3}
   N: 9
   M: 27
   K: 5

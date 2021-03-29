@@ -4,33 +4,34 @@ using UnityEngine;
 
 public class Shadow : MonoBehaviour
 {
-    private float dragSpeed = 0.002f;
-    Vector3 lastMousePos;
+    //private float dragSpeed = 0.002f;
+    //Vector3 lastMousePos;
 
     public Color color;
     public Color selectedColor;
     private new Renderer renderer;
-    private AtomsManager atomsManager;
+    //private AtomsManager atomsManager;
 
-    private void Awake()
+    private void Start()
     {
         renderer = GetComponent<Renderer>();
         renderer.enabled = true;
         renderer.material.color = color;
-        transform.localPosition = new Vector3(0, transform.parent.position.y-0.1f, 0);
-        atomsManager = GameObject.FindObjectOfType<AtomsManager>();
+        //transform.localPosition = new Vector3(0, transform.parent.position.y-0.1f, 0);
+        transform.localPosition = Vector3.zero;
+        //atomsManager = GameObject.FindObjectOfType<AtomsManager>();
     }
 
     private void Update()
     {
         //impedisci all'ombra di non scendere sotto al pavimento
         Vector3 clampedPosition = transform.position;
-        clampedPosition.y = -2.4f;
+        clampedPosition.y = -1.8f;
         //clampedPosition.x = Mathf.Clamp(clampedPosition.x, clampedPosition.x - 2f, clampedPosition.x + 2f);
         transform.position = clampedPosition;
         
     }
-
+/*
     void OnMouseDown()
     {
         atomsManager.SetStopTrue();

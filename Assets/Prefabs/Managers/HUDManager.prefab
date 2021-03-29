@@ -47,4 +47,6 @@ MonoBehaviour:
   lambda: {fileID: 5779861530515566403, guid: 4426913d509d92e40baab365c24bc36e, type: 3}
   power: {fileID: 1981010693554859553, guid: 5946e4efd85ab3147a00ffc33befc9fa, type: 3}
   rotation: {fileID: 442465426168867116, guid: ee60a1776eec1584c9996720a023fc9a, type: 3}
+  molecule: {fileID: 3614252748492943199, guid: f20002db51c959c40a6227de187e3440, type: 3}
+  swap: {fileID: 3184064519747410915, guid: a41479023419fbd4cba90175a13630f9, type: 3}
   textManager: {fileID: 6273631944732598851, guid: bde7273f3efb4064db2d49c8e5cb5f0c, type: 3}

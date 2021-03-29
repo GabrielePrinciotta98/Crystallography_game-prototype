@@ -1,7 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-
 public class ShopItem
 {
     private int id;
@@ -9,9 +5,9 @@ public class ShopItem
     public ShopItem(int id, string description, int price, string info)
     {
         this.id = id;
-        this.Description = description;
-        this.Price = price;
-        this.Info = info;
+        Description = description;
+        Price = price;
+        Info = info;
     }
 
     public string Description { get; set; }
@@ -19,6 +15,8 @@ public class ShopItem
     public int Price { get; set; }
 
     public bool Sold { get; set; }
+    
+    public bool Buyable { get; set; }
 
     public string Info { get; set; }
 }

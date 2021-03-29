@@ -3,6 +3,8 @@ using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
+using Random = UnityEngine.Random;
+
 public class LevelManager2 : MonoBehaviour
 {
     [SerializeReference] private HUDManager hudManager;
@@ -19,11 +21,20 @@ public class LevelManager2 : MonoBehaviour
     [SerializeReference] private GameObject levelIndicatorText;
     [SerializeReference] private GameObject nextLevelButton;
     [SerializeReference] private GameObject backButton;
+    [SerializeReference] private MoleculeManager moleculeManager; 
+    //[SerializeReference] private GameObject hintArrow;
     private EmitterCone emitterCone;
     private EmitterConeSol emitterConeSol;
     private int frames;
     private Vector3 atomPos;
     private Vector3[] solAtomPos;
+
+    public Vector3[] SolAtomPos
+    {
+        get => solAtomPos;
+        set => solAtomPos = value;
+    }
+
     private bool[] markedSolAtomPos;
     private int n;
     private bool over = false;
@@ -42,11 +53,15 @@ public class LevelManager2 : MonoBehaviour
         //Debug.Log("Scena corrente:" + (SceneManager.GetActiveScene().buildIndex-1));
         Debug.Log("Lv counter: " + LevelLoader.LevelCounter);
         Level lv = LevelData.Levels[LevelLoader.LevelCounter-1];
-        //Debug.Log(lv.SolPositions);
-        InstantiateAtomsManager(lv.R,lv.M,lv.N, lv.IsCrystal, lv.Plane);
-        InstantiateSolutionManager(lv.R,lv.M,lv.N, lv.IsCrystal, lv.SolPositions);
-        Instantiate(hudManager);
 
+        lv.SolPositions = RandomPositions(lv.Plane, lv.N - 1);
+        
+        atomsManager = InstantiateAtomsManager(lv.R,lv.M,lv.N, lv.IsCrystal, lv.Plane, lv.SolPositions);
+        solutionManager = InstantiateSolutionManager(lv.R,lv.M,lv.N, lv.IsCrystal, lv.Plane, lv.SolPositions); 
+        InstantiateMoleculeManager(atomsManager, solutionManager);
+        
+        hudManager = Instantiate(hudManager);
+        
         FindObjectOfType<Detector>().SetAtomsManager(atomsManager);
         FindObjectOfType<SolutionDetector>().SetSolutionManager(solutionManager);
         //GameObject.Find("SolutionDetectorSwap").GetComponent<SolutionDetector>().SetSolutionManager(solutionManager);
@@ -55,7 +70,7 @@ public class LevelManager2 : MonoBehaviour
         for (int i = 0; i < markedSolAtomPos.Length; i++)
             markedSolAtomPos[i] = false;
         n = lv.N-1; // n sono gli atomi ancora da risolvere
-
+        
         Instantiate(controlPlane);
         Instantiate(dottedLine).gameObject.name = "DottedLineHoriz";
         var dottedLineVert = Instantiate(dottedLine);
@@ -77,7 +92,14 @@ public class LevelManager2 : MonoBehaviour
         StartCoroutine(StartLevel());
     }
 
-    private void InstantiateSolutionManager(int r, int m, int n, bool isCrystal, Vector3[] listPos)
+    private void InstantiateMoleculeManager(AtomsManager am, SolutionManager sm)
+    {
+        moleculeManager = Instantiate(moleculeManager);
+        moleculeManager.AtomsManager = am;
+        moleculeManager.SolutionManager = sm;
+    }
+
+    private SolutionManager InstantiateSolutionManager(int r, int m, int n, bool isCrystal, string plane, Vector3[] listPos)
     {
         solutionManager = Instantiate(solutionManager);
         solutionManager.SetCrystal(isCrystal);
@@ -85,9 +107,11 @@ public class LevelManager2 : MonoBehaviour
         solutionManager.SetM(m);
         solutionManager.SetN(n);
         solutionManager.SetAtomSpawnPositions(listPos);
+        solutionManager.Plane = plane;
+        return solutionManager;
     }
 
-    private void InstantiateAtomsManager(int r, int m, int n, bool isCrystal, string plane)
+    private AtomsManager InstantiateAtomsManager(int r, int m, int n, bool isCrystal, string plane, Vector3[] listPos)
     {
         atomsManager = Instantiate(atomsManager);
         atomsManager.SetCrystal(isCrystal);
@@ -95,6 +119,9 @@ public class LevelManager2 : MonoBehaviour
         atomsManager.SetM(m);
         atomsManager.SetN(n);
         atomsManager.Plane = plane;
+        atomsManager.SetSolutionSpawnPositions(listPos);
+
+        return atomsManager;
     }
     
 
@@ -126,7 +153,6 @@ public class LevelManager2 : MonoBehaviour
                 }
 
                 over = true;
-                curtain.GetComponent<Curtain>().ShowSolution();
                 //atomsManager.AnAtomIsMoving = true;
                 StartCoroutine(Victory());
                 ScoreDisplay.CurScore = ScoreManager.Score;
@@ -232,6 +258,8 @@ public class LevelManager2 : MonoBehaviour
     IEnumerator Victory()
     {
         yield return SnapAll();
+        curtain.GetComponent<Curtain>().ShowSolution();
+
         yield return new WaitForSeconds(1.5f);
         addedScoreText.GetComponent<Text>().text = "+ " + 100;
         addedBonusScoreText.GetComponent<Text>().text = "+ " + string.Format("{0:00}", time);
@@ -398,9 +426,55 @@ public class LevelManager2 : MonoBehaviour
         return x * x * x * x;
     }
     
+    public float easeInOutBack(float x)
+    {
+        const float c1 = 1.70158f;
+        const float c2 = c1 * 1.525f;
+
+        return x < 0.5
+            ? (Mathf.Pow(2 * x, 2) * ((c2 + 1) * 2 * x - c2)) / 2
+            : (Mathf.Pow(2 * x - 2, 2) * ((c2 + 1) * (x * 2 - 2) + c2) + 2) / 2;
+        
+    }
+    
     public bool GetOver()
     {
         return over;
     }
     
+    private static Vector3[] RandomPositions(string plane, int n)
+    {
+        Vector3[] ris = new Vector3[n];
+
+        for (int i = 0; i < n; i++)
+        {
+            bool isEqual = false;
+            bool isPivot = false;
+            Vector3 newPos = plane switch
+            {
+                "YZ" => new Vector3(0, Random.Range(-5f, 5f), Random.Range(-5f, 5f)),
+                "XZ" => new Vector3(Random.Range(-5f, 5f), 0, Random.Range(-5f, 5f)),
+                "XYZ" => new Vector3(Random.Range(-5f, 5f), Random.Range(-5f, 5f), Random.Range(-5f, 5f)),
+                _ => Vector3.zero
+            };
+            for (int j = 0; j < i; j++)
+            {
+                if (ris[j] != newPos) continue;
+                isEqual = true;
+                break;
+            }
+            
+            if (Vector3.Distance(newPos, Vector3.zero) <= 1)
+                isPivot = true;
+            
+            if (isEqual || isPivot)
+            {
+                i--;
+                continue;
+            }
+            ris[i] = newPos;
+        }
+
+        return ris;
+    }
 }

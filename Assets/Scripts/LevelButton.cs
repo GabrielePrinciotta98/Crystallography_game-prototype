@@ -20,13 +20,19 @@ public class LevelButton : MonoBehaviour
         levelSelectionManager = FindObjectOfType<LevelSelectionManager>();
         levelSelectionManager.UpdateLevelButtonsCounter();
         LevelNumber = levelSelectionManager.LevelButtonsCounter;
-        this.GetComponent<Button>().onClick.AddListener(delegate { LevelLoader.LoadLevel(levelNumber); });
-        this.transform.GetChild(0).GetComponent<Text>().text = LevelNumber.ToString();
+        transform.GetChild(0).GetComponent<Text>().text = LevelNumber.ToString();
+        if (LevelNumber <= 8) 
+            GetComponent<Button>().onClick.AddListener(delegate { LevelLoader.LoadLevel(levelNumber); });
+        else
+        {
+            transform.GetChild(2).gameObject.SetActive(true);
+        }
     }
 
     // Update is called once per frame
     void Update()
     {
-        transform.GetChild(1).gameObject.SetActive(!GetComponent<Button>().interactable);
+        if (LevelNumber <= 8)
+            transform.GetChild(1).gameObject.SetActive(!GetComponent<Button>().interactable);
     }
 }

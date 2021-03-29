@@ -98,6 +98,7 @@ public class Detector : MonoBehaviour
         Shader.SetGlobalFloat(Pwr, Mathf.Pow(2, pwr));
         Shader.SetGlobalVector(A, a);
         Shader.SetGlobalVector(C, c);
+        Debug.Log("R: " + atomsManager.GetR());
         Shader.SetGlobalInt(R, atomsManager.GetR());
         Shader.SetGlobalInt(M, atomsManager.GetM());
         Shader.SetGlobalFloat(Lambda, lambda);

@@ -4,40 +4,18 @@ using UnityEngine;
 
 public static class PowerUpsManger
 {
-    private static bool zoomUnlocked;
-    private static bool lambdaUnlocked;
-    private static bool powerUnlocked;
-    private static bool rotationUnlocked;
+    public static bool SwapUnlocked { get; set; }
+
+    public static bool MoleculeUnlocked { get; set; }
     //private static bool rotationButtonUnlocked;
     
-    public static bool ZoomUnlocked
-    {
-        get => zoomUnlocked;
-        set => zoomUnlocked = value;
-    }
+    public static bool ZoomUnlocked { get; set; }
 
-    public static bool LambdaUnlocked
-    {
-        get => lambdaUnlocked;
-        set => lambdaUnlocked = value;
-    }
+    public static bool LambdaUnlocked { get; set; }
 
-    public static bool PowerUnlocked
-    {
-        get => powerUnlocked;
-        set => powerUnlocked = value;
-    }
+    public static bool PowerUnlocked { get; set; }
 
-    public static bool RotationUnlocked
-    {
-        get => rotationUnlocked;
-        set => rotationUnlocked = value;
-    }
-    /*
-    public static bool RotationButtonUnlocked
-    {
-        get => rotationButtonUnlocked;
-        set => rotationButtonUnlocked = value;
-    }
-    */
+    public static bool RotationUnlocked { get; set; }
+
+    
 }

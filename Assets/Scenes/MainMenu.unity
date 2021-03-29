@@ -123,6 +123,112 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
+--- !u!1001 &75854791
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    m_TransformParent: {fileID: 766707092}
+    m_Modifications:
+    - target: {fileID: 569931379547645394, guid: eb661283e4b98b840907c1544502b5bb, type: 3}
+      propertyPath: m_Text
+      value: '[Cheat Code: UP + DOWN]'
+      objectReference: {fileID: 0}
+    - target: {fileID: 2090780702749933056, guid: eb661283e4b98b840907c1544502b5bb, type: 3}
+      propertyPath: m_Pivot.x
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 2090780702749933056, guid: eb661283e4b98b840907c1544502b5bb, type: 3}
+      propertyPath: m_Pivot.y
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 2090780702749933056, guid: eb661283e4b98b840907c1544502b5bb, type: 3}
+      propertyPath: m_RootOrder
+      value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 2090780702749933056, guid: eb661283e4b98b840907c1544502b5bb, type: 3}
+      propertyPath: m_AnchorMax.x
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 2090780702749933056, guid: eb661283e4b98b840907c1544502b5bb, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 2090780702749933056, guid: eb661283e4b98b840907c1544502b5bb, type: 3}
+      propertyPath: m_AnchorMin.x
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 2090780702749933056, guid: eb661283e4b98b840907c1544502b5bb, type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 2090780702749933056, guid: eb661283e4b98b840907c1544502b5bb, type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 632.1339
+      objectReference: {fileID: 0}
+    - target: {fileID: 2090780702749933056, guid: eb661283e4b98b840907c1544502b5bb, type: 3}
+      propertyPath: m_SizeDelta.y
+      value: 100
+      objectReference: {fileID: 0}
+    - target: {fileID: 2090780702749933056, guid: eb661283e4b98b840907c1544502b5bb, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2090780702749933056, guid: eb661283e4b98b840907c1544502b5bb, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2090780702749933056, guid: eb661283e4b98b840907c1544502b5bb, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2090780702749933056, guid: eb661283e4b98b840907c1544502b5bb, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2090780702749933056, guid: eb661283e4b98b840907c1544502b5bb, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2090780702749933056, guid: eb661283e4b98b840907c1544502b5bb, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2090780702749933056, guid: eb661283e4b98b840907c1544502b5bb, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2090780702749933056, guid: eb661283e4b98b840907c1544502b5bb, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: -0.0000076294
+      objectReference: {fileID: 0}
+    - target: {fileID: 2090780702749933056, guid: eb661283e4b98b840907c1544502b5bb, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: -432
+      objectReference: {fileID: 0}
+    - target: {fileID: 2090780702749933056, guid: eb661283e4b98b840907c1544502b5bb, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2090780702749933056, guid: eb661283e4b98b840907c1544502b5bb, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2090780702749933056, guid: eb661283e4b98b840907c1544502b5bb, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5039190512143395423, guid: eb661283e4b98b840907c1544502b5bb, type: 3}
+      propertyPath: m_Name
+      value: CheatCodeText
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: eb661283e4b98b840907c1544502b5bb, type: 3}
+--- !u!224 &75854792 stripped
+RectTransform:
+  m_CorrespondingSourceObject: {fileID: 2090780702749933056, guid: eb661283e4b98b840907c1544502b5bb, type: 3}
+  m_PrefabInstance: {fileID: 75854791}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &353266592
 GameObject:
   m_ObjectHideFlags: 0
@@ -564,6 +670,7 @@ RectTransform:
   - {fileID: 723137408}
   - {fileID: 1186535824}
   - {fileID: 432368838}
+  - {fileID: 75854792}
   m_Father: {fileID: 0}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -1151,6 +1258,10 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 7587705580352474460, guid: 26f669ad55a268b4ea815f46484dddbc, type: 3}
+      propertyPath: debugMode
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 7587705580352474460, guid: 26f669ad55a268b4ea815f46484dddbc, type: 3}
       propertyPath: quitButton
       value: 

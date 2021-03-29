@@ -91,7 +91,7 @@ public class EmitterCone : MonoBehaviour
         PowerOn = true;
         _renderer.enabled = true;
         tripod.Click();
-        Debug.Log("click");
+        //Debug.Log("click");
     }
 
     private void OnMouseEnter()

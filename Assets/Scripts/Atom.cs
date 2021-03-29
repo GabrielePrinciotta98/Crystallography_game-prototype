@@ -87,13 +87,9 @@ public class Atom : MonoBehaviour
     
     private void Update()
     {
-
         if (atomsManager.GameStart)
             _collider.enabled = true;
-        
-        
-            
-        
+
         if (!atomsManager.GetStop())
         {
             Quaternion rotation = Quaternion.Euler(0, rotationAngle, 0);
@@ -126,9 +122,9 @@ public class Atom : MonoBehaviour
         */
         //CLAMP DELLA POSIZIONE DEGLI ATOMI
 
-        pos = new Vector3(Mathf.Clamp(pos.x, -9, 9),
-                        Mathf.Clamp(pos.y, -9, 9),
-                        Mathf.Clamp(pos.z, -9, 9));
+        pos = new Vector3(Mathf.Clamp(pos.x, -8, 8),
+                        Mathf.Clamp(pos.y, -8, 8),
+                        Mathf.Clamp(pos.z, -8, 8));
         
         transform.localPosition = pos;
 

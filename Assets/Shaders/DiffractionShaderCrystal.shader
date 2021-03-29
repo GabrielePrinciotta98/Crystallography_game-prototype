@@ -16,8 +16,8 @@ Shader "Custom/DiffractionShaderCrystal"
             uniform half zoom = 1;
             uniform half pwr = 0; 
             uniform int K = 5;
-            uniform int R = 4;
-            uniform int M = 1;
+            uniform int R;
+            uniform int M;
             uniform half4 atomsPos[20];
             uniform int n_atoms = 0;
             uniform half4 a;
@@ -64,10 +64,12 @@ Shader "Custom/DiffractionShaderCrystal"
                 pwr *= vign;
 
                 //return half4(1,0,0,1);
+                
                 return half4(1,1,1,1) - half4(dot(I,I)/((n_atoms+1)*M*(n_atoms+1)*M),
                                             dot(I, I)/((n_atoms+1)*M*(n_atoms+1)*M),
                                             dot(I, I)/((n_atoms+1)*M*(n_atoms+1)*M),
                                             1) * pwr;
+               
                 /*
                  I *= sin(PI * 10 * dot(a, s)) / sin(PI * dot(a,s)) *
                      sin(PI * 10 * dot(b, s)) / sin(PI * dot(b,s)) *
@@ -77,6 +79,12 @@ Shader "Custom/DiffractionShaderCrystal"
                 //pwr *= vign;
             
                 return half4(1,1,1,1) - half4(dot(I,I),
+                                            dot(I, I),
+                                            dot(I, I),
+                                            1) * pwr;
+                */
+                /*
+                return half4(dot(I,I),
                                             dot(I, I),
                                             dot(I, I),
                                             1) * pwr;

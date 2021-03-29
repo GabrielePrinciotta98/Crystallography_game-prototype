@@ -2,9 +2,11 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using Random = UnityEngine.Random;
 
 public class AtomsManager : MonoBehaviour
 {
+    private SolutionManager solutionManager;
     private bool isCrystal;
 
     public bool GameStart { get; set; }
@@ -13,28 +15,28 @@ public class AtomsManager : MonoBehaviour
     [SerializeReference] GameObject pivot;
     [SerializeReference] GameObject centralCell;
     [SerializeReference] GameObject cell;
+    [SerializeReference] private GameObject[] platforms;
     [SerializeField] int N = 1;
     [SerializeField] int M = 1;
     [SerializeField] int K = 5;
     [SerializeField] int R = 4;
-    //[SerializeField] int rows = 1;
-    //[SerializeField] int columns = 1;
-    //[SerializeField] int depth = 1;
     List<Atom> atoms = new List<Atom>();
     Vector4[] positions = new Vector4[20];
-    private Vector4 sumPos;
 
+    public Vertex[] SolutionMst { get; set; }
 
     private bool stop = true;
     private List<Vector3> cellsSpawnPositions = new List<Vector3>();
     private Vector3 centralCellSpawnPos;
     private List<Vector3> atomsSpawnPositions = new List<Vector3>();
+    private Vector3[] solutionSpawnPositions;
     private Atom draggingAtom;
 
     public string Plane { get; set; }
 
     public bool AnAtomIsMoving { get; set; }
 
+    private GameObject workspace;
     private void Awake()
     {
         centralCellSpawnPos = pivot.transform.position;
@@ -45,7 +47,10 @@ public class AtomsManager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        Debug.Log("N: " + N);
         // POSIZIONI DI SPAWN DEGLI ATOMI
+        GenerateRandomPositions(Plane, N-1);
+        /*
         if (!Plane.Equals("XZ"))
         {
             for (float x = -1.5f; x < 2f; x+=1.5f)
@@ -60,7 +65,7 @@ public class AtomsManager : MonoBehaviour
                 if (x != 0 || y != 0)
                     atomsSpawnPositions.Add(new Vector3(y, 0, x));
         }
-        
+        */
         //POSIZIONI DI SPAWN DELLE CELLE 
         if (K > 5)
         {
@@ -101,9 +106,10 @@ public class AtomsManager : MonoBehaviour
         }
         
         
-        
         if (isCrystal)
         {
+            workspace = Instantiate(platforms[1]);
+
             // SPAWN CELLA CENTRALE
             centralCell = Instantiate(centralCell, centralCellSpawnPos, Quaternion.identity);
             if (K >= 5)
@@ -112,7 +118,7 @@ public class AtomsManager : MonoBehaviour
                 centralCell.transform.localScale *= 5;
 
             // SPAWN CELLE RIPETUTE
-            //Debug.Log(M);
+            Debug.Log(M);
             
             for (int i = 0; i < M - 1; i++)
                 Instantiate(cell, centralCellSpawnPos + cellsSpawnPositions[i], Quaternion.identity,
@@ -120,6 +126,7 @@ public class AtomsManager : MonoBehaviour
         }
         else
         {
+            workspace = Instantiate(Plane.Equals("YZ") ? platforms[0] : platforms[1]);
             //centralCellSpawnPos ha la posizione del pivot
             pivot = Instantiate(pivot, centralCellSpawnPos, Quaternion.identity);
             for (int i=0; i<N-1; i++)
@@ -128,6 +135,8 @@ public class AtomsManager : MonoBehaviour
                         centralCellSpawnPos.z + atomsSpawnPositions[i].z),
                     Quaternion.identity, pivot.transform);
         }
+        
+
     }
 
     public void UnsetHoveredAtom(Atom hovered)
@@ -258,7 +267,8 @@ public class AtomsManager : MonoBehaviour
         {
             a.RotationAngle = (int)angle;
         }
-
+        workspace.GetComponent<Workspace>().SetAtomsManager(this);
+        workspace.GetComponent<Workspace>().RotationAngle = (int) angle;
         centralCell.GetComponent<CentralCell>().RotationAngle = (int) angle;
     }
 
@@ -282,4 +292,62 @@ public class AtomsManager : MonoBehaviour
     {
         isCrystal = flag;
     }
+    
+    private void GenerateRandomPositions(string plane, int n)
+    {
+        Vector3[] ris = new Vector3[n];
+
+        for (int i = 0; i < n; i++)
+        {
+            bool isEqual = false;
+            bool isPivot = false;
+            bool isSpawn = false;
+
+            Vector3 newPos = plane switch
+            {
+                "YZ" => new Vector3(0, Random.Range(-5f, 5f), Random.Range(-5f, 5f)),
+                "XZ" => new Vector3(Random.Range(-5f, 5f), 0, Random.Range(-5f, 5f)),
+                "XYZ" => new Vector3(Random.Range(-5f, 5f), Random.Range(-5f, 5f), Random.Range(-5f, 5f)),
+                _ => Vector3.zero
+            };
+            for (int j = 0; j < i; j++)
+            {
+                if (ris[j] != newPos) continue;
+                isEqual = true;
+                break;
+            }
+
+            for (int j = 0; j < N-1; j++)
+            {
+                if (!(Vector3.Distance(newPos, solutionSpawnPositions[j]) < 1)) continue;
+                isSpawn = true;
+                break;
+            }
+            
+
+            if (Vector3.Distance(newPos, Vector3.zero) <= 1)
+                isPivot = true;
+            
+            if (isEqual || isPivot || isSpawn)
+            {
+                i--;
+                continue;
+            }
+            ris[i] = newPos;
+        }
+
+        foreach (var v in ris)
+        {
+            atomsSpawnPositions.Add(v);
+        } 
+        
+    }
+
+    public void SetSolutionSpawnPositions(Vector3[] listPos)
+    {
+        solutionSpawnPositions = listPos;
+    }
+
+    
+    
 }

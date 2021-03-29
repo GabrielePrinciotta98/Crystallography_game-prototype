@@ -23,18 +23,20 @@ public class ShopManager : MonoBehaviour
     public Sprite[] lambdaInfoSprites;
     public Sprite[] powerInfoSprites;
     public Sprite[] rotationInfoSprites;
-
+    public Sprite[] swapInfoSprites;
     
     private GameObject zoomShopButton;
     private GameObject lambdaShopButton;
     private GameObject powerShopButton;
     private GameObject rotationShopButton;
-
+    private GameObject swapShopButton;
+    
     public Sprite[] zoomSprites;
     public Sprite[] lambdaSprites;
     public Sprite[] powerSprites;
     public Sprite[] rotationSprites;
-
+    public Sprite[] swapSprites;
+    
     private int currentItem = -1;
     private int currentInfoPage = 0;
     // Start is called before the first frame update
@@ -73,14 +75,68 @@ public class ShopManager : MonoBehaviour
             zoomShopButton = GameObject.Find("ZoomShop"),
             lambdaShopButton = GameObject.Find("LambdaShop"),
             powerShopButton = GameObject.Find("PowerShop"),
-            rotationShopButton = GameObject.Find("RotationShop")
+            rotationShopButton = GameObject.Find("RotationShop"),
+            swapShopButton = GameObject.Find("SwapShop")
         };
         
         buttons[0].GetComponent<Button>().onClick.AddListener(delegate { DisplayItem(0); });
         buttons[1].GetComponent<Button>().onClick.AddListener(delegate { DisplayItem(1); });
         buttons[2].GetComponent<Button>().onClick.AddListener(delegate { DisplayItem(2); });
         buttons[3].GetComponent<Button>().onClick.AddListener(delegate { DisplayItem(3); });
+        buttons[4].GetComponent<Button>().onClick.AddListener(delegate { DisplayItem(4); });
 
+        if (LevelsUnlocked.NumberOfLevelsUnlocked < 3)
+        {
+            items[2].Buyable = true;
+            items[4].Buyable = true;
+        }
+        
+        if (LevelsUnlocked.NumberOfLevelsUnlocked == 3)
+        {
+            items[0].Buyable = true;
+            items[1].Buyable = true;
+            items[2].Buyable = true;
+            items[4].Buyable = true;
+        }
+        if (LevelsUnlocked.NumberOfLevelsUnlocked >= 4)
+        {
+            items[3].Buyable = true;
+            items[0].Buyable = true;
+            items[1].Buyable = true;
+            items[2].Buyable = true;
+            items[4].Buyable = true;
+        }
+
+
+
+        if (!items[0].Buyable)
+        {
+            buttons[0].GetComponent<Image>().sprite = zoomSprites[2];
+            buttons[0].GetComponent<Button>().interactable = false;
+        }
+
+        if (!items[1].Buyable)
+        {
+            buttons[1].GetComponent<Image>().sprite = lambdaSprites[2];
+            buttons[1].GetComponent<Button>().interactable = false;
+        }
+        if (!items[2].Buyable)
+        {
+            buttons[2].GetComponent<Image>().sprite = powerSprites[2];
+            buttons[2].GetComponent<Button>().interactable = false;
+        }
+        if (!items[3].Buyable)
+        {
+            buttons[3].GetComponent<Image>().sprite = rotationSprites[2];
+            buttons[3].GetComponent<Button>().interactable = false;
+        }
+        if (!items[4].Buyable)
+        {
+            buttons[4].GetComponent<Image>().sprite = swapSprites[2];
+            buttons[4].GetComponent<Button>().interactable = false;
+        }
+        
+        
         if (items[0].Sold)
             buttons[0].GetComponent<Image>().sprite = zoomSprites[1];
         if (items[1].Sold)
@@ -89,17 +145,22 @@ public class ShopManager : MonoBehaviour
             buttons[2].GetComponent<Image>().sprite = powerSprites[1];
         if (items[3].Sold)
             buttons[3].GetComponent<Image>().sprite = rotationSprites[1];
+        if (items[4].Sold)
+            buttons[4].GetComponent<Image>().sprite = swapSprites[1];
+        
+        
 
     }
 
     private void DisplayInfo()
     {
         if (currentItem == -1) return;
+        
         zoomShopButton.GetComponent<Button>().interactable = false;
         lambdaShopButton.GetComponent<Button>().interactable = false;
         powerShopButton.GetComponent<Button>().interactable = false;
         rotationShopButton.GetComponent<Button>().interactable = false;
-        
+        swapShopButton.GetComponent<Button>().interactable = false;
         prevPageButton.SetActive(false);
         nextPageButton.SetActive(true);
         switch (currentItem)
@@ -122,6 +183,11 @@ public class ShopManager : MonoBehaviour
             case 3:
                 infoPanel.transform.GetChild(2).GetComponent<Image>().sprite = rotationInfoSprites[0];
                 if (rotationInfoSprites.Length == 1)
+                    nextPageButton.SetActive(false);
+                break;
+            case 4:
+                infoPanel.transform.GetChild(2).GetComponent<Image>().sprite = swapInfoSprites[0];
+                if (swapInfoSprites.Length == 1)
                     nextPageButton.SetActive(false);
                 break;
 
@@ -172,6 +238,15 @@ public class ShopManager : MonoBehaviour
                         nextPageButton.SetActive(false);
                 }
                 break;
+            
+            case 4:
+                if (currentInfoPage < swapInfoSprites.Length-1)
+                {
+                    infoPanel.transform.GetChild(2).GetComponent<Image>().sprite = swapInfoSprites[++currentInfoPage];
+                    if (currentInfoPage == swapInfoSprites.Length-1)
+                        nextPageButton.SetActive(false);
+                }
+                break;
         }
     }
     
@@ -198,6 +273,9 @@ public class ShopManager : MonoBehaviour
             case 3:
                 infoPanel.transform.GetChild(2).GetComponent<Image>().sprite = rotationInfoSprites[currentInfoPage];
                 break;
+            case 4:
+                infoPanel.transform.GetChild(2).GetComponent<Image>().sprite = swapInfoSprites[currentInfoPage];
+                break;
 
         }
     }
@@ -209,13 +287,15 @@ public class ShopManager : MonoBehaviour
         lambdaShopButton.GetComponent<Button>().interactable = true;
         powerShopButton.GetComponent<Button>().interactable = true;
         rotationShopButton.GetComponent<Button>().interactable = true;
-        
+        swapShopButton.GetComponent<Button>().interactable = true;
+
         infoPanel.SetActive(false);
         backButton.SetActive(true);
     }
     
     public void DisplayItem(int id)
     {
+        
         currentItem = id;
        
         textBG.transform.GetChild(0).GetComponent<Text>().text = items[id].Description;
@@ -258,6 +338,10 @@ public class ShopManager : MonoBehaviour
             case 3: buttons[3].GetComponent<Image>().sprite = rotationSprites[1];
                 PowerUpsManger.RotationUnlocked = true;
                 ShopItemsData.ShopItems[3].Sold = true;
+                break;
+            case 4: buttons[4].GetComponent<Image>().sprite = swapSprites[1];
+                PowerUpsManger.SwapUnlocked = true;
+                ShopItemsData.ShopItems[4].Sold = true;
                 break;
         }
         

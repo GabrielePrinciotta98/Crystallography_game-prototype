@@ -15,11 +15,16 @@ public class HUDManager : MonoBehaviour
     private EmitterConeSol emitterConeSol;
     private AtomsManager atomsManager;
     private SolutionManager solutionManager;
+    private MoleculeManager moleculeManager;
     private Wave wave;
+    private HintArrow hintArrow;
+    private Button hint;
     [SerializeReference] private Button zoom; 
     [SerializeReference] private Button lambda; 
     [SerializeReference] private Button power; 
     [SerializeReference] private Button rotation;
+    [SerializeReference] private Button molecule;
+    [SerializeReference] private Button swap;
     [SerializeReference] private TextManager textManager;
 
     private bool mapDisplayed;
@@ -29,18 +34,20 @@ public class HUDManager : MonoBehaviour
     private GameObject powerLocked;
     private GameObject rotationLocked;
 
-    private static List<Button> buttons;
+    private static List<Button> buttonsWithSlider;
     //[SerializeReference] private Button rotateButton; 
     //[SerializeReference] private Button stopRotationButton;
 
     private void Awake()
     {
+        /*
         minimapButton = GameObject.Find("MimimapButton");
         zoomLocked = GameObject.Find("ZoomButtonLocked");
         lambdaLocked = GameObject.Find("LambdaButtonLocked");
         powerLocked = GameObject.Find("PowerButtonLocked");
         rotationLocked = GameObject.Find("RotationButtonLocked");
-        
+        */
+        hint = GameObject.Find("HintButton").GetComponent<Button>();
         canvas = GameObject.Find("Canvas");
 
         detector = FindObjectOfType<Detector>();
@@ -49,24 +56,26 @@ public class HUDManager : MonoBehaviour
         emitterConeSol = FindObjectOfType<EmitterConeSol>();
         atomsManager = FindObjectOfType<AtomsManager>();
         solutionManager = FindObjectOfType<SolutionManager>();
+        moleculeManager = FindObjectOfType<MoleculeManager>();
         wave = FindObjectOfType<Wave>();
+        hintArrow = FindObjectOfType<HintArrow>();
     }
 
     void Start()
     {
-        buttons = new List<Button>();
+        buttonsWithSlider = new List<Button>();
         
         textManager = Instantiate(textManager);
-
+        hint.onClick.AddListener(delegate { hintArrow.Activate(); });
         //INSTANZIO I BOTTONI E I RELATIVI LISTENER
         //minimapButton.GetComponent<Button>().onClick.AddListener(DisplayMap);
         
         
         if (PowerUpsManger.ZoomUnlocked)
         {
-            zoomLocked.SetActive(false);
+            //zoomLocked.SetActive(false);
             zoom = Instantiate(zoom, canvas.transform);
-            buttons.Add(zoom);
+            buttonsWithSlider.Add(zoom);
             
             zoom.onClick.RemoveAllListeners();
             zoom.onClick.AddListener(delegate { DisplaySlider(zoom); });
@@ -84,14 +93,14 @@ public class HUDManager : MonoBehaviour
         }
         else
         {
-            zoomLocked.GetComponent<Button>().onClick.AddListener(LevelLoader.LoadShop);
+            //zoomLocked.GetComponent<Button>().onClick.AddListener(LevelLoader.LoadShop);
         }
         
         if (PowerUpsManger.LambdaUnlocked)
         {
-            lambdaLocked.SetActive(false);
+            //lambdaLocked.SetActive(false);
             lambda = Instantiate(lambda, canvas.transform);
-            buttons.Add(lambda);
+            buttonsWithSlider.Add(lambda);
             
             lambda.onClick.RemoveAllListeners();
             lambda.onClick.AddListener(delegate { DisplaySlider(lambda); });
@@ -109,14 +118,14 @@ public class HUDManager : MonoBehaviour
         }
         else
         {
-            lambdaLocked.GetComponent<Button>().onClick.AddListener(LevelLoader.LoadShop);
+            //lambdaLocked.GetComponent<Button>().onClick.AddListener(LevelLoader.LoadShop);
         }
         
         if (PowerUpsManger.PowerUnlocked)
         {
-            powerLocked.SetActive(false);
+            //powerLocked.SetActive(false);
             power = Instantiate(power, canvas.transform);
-            buttons.Add(power);
+            buttonsWithSlider.Add(power);
             
             power.onClick.RemoveAllListeners();
             power.onClick.AddListener(delegate { DisplaySlider(power); });
@@ -134,22 +143,21 @@ public class HUDManager : MonoBehaviour
         }
         else
         {
-            powerLocked.GetComponent<Button>().onClick.AddListener(LevelLoader.LoadShop);
+            //powerLocked.GetComponent<Button>().onClick.AddListener(LevelLoader.LoadShop);
         }
         
         if (PowerUpsManger.RotationUnlocked)
         {
-            rotationLocked.SetActive(false);
+            //rotationLocked.SetActive(false);
             rotation = Instantiate(rotation, canvas.transform);
-            buttons.Add(rotation);
+            buttonsWithSlider.Add(rotation);
             
             rotation.onClick.RemoveAllListeners();
             rotation.onClick.AddListener(delegate { DisplaySlider(rotation); });
             
             Slider rotationSlider = rotation.transform.GetChild(0).gameObject.GetComponent<Slider>();
             rotationSlider.onValueChanged.RemoveAllListeners();
-            //rotationSlider.onValueChanged.AddListener(delegate {atomsManager.Rotate(1f);});
-            //rotationSlider.onValueChanged.AddListener(delegate {solutionManager.Rotate(1f);});
+            
             rotationSlider.onValueChanged.AddListener(delegate {atomsManager.Rotate(rotationSlider.value);  });
             rotationSlider.onValueChanged.AddListener(delegate {solutionManager.Rotate(rotationSlider.value);  });
 
@@ -160,7 +168,22 @@ public class HUDManager : MonoBehaviour
         }
         else
         {
-            rotationLocked.GetComponent<Button>().onClick.AddListener(LevelLoader.LoadShop);
+            //rotationLocked.GetComponent<Button>().onClick.AddListener(LevelLoader.LoadShop);
+        }
+        Debug.Log("swap unlocked: " + PowerUpsManger.SwapUnlocked);
+        if (PowerUpsManger.SwapUnlocked)
+        {
+            swap = Instantiate(swap, canvas.transform);
+            swap.onClick.RemoveAllListeners();
+            
+            //swap.onClick.AddListener(delegate { detector.Compare(); });
+        }
+
+        if (PowerUpsManger.MoleculeUnlocked)
+        {
+            molecule = Instantiate(molecule, canvas.transform);
+            molecule.onClick.RemoveAllListeners();
+            molecule.onClick.AddListener(delegate { moleculeManager.ActiveMolecule(); });
         }
     }
         
@@ -180,7 +203,7 @@ public class HUDManager : MonoBehaviour
         Vector3 textPos = powerUp.transform.GetChild(1).localPosition;
         textPos = new Vector3(textPosXMax, textPos.y, textPos.z);
         powerUp.transform.GetChild(1).localPosition = textPos;
-        foreach (var b in buttons)
+        foreach (var b in buttonsWithSlider)
         {
             if (b == powerUp) continue;
             b.transform.GetChild(0).gameObject.SetActive(false);
@@ -201,7 +224,7 @@ public class HUDManager : MonoBehaviour
         }
         else
         {
-            foreach (var b in buttons)
+            foreach (var b in buttonsWithSlider)
             {
                 if (b == rotation) continue;
                 if (!b.transform.GetChild(0).gameObject.activeSelf) continue;
@@ -264,7 +287,6 @@ public class HUDManager : MonoBehaviour
     {
         return x * x * x * x;
     }
-
     
    
 }

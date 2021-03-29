@@ -9,7 +9,7 @@ public class ControlPlane : MonoBehaviour
     private Quaternion originRot;
     private Atom atom;
     private bool atomFlag;
-    private Vector3 pivotPos = new Vector3(25, 6.6f, 10);
+    private Vector3 pivotPos = new Vector3(22, 6.6f, 10);
     void Start()
     {
         originPos = transform.position;

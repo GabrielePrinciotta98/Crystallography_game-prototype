@@ -1,22 +1,17 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class SolutionManager : MonoBehaviour
 {
-
     private bool isCrystal = true;
     [SerializeReference] GameObject atom;
     [SerializeReference] GameObject pivot;
     [SerializeReference] GameObject centralCell;
     [SerializeReference] GameObject cell;
-
-    //[SerializeReference] QuestionMarkBox box;
-    //[SerializeField] int numberOfAtomsPerBlock = 1;
-    //[SerializeField] int numberOfBlocks = 1;
-    //[SerializeField] int rows = 1;
-    //[SerializeField] int columns = 1;
-    //[SerializeField] int depth = 1;
+    [SerializeReference] private GameObject[] platforms;
     [SerializeField] int N = 1;
     [SerializeField] int M = 1;
     [SerializeField] int K = 5;
@@ -28,19 +23,21 @@ public class SolutionManager : MonoBehaviour
     List<SolutionAtom> atoms = new List<SolutionAtom>();
     Vector4[] positions = new Vector4[20];
     private List<Vector3> positions3 = new List<Vector3>();
-
+    
+    //private List<float> distancesMST = new List<float>();
+ 
     public List<Vector3> Positions3 => positions3;
+    private GameObject workspace;
 
+    private Vector3[] allAtomsPositions;
+    private List<int[]> bonds; 
+    private List<float> distancesGraph = new List<float>();
+    private Vertex[] vertices; // i vertici appartenenti all'MST
 
-    private bool anAtomIsMoving;
-    
-    
-    
-    public bool AnAtomIsMoving
-    {
-        get => anAtomIsMoving;
-        set => anAtomIsMoving = value;
-    }
+    public bool AnAtomIsMoving { get; set; }
+
+    public string Plane { get; set; }
+
     
     private void Awake()
     {
@@ -69,6 +66,8 @@ public class SolutionManager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        workspace = GameObject.Find("WorkspaceSol");
+
         /*
         for (int i = 0; i < rows; i++)
         {
@@ -79,6 +78,7 @@ public class SolutionManager : MonoBehaviour
             }
         }
         */
+        
         if (K > 5)
         {
             for (int x = -K; x < 2 * K; x += K)
@@ -119,6 +119,7 @@ public class SolutionManager : MonoBehaviour
         
         if (isCrystal)
         {
+            workspace = Instantiate(platforms[1]);
             centralCell = Instantiate(centralCell, centralCellSpawnPos, Quaternion.identity);
             if (K >= 5)
                 centralCell.transform.localScale *= K; // scalo la dimensione del modulo centrale
@@ -133,8 +134,8 @@ public class SolutionManager : MonoBehaviour
         }
         else
         {
+            workspace = Instantiate(Plane.Equals("YZ") ? platforms[0] : platforms[1]);
             //centralCellSpawnPos ha la posizione del pivot
-            
             pivot = Instantiate(pivot, centralCellSpawnPos, Quaternion.identity);
             for (int i = 0; i < N - 1; i++)
             {
@@ -146,7 +147,7 @@ public class SolutionManager : MonoBehaviour
             }
         }
     }
-
+    
     public bool GetStop()
     {
         return stop;
@@ -241,7 +242,8 @@ public class SolutionManager : MonoBehaviour
         {
             a.RotationAngle = (int)angle;
         }
-        
+        workspace.GetComponent<Workspace>().SetSolutionManager(this);
+        workspace.GetComponent<Workspace>().RotationAngle = (int) angle;
         centralCell.GetComponent<CentralCellSolution>().RotationAngle = (int) angle;
 
     }

@@ -1,0 +1,552 @@
+fileFormatVersion: 2
+guid: e9731da9da673304b8f43e33d3a61b9e
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: -6621491648885419013
+    second: powerUpButtons_0
+  - first:
+      213: 8861330478100948973
+    second: powerUpButtons_1
+  - first:
+      213: 5495005310652481551
+    second: powerUpButtons_2
+  - first:
+      213: 3469882454036781333
+    second: powerUpButtons_3
+  - first:
+      213: -6154992797748009761
+    second: powerUpButtons_4
+  - first:
+      213: 224683601653821304
+    second: powerUpButtons_5
+  - first:
+      213: -3771919662006707915
+    second: powerUpButtons_6
+  - first:
+      213: 4347885540131503904
+    second: powerUpButtons_7
+  - first:
+      213: 7645048600386880783
+    second: powerUpButtons_8
+  - first:
+      213: 5467345681560212667
+    second: powerUpButtons_9
+  - first:
+      213: -3234225103710254962
+    second: powerUpButtons_10
+  - first:
+      213: -6264198896479752997
+    second: powerUpButtons_11
+  - first:
+      213: 5918979931757277226
+    second: powerUpButtons_12
+  - first:
+      213: 9039792895274502312
+    second: powerUpButtons_13
+  - first:
+      213: -6481174290296314360
+    second: powerUpButtons_14
+  - first:
+      213: 8205155949138787242
+    second: powerUpButtons_15
+  - first:
+      213: 7013499247320840505
+    second: powerUpButtons_16
+  - first:
+      213: 1568310486307659060
+    second: powerUpButtons_17
+  externalObjects: {}
+  serializedVersion: 11
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 1
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 1
+    aniso: -1
+    mipBias: -100
+    wrapU: 1
+    wrapV: 1
+    wrapW: -1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 100
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  platformSettings:
+  - serializedVersion: 3
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 3
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 3
+    buildTarget: WebGL
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: powerUpButtons_0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 2366
+        width: 1027
+        height: 1096
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: bf318f07d6cbb14a0800000000000000
+      internalID: -6621491648885419013
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: powerUpButtons_1
+      rect:
+        serializedVersion: 2
+        x: 1198
+        y: 2380
+        width: 1030
+        height: 1028
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: de7ac88de15c9fa70800000000000000
+      internalID: 8861330478100948973
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: powerUpButtons_2
+      rect:
+        serializedVersion: 2
+        x: 2402
+        y: 2383
+        width: 1030
+        height: 1028
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f00835c573e224c40800000000000000
+      internalID: 5495005310652481551
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: powerUpButtons_3
+      rect:
+        serializedVersion: 2
+        x: 3581
+        y: 2411
+        width: 1028
+        height: 1030
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 519193d25bf772030800000000000000
+      internalID: 3469882454036781333
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: powerUpButtons_4
+      rect:
+        serializedVersion: 2
+        x: 4718
+        y: 2404
+        width: 1061
+        height: 1028
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: fd4642739a2159aa0800000000000000
+      internalID: -6154992797748009761
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: powerUpButtons_5
+      rect:
+        serializedVersion: 2
+        x: 5983
+        y: 2437
+        width: 1064
+        height: 1025
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 87f6e679b8c3e1300800000000000000
+      internalID: 224683601653821304
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: powerUpButtons_6
+      rect:
+        serializedVersion: 2
+        x: 77
+        y: 1261
+        width: 871
+        height: 874
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 53957c84d0377abc0800000000000000
+      internalID: -3771919662006707915
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: powerUpButtons_7
+      rect:
+        serializedVersion: 2
+        x: 1285
+        y: 1311
+        width: 874
+        height: 874
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 02f7897dcdac65c30800000000000000
+      internalID: 4347885540131503904
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: powerUpButtons_8
+      rect:
+        serializedVersion: 2
+        x: 2483
+        y: 1251
+        width: 874
+        height: 874
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f0548a4623ba81a60800000000000000
+      internalID: 7645048600386880783
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: powerUpButtons_9
+      rect:
+        serializedVersion: 2
+        x: 3656
+        y: 1273
+        width: 874
+        height: 873
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: bb499ad1ee9efdb40800000000000000
+      internalID: 5467345681560212667
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: powerUpButtons_10
+      rect:
+        serializedVersion: 2
+        x: 4850
+        y: 1303
+        width: 874
+        height: 874
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e8803b16769bd13d0800000000000000
+      internalID: -3234225103710254962
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: powerUpButtons_11
+      rect:
+        serializedVersion: 2
+        x: 6047
+        y: 1330
+        width: 874
+        height: 873
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: bdc2ee4fa481119a0800000000000000
+      internalID: -6264198896479752997
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: powerUpButtons_12
+      rect:
+        serializedVersion: 2
+        x: 88
+        y: 0
+        width: 984
+        height: 964
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a20fe0943e0742250800000000000000
+      internalID: 5918979931757277226
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: powerUpButtons_13
+      rect:
+        serializedVersion: 2
+        x: 1258
+        y: 51
+        width: 984
+        height: 942
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 8a8cfed4ebbc37d70800000000000000
+      internalID: 9039792895274502312
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: powerUpButtons_14
+      rect:
+        serializedVersion: 2
+        x: 2472
+        y: 19
+        width: 971
+        height: 957
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 8066e7b525e3e06a0800000000000000
+      internalID: -6481174290296314360
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: powerUpButtons_15
+      rect:
+        serializedVersion: 2
+        x: 3680
+        y: 9
+        width: 991
+        height: 956
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: aabb91becd19ed170800000000000000
+      internalID: 8205155949138787242
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: powerUpButtons_16
+      rect:
+        serializedVersion: 2
+        x: 4874
+        y: 40
+        width: 1004
+        height: 932
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 93937050864f45160800000000000000
+      internalID: 7013499247320840505
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: powerUpButtons_17
+      rect:
+        serializedVersion: 2
+        x: 6069
+        y: 0
+        width: 978
+        height: 1003
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 43d53e9f312c3c510800000000000000
+      internalID: 1568310486307659060
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    physicsShape: []
+    bones: []
+    spriteID: 5e97eb03825dee720800000000000000
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+  spritePackingTag: 
+  pSDRemoveMatte: 0
+  pSDShowRemoveMatteOption: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
