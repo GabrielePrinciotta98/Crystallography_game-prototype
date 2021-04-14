@@ -47,7 +47,12 @@ MonoBehaviour:
   atomsManager: {fileID: 4323790100589642198, guid: aa8b2af32cbd6df4885c2c5868d12177, type: 3}
   solutionManager: {fileID: 7036924550722588422, guid: 4a012981ae663b346bbc5f8e2dd25720, type: 3}
   youWonUI: {fileID: 0}
-  curtain: {fileID: 0}
+  curtain: {fileID: 919132149155446097, guid: 433655628fdb8b64faadbacae2ed0d39, type: 3}
   youWonBackGroundUI: {fileID: 0}
   addedScoreText: {fileID: 0}
-  rotationSlider: {fileID: 0}
+  controlPlane: {fileID: 486711999808616672, guid: 0602a71fdf6712e40981b092b5964977, type: 3}
+  dottedLine: {fileID: 3421961755772950661, guid: 0d138a957a61b654cb78de08f681e7c9, type: 3}
+  levelIndicatorBackGroundUI: {fileID: 0}
+  levelIndicatorText: {fileID: 0}
+  nextLevelButton: {fileID: 0}
+  backButton: {fileID: 0}

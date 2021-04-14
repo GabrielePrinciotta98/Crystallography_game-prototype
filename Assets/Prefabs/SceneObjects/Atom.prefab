@@ -227,9 +227,9 @@ MonoBehaviour:
   - {fileID: 2100000, guid: 553496eb89ccab143a785b4fa66b09ac, type: 2}
   - {fileID: 2100000, guid: 90fadeb162462d8468661d4582f8aac5, type: 2}
   - {fileID: 2100000, guid: c485360be9d220a46b5cdb417cbdb8b6, type: 2}
-  layerMask:
-    serializedVersion: 2
-    m_Bits: 128
+  molecularParent: {fileID: 0}
+  molecularChildren: []
+  distanceToMolecularParent: 0
 --- !u!54 &7642621506531618648
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -245,4 +245,4 @@ Rigidbody:
   m_IsKinematic: 0
   m_Interpolate: 0
   m_Constraints: 112
-  m_CollisionDetection: 0
+  m_CollisionDetection: 3

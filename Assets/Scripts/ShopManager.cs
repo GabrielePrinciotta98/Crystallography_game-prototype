@@ -24,18 +24,21 @@ public class ShopManager : MonoBehaviour
     public Sprite[] powerInfoSprites;
     public Sprite[] rotationInfoSprites;
     public Sprite[] swapInfoSprites;
+    public Sprite[] moleculeInfoSprites;
     
     private GameObject zoomShopButton;
     private GameObject lambdaShopButton;
     private GameObject powerShopButton;
     private GameObject rotationShopButton;
     private GameObject swapShopButton;
+    private GameObject moleculeShopButton;
     
     public Sprite[] zoomSprites;
     public Sprite[] lambdaSprites;
     public Sprite[] powerSprites;
     public Sprite[] rotationSprites;
     public Sprite[] swapSprites;
+    public Sprite[] moleculeSprites;
     
     private int currentItem = -1;
     private int currentInfoPage = 0;
@@ -76,7 +79,8 @@ public class ShopManager : MonoBehaviour
             lambdaShopButton = GameObject.Find("LambdaShop"),
             powerShopButton = GameObject.Find("PowerShop"),
             rotationShopButton = GameObject.Find("RotationShop"),
-            swapShopButton = GameObject.Find("SwapShop")
+            swapShopButton = GameObject.Find("SwapShop"),
+            moleculeShopButton = GameObject.Find("MoleculeShop"),
         };
         
         buttons[0].GetComponent<Button>().onClick.AddListener(delegate { DisplayItem(0); });
@@ -84,57 +88,10 @@ public class ShopManager : MonoBehaviour
         buttons[2].GetComponent<Button>().onClick.AddListener(delegate { DisplayItem(2); });
         buttons[3].GetComponent<Button>().onClick.AddListener(delegate { DisplayItem(3); });
         buttons[4].GetComponent<Button>().onClick.AddListener(delegate { DisplayItem(4); });
-
-        if (LevelsUnlocked.NumberOfLevelsUnlocked < 3)
-        {
-            items[2].Buyable = true;
-            items[4].Buyable = true;
-        }
-        
-        if (LevelsUnlocked.NumberOfLevelsUnlocked == 3)
-        {
-            items[0].Buyable = true;
-            items[1].Buyable = true;
-            items[2].Buyable = true;
-            items[4].Buyable = true;
-        }
-        if (LevelsUnlocked.NumberOfLevelsUnlocked >= 4)
-        {
-            items[3].Buyable = true;
-            items[0].Buyable = true;
-            items[1].Buyable = true;
-            items[2].Buyable = true;
-            items[4].Buyable = true;
-        }
+        buttons[5].GetComponent<Button>().onClick.AddListener(delegate { DisplayItem(5); });
 
 
-
-        if (!items[0].Buyable)
-        {
-            buttons[0].GetComponent<Image>().sprite = zoomSprites[2];
-            buttons[0].GetComponent<Button>().interactable = false;
-        }
-
-        if (!items[1].Buyable)
-        {
-            buttons[1].GetComponent<Image>().sprite = lambdaSprites[2];
-            buttons[1].GetComponent<Button>().interactable = false;
-        }
-        if (!items[2].Buyable)
-        {
-            buttons[2].GetComponent<Image>().sprite = powerSprites[2];
-            buttons[2].GetComponent<Button>().interactable = false;
-        }
-        if (!items[3].Buyable)
-        {
-            buttons[3].GetComponent<Image>().sprite = rotationSprites[2];
-            buttons[3].GetComponent<Button>().interactable = false;
-        }
-        if (!items[4].Buyable)
-        {
-            buttons[4].GetComponent<Image>().sprite = swapSprites[2];
-            buttons[4].GetComponent<Button>().interactable = false;
-        }
+        VerifyBuyableItems();
         
         
         if (items[0].Sold)
@@ -147,9 +104,102 @@ public class ShopManager : MonoBehaviour
             buttons[3].GetComponent<Image>().sprite = rotationSprites[1];
         if (items[4].Sold)
             buttons[4].GetComponent<Image>().sprite = swapSprites[1];
+        if (items[5].Sold)
+            buttons[5].GetComponent<Image>().sprite = moleculeSprites[1];
         
-        
+    }
 
+    public void VerifyBuyableItems()
+    {
+        if (LevelsUnlocked.NumberOfLevelsUnlocked < 3)
+        {
+            items[2].Buyable = true;
+            items[4].Buyable = true;
+        }
+
+        if (LevelsUnlocked.NumberOfLevelsUnlocked == 3)
+        {
+            items[0].Buyable = true;
+            items[1].Buyable = true;
+            items[2].Buyable = true;
+            items[4].Buyable = true;
+        }
+
+        if (LevelsUnlocked.NumberOfLevelsUnlocked >= 4)
+        {
+            items[3].Buyable = true;
+            items[0].Buyable = true;
+            items[1].Buyable = true;
+            items[2].Buyable = true;
+            items[4].Buyable = true;
+            items[5].Buyable = true;
+        }
+        
+        if (!items[0].Buyable)
+        {
+            buttons[0].GetComponent<Image>().sprite = zoomSprites[2];
+            buttons[0].GetComponent<Button>().interactable = false;
+        }
+        else
+        {
+            buttons[0].GetComponent<Image>().sprite = zoomSprites[0];
+            buttons[0].GetComponent<Button>().interactable = true;
+        }
+
+        if (!items[1].Buyable)
+        {
+            buttons[1].GetComponent<Image>().sprite = lambdaSprites[2];
+            buttons[1].GetComponent<Button>().interactable = false;
+        }
+        else
+        {
+            buttons[1].GetComponent<Image>().sprite = lambdaSprites[0];
+            buttons[1].GetComponent<Button>().interactable = true;
+        }
+        
+        if (!items[2].Buyable)
+        {
+            buttons[2].GetComponent<Image>().sprite = powerSprites[2];
+            buttons[2].GetComponent<Button>().interactable = false;
+        }
+        else
+        {
+            buttons[2].GetComponent<Image>().sprite = powerSprites[0];
+            buttons[2].GetComponent<Button>().interactable = true;
+        }
+        
+        if (!items[3].Buyable)
+        {
+            buttons[3].GetComponent<Image>().sprite = rotationSprites[2];
+            buttons[3].GetComponent<Button>().interactable = false;
+        }
+        else
+        {
+            buttons[3].GetComponent<Image>().sprite = rotationSprites[0];
+            buttons[3].GetComponent<Button>().interactable = true;
+        }
+        
+        if (!items[4].Buyable)
+        {
+            buttons[4].GetComponent<Image>().sprite = swapSprites[2];
+            buttons[4].GetComponent<Button>().interactable = false;
+        }
+        else
+        {
+            buttons[4].GetComponent<Image>().sprite = swapSprites[0];
+            buttons[4].GetComponent<Button>().interactable = true;
+        }
+        
+        if (!items[5].Buyable)
+        {
+            buttons[5].GetComponent<Image>().sprite = moleculeSprites[2];
+            buttons[5].GetComponent<Button>().interactable = false;
+        }
+        else
+        {
+            buttons[5].GetComponent<Image>().sprite = moleculeSprites[0];
+            buttons[5].GetComponent<Button>().interactable = true;
+        }
     }
 
     private void DisplayInfo()
@@ -161,6 +211,7 @@ public class ShopManager : MonoBehaviour
         powerShopButton.GetComponent<Button>().interactable = false;
         rotationShopButton.GetComponent<Button>().interactable = false;
         swapShopButton.GetComponent<Button>().interactable = false;
+        moleculeShopButton.GetComponent<Button>().interactable = false;
         prevPageButton.SetActive(false);
         nextPageButton.SetActive(true);
         switch (currentItem)
@@ -188,6 +239,11 @@ public class ShopManager : MonoBehaviour
             case 4:
                 infoPanel.transform.GetChild(2).GetComponent<Image>().sprite = swapInfoSprites[0];
                 if (swapInfoSprites.Length == 1)
+                    nextPageButton.SetActive(false);
+                break;
+            case 5:
+                infoPanel.transform.GetChild(2).GetComponent<Image>().sprite = moleculeInfoSprites[0];
+                if (moleculeInfoSprites.Length == 1)
                     nextPageButton.SetActive(false);
                 break;
 
@@ -247,6 +303,14 @@ public class ShopManager : MonoBehaviour
                         nextPageButton.SetActive(false);
                 }
                 break;
+            case 5:
+                if (currentInfoPage < moleculeInfoSprites.Length-1)
+                {
+                    infoPanel.transform.GetChild(2).GetComponent<Image>().sprite = moleculeInfoSprites[++currentInfoPage];
+                    if (currentInfoPage == moleculeInfoSprites.Length-1)
+                        nextPageButton.SetActive(false);
+                }
+                break;
         }
     }
     
@@ -276,6 +340,9 @@ public class ShopManager : MonoBehaviour
             case 4:
                 infoPanel.transform.GetChild(2).GetComponent<Image>().sprite = swapInfoSprites[currentInfoPage];
                 break;
+            case 5:
+                infoPanel.transform.GetChild(2).GetComponent<Image>().sprite = moleculeInfoSprites[currentInfoPage];
+                break;
 
         }
     }
@@ -288,7 +355,7 @@ public class ShopManager : MonoBehaviour
         powerShopButton.GetComponent<Button>().interactable = true;
         rotationShopButton.GetComponent<Button>().interactable = true;
         swapShopButton.GetComponent<Button>().interactable = true;
-
+        moleculeShopButton.GetComponent<Button>().interactable = true;
         infoPanel.SetActive(false);
         backButton.SetActive(true);
     }
@@ -314,7 +381,7 @@ public class ShopManager : MonoBehaviour
 
         if (ScoreManager.Score < items[currentItem].Price)
         {
-            textBG.transform.GetChild(0).GetComponent<Text>().text = "Not enough points!";
+            textBG.transform.GetChild(0).GetComponent<Text>().text = "Non hai abbastanza punti!";
             textBG.transform.GetChild(1).gameObject.SetActive(false);
 
             return;
@@ -342,6 +409,10 @@ public class ShopManager : MonoBehaviour
             case 4: buttons[4].GetComponent<Image>().sprite = swapSprites[1];
                 PowerUpsManger.SwapUnlocked = true;
                 ShopItemsData.ShopItems[4].Sold = true;
+                break;
+            case 5: buttons[5].GetComponent<Image>().sprite = moleculeSprites[1];
+                PowerUpsManger.MoleculeUnlocked = true;
+                ShopItemsData.ShopItems[5].Sold = true;
                 break;
         }
         

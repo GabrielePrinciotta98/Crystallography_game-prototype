@@ -28,11 +28,17 @@ public static class ShopItemsData
     private const string SwapDescription = "Permette di proiettare il pattern della soluzione anche sul detector" +
                                            " di gioco per confrontare meglio i due pattern di diffrazione." ;
 
+    private const string MoleculeDescription = "Attiva la \" modalità molecola\". In questa modalità gli atomi si disporranno" +
+                                               " come in una molecola, i cui legami avranno lunghezza fissa.";
+    
+    
     private const string ZoomInfo = "Zoom info";
     private const string LambdaInfo = "Lambda info";
     private const string PowerInfo = "Power info";
     private const string RotationInfo = "Rotation info";
     private const string SwapInfo = "Swap info";
+    private const string MoleculeInfo = "Molecule info";
+
 
     public static List<ShopItem> ShopItems
     { 
@@ -41,11 +47,12 @@ public static class ShopItemsData
         {
             shopitems = value;
             
-            shopitems.Add(new ShopItem(0, ZoomDescription, 2500, ZoomInfo));
-            shopitems.Add(new ShopItem(1, LambdaDescription, 3000, LambdaInfo));
+            shopitems.Add(new ShopItem(0, ZoomDescription, 1500, ZoomInfo));
+            shopitems.Add(new ShopItem(1, LambdaDescription, 2000, LambdaInfo));
             shopitems.Add(new ShopItem(2, PowerDescription, 1000, PowerInfo));
-            shopitems.Add(new ShopItem(3, RotationDescription, 5000, RotationInfo));
+            shopitems.Add(new ShopItem(3, RotationDescription, 3000, RotationInfo));
             shopitems.Add(new ShopItem(4, SwapDescription, 500, SwapInfo));
+            shopitems.Add(new ShopItem(5, MoleculeDescription, 4000, MoleculeInfo));
         }
     }
 }

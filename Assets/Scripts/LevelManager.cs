@@ -3,7 +3,9 @@ using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
-public class LevelManager : MonoBehaviour
+using Random = UnityEngine.Random;
+
+public class LevelManager2 : MonoBehaviour
 {
     [SerializeReference] private HUDManager hudManager;
     [SerializeReference] private AtomsManager atomsManager;
@@ -12,20 +14,37 @@ public class LevelManager : MonoBehaviour
     [SerializeReference] private GameObject curtain;
     [SerializeReference] private GameObject youWonBackGroundUI;
     [SerializeReference] private GameObject addedScoreText;
-    [SerializeReference] private GameObject controlPlane;
+    [SerializeReference] private GameObject addedBonusScoreText;
     [SerializeReference] private GameObject dottedLine;
     [SerializeReference] private GameObject levelIndicatorBackGroundUI;
     [SerializeReference] private GameObject levelIndicatorText;
     [SerializeReference] private GameObject nextLevelButton;
     [SerializeReference] private GameObject backButton;
-
+    [SerializeReference] private MoleculeManager moleculeManager; 
+    //[SerializeReference] private GameObject hintArrow;
+    private EmitterCone emitterCone;
+    private EmitterConeSol emitterConeSol;
     private int frames;
     private Vector3 atomPos;
     private Vector3[] solAtomPos;
+
+    public Vector3[] SolAtomPos
+    {
+        get => solAtomPos;
+        set => solAtomPos = value;
+    }
+
     private bool[] markedSolAtomPos;
     private int n;
     private bool over = false;
-   
+    private bool isSymmetric;
+    private float haussdorfThreshold = 0.8f;
+
+    private ScoreDisplay scoreDisplay;
+    
+    private float time = 300; //in secondi
+    private Timer timer;
+    private bool updateTime;
 
     // Start is called before the first frame update
     void Start()
@@ -33,29 +52,53 @@ public class LevelManager : MonoBehaviour
         //Debug.Log("Scena corrente:" + (SceneManager.GetActiveScene().buildIndex-1));
         Debug.Log("Lv counter: " + LevelLoader.LevelCounter);
         Level lv = LevelData.Levels[LevelLoader.LevelCounter-1];
-        //Debug.Log(lv.SolPositions);
-        InstantiateAtomsManager(lv.R,lv.M,lv.N, lv.IsCrystal);
-        InstantiateSolutionManager(lv.R,lv.M,lv.N, lv.IsCrystal, lv.SolPositions);
-        Instantiate(hudManager);
 
+        lv.SolPositions = RandomPositions(lv.Plane, lv.N - 1);
+        
+        atomsManager = InstantiateAtomsManager(lv.R,lv.M,lv.N, lv.IsCrystal, lv.Plane, lv.SolPositions);
+        solutionManager = InstantiateSolutionManager(lv.R,lv.M,lv.N, lv.IsCrystal, lv.Plane, lv.SolPositions); 
+        InstantiateMoleculeManager(atomsManager, solutionManager);
+        
+        hudManager = Instantiate(hudManager);
+        
         FindObjectOfType<Detector>().SetAtomsManager(atomsManager);
         FindObjectOfType<SolutionDetector>().SetSolutionManager(solutionManager);
-        
+        FindObjectOfType<ControlGizmo>().SetPlane(lv.Plane);
+        //GameObject.Find("SolutionDetectorSwap").GetComponent<SolutionDetector>().SetSolutionManager(solutionManager);
         solAtomPos = lv.SolPositions;
         markedSolAtomPos = new bool[solAtomPos.Length];
         for (int i = 0; i < markedSolAtomPos.Length; i++)
             markedSolAtomPos[i] = false;
         n = lv.N-1; // n sono gli atomi ancora da risolvere
-
-        Instantiate(controlPlane);
-        Instantiate(dottedLine);
+        
+        Instantiate(dottedLine).gameObject.name = "DottedLineHoriz";
+        var dottedLineVert = Instantiate(dottedLine);
+        dottedLineVert.gameObject.name = "DottedLineVert";
+        dottedLineVert.GetComponent<DottedLine>().Vertical = true;
+        dottedLineVert.transform.Rotate(0,90,0);
         levelIndicatorText.GetComponent<Text>().text = lv.Description;
         nextLevelButton.GetComponent<Button>().onClick.AddListener(LevelLoader.LoadNextLevel);
         backButton.GetComponent<Button>().onClick.AddListener(LevelLoader.LoadMenu);
+
+        emitterCone = FindObjectOfType<EmitterCone>();
+        emitterConeSol = FindObjectOfType<EmitterConeSol>();
+
+        scoreDisplay = FindObjectOfType<ScoreDisplay>();
+        scoreDisplay.DisplayScore();
+        
+        Timer.Time = time;
+
         StartCoroutine(StartLevel());
     }
 
-    private void InstantiateSolutionManager(int r, int m, int n, bool isCrystal, Vector3[] listPos)
+    private void InstantiateMoleculeManager(AtomsManager am, SolutionManager sm)
+    {
+        moleculeManager = Instantiate(moleculeManager);
+        moleculeManager.AtomsManager = am;
+        moleculeManager.SolutionManager = sm;
+    }
+
+    private SolutionManager InstantiateSolutionManager(int r, int m, int n, bool isCrystal, string plane, Vector3[] listPos)
     {
         solutionManager = Instantiate(solutionManager);
         solutionManager.SetCrystal(isCrystal);
@@ -63,76 +106,122 @@ public class LevelManager : MonoBehaviour
         solutionManager.SetM(m);
         solutionManager.SetN(n);
         solutionManager.SetAtomSpawnPositions(listPos);
+        solutionManager.Plane = plane;
+        return solutionManager;
     }
 
-    private void InstantiateAtomsManager(int r, int m, int n, bool isCrystal)
+    private AtomsManager InstantiateAtomsManager(int r, int m, int n, bool isCrystal, string plane, Vector3[] listPos)
     {
         atomsManager = Instantiate(atomsManager);
         atomsManager.SetCrystal(isCrystal);
         atomsManager.SetR(r);
         atomsManager.SetM(m);
         atomsManager.SetN(n);
+        atomsManager.LevelType = plane;
+        atomsManager.SetSolutionSpawnPositions(listPos);
+
+        return atomsManager;
     }
     
-    
 
-    // Update is called once per frame
     void Update()
     {
-        Atom atom = atomsManager.GetDraggingAtom();
-        int j = -1; // j è l'indice della posizione risolta
-        if (frames % 10 == 0 && !over && atom != null)
+        
+        if (updateTime && !over)
         {
-
-            bool atomSolved = false;
-            for (int i = 0; i < atomsManager.GetAtoms().Count; i++)
-            {
-                if (!(Vector3.Distance(atom.transform.localPosition, solAtomPos[i]) <= 1f) || markedSolAtomPos[i]) 
-                    continue;
-                j = i;
-                markedSolAtomPos[i] = true;
-                atomSolved = true;
-                break;
-            }
-            
-            
-            if (atomSolved)
-            {
-                //atomsManager.GetAtoms()[0].transform.localPosition = solutionManager.GetAtoms()[0].transform.localPosition; //snap
-                StartCoroutine(Snap(atom, j));
-                atom.GetComponent<Collider>().enabled = false;
-                atom.GetComponent<Atom>().SetSolved(true);
-                atom.GetComponent<Atom>().ChangeMaterial(3);
-                atomsManager.SetDraggingAtom(null);
-                n--;
-            }
-            //Debug.Log(n);
-
-            if (n == 0) 
-            {
-                curtain.GetComponent<Curtain>().ShowSolution();
-                StartCoroutine(Victory());
-                ScoreManager.Score += 100;    
-                print("hai vinto");
-                //LevelLoader.LevelCounter++;
-                over = true;
-            }
+            time -= Time.deltaTime;
+            Timer.Time = time;
+        }
+        if (!solutionManager.GetStop())
+        {
+            solAtomPos = solutionManager.Positions3.ToArray();
+        }
+        if (frames == 20 && !over && !Input.GetMouseButton(0))
+        {
+            TestVictory();
             frames = 0;
         }
-
+        
         frames++;
+    }
+
+    private void TestVictory()
+    {
+        //Debug.Log("sol: " + solutionManager.SumPos);
+        //Debug.Log("atom: " + atomsManager.SumPos);
+        //Debug.Log("distance: " + Vector4.Distance(atomsManager.SumPos, solutionManager.SumPos));
+        float h = Haussdorf();
+        //Debug.Log("Hausdorff: " + h);
+        if (h <= haussdorfThreshold)
+        {
+            if (isSymmetric)
+            {
+                solutionManager.ChangeToSymmetric();
+                Debug.Log("simmetrico");
+            }
+
+            over = true;
+            //atomsManager.AnAtomIsMoving = true;
+            StartCoroutine(Victory());
+            ScoreDisplay.CurScore = ScoreManager.Score;
+            //Debug.Log("time remaining: " + time);
+            ScoreManager.TimeBonus += Mathf.RoundToInt(time);
+            //Debug.Log(ScoreManager.TimeBonus);
+            ScoreManager.Score += 100;
+            if (FindObjectOfType<CheatCode>().AlreadyActivated != true)
+                LevelsUnlocked.NumberOfLevelsUnlocked++;
+            print("hai vinto");
+        }
+    }
+
+    private float Haussdorf()
+    {
+        float h1 = 0;
+        float h2 = 0;
+        for (int i = 0; i < solAtomPos.Length; i++)
+        {
+            float shortest1 = float.MaxValue;
+            float shortest2 = float.MaxValue;
+
+            for (int j = 0; j < solAtomPos.Length; j++)
+            {
+                //float d1 = Vector3.Distance(atomsManager.GetAtoms()[i].transform.localPosition, solAtomPos[j]);
+                //float d2 = Vector3.Distance(atomsManager.GetAtoms()[i].transform.localPosition, -solAtomPos[j]);
+                float d1 = Vector3.Distance(atomsManager.GetPositions()[i], solAtomPos[j]);
+                float d2 = Vector3.Distance(atomsManager.GetPositions()[i], -solAtomPos[j]);
+                if (d1 < shortest1)
+                    shortest1 = d1;
+                if (d2 < shortest2)
+                    shortest2 = d2;            
+            }
+
+            if (shortest1 > h1)
+                h1 = shortest1; //h1 = Hausdorff rispetto alla soluzione base
+            if (shortest2 > h2)
+                h2 = shortest2; //h2 = Hausdorff rispetto alla soluzione simmetrica
+        }
+        float H = Mathf.Min(h1,h2);
+        isSymmetric = Math.Abs(H - h2) < 0.00001f;
+        
+        return H;
     }
 
     IEnumerator StartLevel()
     {
-        yield return new WaitForSeconds(0.8f);
-        levelIndicatorBackGroundUI.SetActive(true);
-        //StartCoroutine(EnterLevelIndicator(levelIndicatorText));
-        //yield return new WaitForSeconds(2);
-        yield return StartCoroutine(ExitLevelIndicator(levelIndicatorText));
+
+        //yield return new WaitForSeconds(0.8f);
+        //levelIndicatorBackGroundUI.SetActive(true);
+        
+        //yield return StartCoroutine(ExitLevelIndicator(levelIndicatorText));
         
         //yield return new WaitForSeconds(1);
         levelIndicatorBackGroundUI.SetActive(false);
+        atomsManager.GameStart = true;
+        emitterCone.GameStart = true;
+        emitterConeSol.GameStart = true;
+        updateTime = true;
+        yield return null;
+
     }
 
     IEnumerator EnterLevelIndicator(GameObject levelIndicatorText)
@@ -170,36 +259,216 @@ public class LevelManager : MonoBehaviour
 
     }
     
-    
-    
     IEnumerator Victory()
     {
+        yield return SnapAll();
+        curtain.GetComponent<Curtain>().ShowSolution();
+
         yield return new WaitForSeconds(1.5f);
+        addedScoreText.GetComponent<Text>().text = "+ " + 100;
+        addedBonusScoreText.GetComponent<Text>().text = "+ " + string.Format("{0:00}", time);
         youWonBackGroundUI.SetActive(true);
         StartCoroutine(ShowYouWon(youWonUI));
         yield return new WaitForSeconds(1.5f);
-        StartCoroutine(ShowAddedScore(addedScoreText));
+        
+        StartCoroutine(ShowAddedBonusScore(addedBonusScoreText));
+        scoreDisplay.UpdateScore(100, Mathf.RoundToInt(time));
+
         //atomsManager.GetAtoms()[0].GetComponent<Atom>().ChangeMaterial(0);
 
     }
-    
-    IEnumerator Snap(Atom atom, int j)
+
+    IEnumerator SnapAll()
     {
+        if (moleculeManager.Activated)
+        {
+            if (!isSymmetric)
+            {
+                for (int i = 0; i < atomsManager.GetAtoms().Count; i++)
+                {
+                    Atom atom = atomsManager.GetAtoms()[i];
+                    StartCoroutine(MarkAsCorrect(atom));
+                }
+
+                bool allSnapped = true;
+                do
+                {
+                    for (int i = 0; i < atomsManager.GetAtoms().Count; i++)
+                    {
+                        Atom atom = atomsManager.GetAtoms()[i];
+                        if (atom.Snapped) continue;
+                        Atom father = atom.transform.parent.GetComponent<Atom>();
+                        if (father == null) // il padre è il pivot
+                        {
+                            yield return Snap(atom);
+                            atom.Snapped = true;
+                        }
+                        else // il padre è un atomo
+                        {
+                            if (!father.Snapped) continue;
+                            yield return Snap(atom);
+                            atom.Snapped = true;
+                        }
+                    }
+
+                    for (int i = 0; i < atomsManager.GetAtoms().Count; i++)
+                    {
+                        if (!atomsManager.GetAtoms()[i].Snapped)
+                        {
+                            allSnapped = false;
+                            break;
+                        }
+                        allSnapped = true;
+                    }
+
+                } while (!allSnapped);
+            }
+            else
+            {
+                for (int i = atomsManager.GetAtoms().Count - 1; i >= 0; i--)
+                {
+                    Atom atom = atomsManager.GetAtoms()[i];
+                    StartCoroutine(MarkAsCorrect(atom));
+                }
+
+                bool allSnapped = true;
+
+                do
+                {
+                    for (int i = atomsManager.GetAtoms().Count - 1; i >= 0; i--)
+                    {
+                        Atom atom = atomsManager.GetAtoms()[i];
+                        if (atom.Snapped) continue;
+                        Atom father = atom.transform.parent.GetComponent<Atom>();
+                        if (father == null) // il padre è il pivot
+                        {
+                            yield return Snap(atom);
+                            atom.Snapped = true;
+
+                        }
+                        else // il padre è un atomo
+                        {
+                            if (!father.Snapped) continue;
+                            yield return Snap(atom);
+                            atom.Snapped = true;
+                        }
+                    }
+                    
+                    for (int i = 0; i < atomsManager.GetAtoms().Count; i++)
+                    {
+                        if (!atomsManager.GetAtoms()[i].Snapped)
+                        {
+                            allSnapped = false;
+                            break;
+                        }
+                        allSnapped = true;
+                    }
+                    
+                } while (!allSnapped);
+            }
+        }
+        else
+        {
+            if (!isSymmetric)
+            {
+                for (int i = 0; i < atomsManager.GetAtoms().Count; i++)
+                {
+                    Atom atom = atomsManager.GetAtoms()[i];
+                    StartCoroutine(MarkAsCorrect(atom));
+                }
+                
+                for (int i = 0; i < atomsManager.GetAtoms().Count; i++)
+                {
+                    Atom atom = atomsManager.GetAtoms()[i];
+                    StartCoroutine(Snap(atom));
+                }
+            }
+            else
+            {
+                for (int i = atomsManager.GetAtoms().Count - 1; i >= 0; i--)
+                {
+                    Atom atom = atomsManager.GetAtoms()[i];
+                    StartCoroutine(MarkAsCorrect(atom));
+                }
+                
+                for (int i = atomsManager.GetAtoms().Count - 1; i >= 0; i--)
+                {
+                    Atom atom = atomsManager.GetAtoms()[i];
+                    StartCoroutine(Snap(atom));
+                }
+            }
+        }
+
+        yield return new WaitUntil(() => n == 0);
+    }
+
+    IEnumerator MarkAsCorrect(Atom atom)
+    {
+        atom.GetComponent<Collider>().enabled = false;
+        atom.GetComponent<Atom>().SetSolved(true);
+        atom.GetComponent<Atom>().ChangeMaterial(3);
+        yield return null;
+    }
+    
+    IEnumerator Snap(Atom atom)
+    {
+        
+        int j = -1;
+        float minDist = float.MaxValue;
+        Vector3 atomPos;
+        float posX, posY, posZ;
+        if (moleculeManager.Activated)
+        {
+            atomPos = atom.PositionFromPivot;
+            posX = atom.transform.localPosition.x;
+            posY = atom.transform.localPosition.y;
+            posZ = atom.transform.localPosition.z;
+        }
+        else
+        {
+            atomPos = atom.transform.localPosition;
+            posX = atomPos.x;
+            posY = atomPos.y;
+            posZ = atomPos.z;
+        }
+        for (int i = 0; i < solAtomPos.Length; i++)
+        {
+            float curDist = Vector3.Distance(atomPos, solutionManager.GetPositions()[i]);
+            if (!(curDist < minDist)) continue;
+            minDist = curDist;
+            j = i;
+        }
+        
         float t = 0;
         float ease, newPosX, newPosY, newPosZ;
-        float posX = atom.transform.localPosition.x,
-              posY = atom.transform.localPosition.y,
-              posZ = atom.transform.localPosition.z;
+        
+        Vector3 targetPosFromPivot = new Vector3(solutionManager.GetPositions()[j].x, solutionManager.GetPositions()[j].y, solutionManager.GetPositions()[j].z);
+        Vector3 targetPos;
+        Atom father = atom.transform.parent.GetComponent<Atom>();
+        if (father != null)
+        {
+            targetPos = targetPosFromPivot - father.PositionFromPivot;
+        }
+        else
+        {
+            targetPos = targetPosFromPivot;
+        }
+        
         while (t <= 1f)
         {
             ease = EaseInCubic(t);
-            newPosX = Mathf.Lerp(posX, solAtomPos[j].x, ease);
-            newPosY = Mathf.Lerp(posY, solAtomPos[j].y, ease);
-            newPosZ = Mathf.Lerp(posZ, solAtomPos[j].z, ease);
+            //Debug.Log("ease: " + ease);
+            newPosX = Mathf.Lerp(posX, targetPos.x, ease);
+            newPosY = Mathf.Lerp(posY, targetPos.y, ease);
+            newPosZ = Mathf.Lerp(posZ, targetPos.z, ease);
             atom.transform.localPosition = new Vector3(newPosX, newPosY, newPosZ); 
-            t += 0.2f;
+            FindObjectOfType<Detector>().SetDirty();
+            t += 0.01f;
             yield return new WaitForFixedUpdate();
         }
+        
+        atom.Snapped = true;
+        n--;
     }
 
     IEnumerator ShowYouWon(GameObject youWonUI)
@@ -231,6 +500,23 @@ public class LevelManager : MonoBehaviour
             newScaleX = Mathf.Lerp(1f, 2f, ease);
             newScaleY = Mathf.Lerp(1f, 2f, ease);
             addedScore.transform.localScale = new Vector3(newScaleX, newScaleY, 1f);;                 
+            t += 0.02f;
+            yield return new WaitForFixedUpdate();
+        }
+    }
+    
+    IEnumerator ShowAddedBonusScore(GameObject addedBonusScore)
+    {
+        yield return ShowAddedScore(addedScoreText);
+        float t = 0;
+        float ease;
+        float newScaleX, newScaleY;
+        while (t <= 1f)
+        {
+            ease = ZoomInZoomOut(t);
+            newScaleX = Mathf.Lerp(1f, 2f, ease);
+            newScaleY = Mathf.Lerp(1f, 2f, ease);
+            addedBonusScore.transform.localScale = new Vector3(newScaleX, newScaleY, 1f);;                 
             t += 0.02f;
             yield return new WaitForFixedUpdate();
         }
@@ -279,9 +565,55 @@ public class LevelManager : MonoBehaviour
         return x * x * x * x;
     }
     
+    public float easeInOutBack(float x)
+    {
+        const float c1 = 1.70158f;
+        const float c2 = c1 * 1.525f;
+
+        return x < 0.5
+            ? (Mathf.Pow(2 * x, 2) * ((c2 + 1) * 2 * x - c2)) / 2
+            : (Mathf.Pow(2 * x - 2, 2) * ((c2 + 1) * (x * 2 - 2) + c2) + 2) / 2;
+        
+    }
+    
     public bool GetOver()
     {
         return over;
     }
     
+    private static Vector3[] RandomPositions(string plane, int n)
+    {
+        Vector3[] ris = new Vector3[n];
+
+        for (int i = 0; i < n; i++)
+        {
+            bool isEqual = false;
+            bool isPivot = false;
+            Vector3 newPos = plane switch
+            {
+                "YZ" => new Vector3(0, Random.Range(-5f, 5f), Random.Range(-5f, 5f)),
+                "XZ" => new Vector3(Random.Range(-5f, 5f), 0, Random.Range(-5f, 5f)),
+                "XYZ" => new Vector3(Random.Range(-5f, 5f), Random.Range(-5f, 5f), Random.Range(-5f, 5f)),
+                _ => Vector3.zero
+            };
+            for (int j = 0; j < i; j++)
+            {
+                if (Vector3.Distance(ris[j], newPos) > 1) continue;
+                isEqual = true;
+                break;
+            }
+            
+            if (Vector3.Distance(newPos, Vector3.zero) <= 1)
+                isPivot = true;
+            
+            if (isEqual || isPivot)
+            {
+                i--;
+                continue;
+            }
+            ris[i] = newPos;
+        }
+
+        return ris;
+    }
 }

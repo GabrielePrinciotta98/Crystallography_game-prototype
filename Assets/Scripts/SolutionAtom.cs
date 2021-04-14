@@ -5,17 +5,11 @@ using UnityEngine;
 
 public class SolutionAtom : MonoBehaviour
 {
-    private Vector3 rotationPoint = new Vector3(25f, 10f, -20f);
     SolutionManager solutionManager;
     private Vector3 curPos;
     private float rotationAngle;
-
-    public float RotationAngle
-    {
-        get => rotationAngle;
-        set => rotationAngle = value;
-    }
-
+    public Vector3 PositionFromPivot { get; set; }
+    
     // Start is called before the first frame update
     void Awake()
     {
@@ -32,19 +26,9 @@ public class SolutionAtom : MonoBehaviour
 
     private void Update()
     {
-        if (!solutionManager.GetStop())
-        {
-            Quaternion rotation = Quaternion.Euler(0, rotationAngle, 0);
-            transform.localPosition = Matrix4x4.Rotate(rotation).MultiplyPoint3x4(curPos);
-        }
-        else
-        {
-            curPos = transform.localPosition;
-        }
+        PositionFromPivot = transform.position - new Vector3(22, 6.6f, -20);
         solutionManager.SetMyPosition(this);
     }
-    
-    
-    
-    
+
+   
 }

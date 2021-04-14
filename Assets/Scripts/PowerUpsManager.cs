@@ -7,7 +7,6 @@ public static class PowerUpsManger
     public static bool SwapUnlocked { get; set; }
 
     public static bool MoleculeUnlocked { get; set; }
-    //private static bool rotationButtonUnlocked;
     
     public static bool ZoomUnlocked { get; set; }
 

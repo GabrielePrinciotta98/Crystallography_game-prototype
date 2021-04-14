@@ -20,15 +20,13 @@ public class RotationSlider : MonoBehaviour, IPointerUpHandler, IPointerDownHand
     //OnPointerDown is also required to receive OnPointerUp callbacks
     public void OnPointerDown(PointerEventData eventData)
     {
-        atomsManager.SetStopFalse();
-        solutionManager.SetStopFalse();
+        
     }
 
     //Do this when the mouse click on this selectable UI object is released.
     public void OnPointerUp(PointerEventData eventData)
     {
-        atomsManager.SetStopTrue();
-        solutionManager.SetStopTrue();
+        
         Debug.Log("The mouse click was released");
         float curValue = GetComponent<Slider>().value;
         // SNAP PER I MULTIPLI DI 45
