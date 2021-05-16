@@ -43,3 +43,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7532ef5f67889494e9b4912586ecd351, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  bond: {fileID: 1570464288176484561, guid: 86582e2ef59d5db42a48e89dcb3adb8d, type: 3}
+  shadow: {fileID: 5451935987613993185, guid: a60e5125cbbe5554884907f9e80a969e, type: 3}

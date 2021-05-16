@@ -45,7 +45,7 @@ public class DottedLine : MonoBehaviour
             transform.position = curPosition;
             transform.rotation = curRotation;
 
-            if (!(timer >= 0.5f)) return;
+            if (!(timer >= 0.01f)) return;
             _renderer.enabled = false;
         }
         else

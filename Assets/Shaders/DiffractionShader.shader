@@ -16,8 +16,6 @@ Shader "Custom/DiffractionShader"
             uniform half4 atomsPos[200];
             uniform int n_atoms = 0;
             half phi[200];
-            
-
 
             half3 ks(half2 screenCoords)
             {
@@ -32,7 +30,7 @@ Shader "Custom/DiffractionShader"
 
             half4 frag(v2f_customrendertexture IN) : SV_Target
             {
-                //mapping delle coordinate texture da [0,1] a [-1.+1]
+           
                 const half2 screenCoords = 2.0 * (half2(IN.globalTexcoord.x, IN.globalTexcoord.y) - half2(0.5,0.5));
                 int i;
                 half2 I = half2(1.0, 0.0);
@@ -44,10 +42,12 @@ Shader "Custom/DiffractionShader"
                     I += e_Pow_ix(phi[i]);
                 }
 
-                return half4(1,1,1,2) - half4(dot(I,I)/((n_atoms+1)*(n_atoms+1)), dot(I, I) / ((n_atoms+1)*(n_atoms+1)), dot(I, I) / ((n_atoms+1)*(n_atoms+1)),1);
-                //c = half2(1, 0);
-                //return half4(dot(I,I), dot(I,I),dot(I,I),1);
-                //return half4(red, green, 0,1);
+                return half4(1,1,1,2) -
+                        half4(dot(I,I) / ((n_atoms+1)*(n_atoms+1)),
+                              dot(I,I) / ((n_atoms+1)*(n_atoms+1)),
+                              dot(I,I) / ((n_atoms+1)*(n_atoms+1)),
+                              1);
+                
             }
 
             ENDCG

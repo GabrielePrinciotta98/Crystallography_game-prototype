@@ -7,10 +7,10 @@ using Random = UnityEngine.Random;
 public class AtomsManager : MonoBehaviour
 {
     private SolutionManager solutionManager;
-    private bool isCrystal;
+    public bool isCrystal;
 
     public bool GameStart { get; set; }
-
+    private GameObject moleculeSpace;
     [SerializeReference] GameObject atom;
     [SerializeReference] GameObject pivot;
     [SerializeReference] GameObject centralCell;
@@ -23,33 +23,28 @@ public class AtomsManager : MonoBehaviour
     List<Atom> atoms = new List<Atom>();
     Vector4[] positions = new Vector4[20];
 
-    public Vertex[] SolutionMst { get; set; }
 
     private bool stop = true;
-    private List<Vector3> cellsSpawnPositions = new List<Vector3>();
+    private List<Vector3> cellsSpawnPositions;
     private Vector3 centralCellSpawnPos;
     private List<Vector3> atomsSpawnPositions = new List<Vector3>();
     private Vector3[] solutionSpawnPositions;
     private Atom draggingAtom;
+    private List<GameObject> cells = new List<GameObject>();
+    public string LevelType { get; set; }
 
-    public string Plane { get; set; }
-
-    public bool AnAtomIsMoving { get; set; }
-
-    private GameObject workspace;
     private void Awake()
     {
         centralCellSpawnPos = pivot.transform.position;
     }
 
-    
-
     // Start is called before the first frame update
     void Start()
     {
+        moleculeSpace = GameObject.Find("MoleculeSpace");
         Debug.Log("N: " + N);
         // POSIZIONI DI SPAWN DEGLI ATOMI
-        GenerateRandomPositions(Plane, N-1);
+        GenerateRandomPositions(LevelType, N-1);
         /*
         if (!Plane.Equals("XZ"))
         {
@@ -77,38 +72,13 @@ public class AtomsManager : MonoBehaviour
         }
         else
         {
-            Debug.Log("R: " + R);
-
-            if (R == 3)
-            {
-                for (float x = -5f; x < 10f; x += 5f)
-                for (float y = -5f; y < 10f; y += 5f)
-                for (float z = -5f; z < 10f; z += 5f)
-                    if (x != 0 || y != 0 || z != 0)
-                        cellsSpawnPositions.Add(new Vector3(x, y, z));
-            }
-            if (R == 5)
-            {
-                for (float x = -10f; x < 15f; x += 5f)
-                for (float y = -10f; y < 15f; y += 5f)
-                for (float z = -10f; z < 15f; z += 5f)
-                    if (x != 0 || y != 0 || z != 0)
-                        cellsSpawnPositions.Add(new Vector3(x, y, z));
-            }
-            if (R == 7)
-            {
-                for (float x = -15f; x < 20f; x += 5f)
-                for (float y = -15f; y < 20f; y += 5f)
-                for (float z = -15f; z < 20f; z += 5f)
-                    if (x != 0 || y != 0 || z != 0)
-                        cellsSpawnPositions.Add(new Vector3(x, y, z));
-            }
+            CalculateCellsPositions();
         }
         
         
         if (isCrystal)
         {
-            workspace = Instantiate(platforms[1]);
+            Instantiate(platforms[1]);
 
             // SPAWN CELLA CENTRALE
             centralCell = Instantiate(centralCell, centralCellSpawnPos, Quaternion.identity);
@@ -117,43 +87,83 @@ public class AtomsManager : MonoBehaviour
             else
                 centralCell.transform.localScale *= 5;
 
-            // SPAWN CELLE RIPETUTE
-            Debug.Log(M);
-            
-            for (int i = 0; i < M - 1; i++)
-                Instantiate(cell, centralCellSpawnPos + cellsSpawnPositions[i], Quaternion.identity,
-                    centralCell.transform);
+            SpawnRepeatedCells();
         }
         else
         {
-            workspace = Instantiate(Plane.Equals("YZ") ? platforms[0] : platforms[1]);
+            Instantiate(LevelType.Equals("YZ") ? platforms[0] : platforms[1], moleculeSpace.transform);
             //centralCellSpawnPos ha la posizione del pivot
-            pivot = Instantiate(pivot, centralCellSpawnPos, Quaternion.identity);
+            pivot = Instantiate(pivot, centralCellSpawnPos, Quaternion.identity, moleculeSpace.transform);
             for (int i=0; i<N-1; i++)
                 Instantiate(atom, new Vector3(centralCellSpawnPos.x + atomsSpawnPositions[i].x,
                         centralCellSpawnPos.y + atomsSpawnPositions[i].y,
                         centralCellSpawnPos.z + atomsSpawnPositions[i].z),
-                    Quaternion.identity, pivot.transform);
+                    Quaternion.identity, moleculeSpace.transform);
         }
         
 
     }
 
-    public void UnsetHoveredAtom(Atom hovered)
+    private void CalculateCellsPositions()
     {
-        foreach (var atom in atoms)
+        Debug.Log("R: " + R);
+        cellsSpawnPositions = new List<Vector3>();
+
+        if (R == 3)
         {
-            if (atom != hovered)
-                atom.LastHovered = false;
+            for (float x = -5f; x < 10f; x += 5f)
+            for (float y = -5f; y < 10f; y += 5f)
+            for (float z = -5f; z < 10f; z += 5f)
+                if (x != 0 || y != 0 || z != 0)
+                    cellsSpawnPositions.Add(new Vector3(x, y, z));
+        }
+
+        if (R == 5)
+        {
+            for (float x = -10f; x < 15f; x += 5f)
+            for (float y = -10f; y < 15f; y += 5f)
+            for (float z = -10f; z < 15f; z += 5f)
+                if (x != 0 || y != 0 || z != 0)
+                    cellsSpawnPositions.Add(new Vector3(x, y, z));
+        }
+
+        if (R == 7)
+        {
+            for (float x = -15f; x < 20f; x += 5f)
+            for (float y = -15f; y < 20f; y += 5f)
+            for (float z = -15f; z < 20f; z += 5f)
+                if (x != 0 || y != 0 || z != 0)
+                    cellsSpawnPositions.Add(new Vector3(x, y, z));
         }
     }
-    
+
+    private void SpawnRepeatedCells()
+    {
+        // SPAWN CELLE RIPETUTE
+        Debug.Log(M);
+        if (R != 1)
+            for (int i = 0; i < M - 1; i++)
+            {
+                var cellTemp = Instantiate(cell, centralCellSpawnPos + cellsSpawnPositions[i], Quaternion.identity,
+                                                    centralCell.transform);
+                cells.Add(cellTemp);
+            }
+    }
+
+
     public void FreezeAtoms()
     {
         foreach (var atom in atoms)
         {
             if (atom != draggingAtom)
                 atom.GetComponent<Rigidbody>().constraints = RigidbodyConstraints.FreezeAll;
+            else
+            {
+                if (LevelType.Equals("YZ"))
+                    atom.GetComponent<Rigidbody>().constraints = RigidbodyConstraints.FreezePositionX;
+                if (LevelType.Equals("XZ"))
+                    atom.GetComponent<Rigidbody>().constraints = RigidbodyConstraints.FreezePositionY;
+            }
         }
     }
 
@@ -189,7 +199,7 @@ public class AtomsManager : MonoBehaviour
 
     public void SetMyPosition(Atom atom)
     {
-        positions[atoms.IndexOf(atom)] = atom.transform.localPosition;
+        positions[atoms.IndexOf(atom)] = atom.PositionFromPivot;
     }
     
 
@@ -201,19 +211,6 @@ public class AtomsManager : MonoBehaviour
     public bool GetStop()
     {
         return stop;
-    }
-
-    public void SetStopTrue()
-    {
-        stop = true;
-        AnAtomIsMoving = false;
-    }
-
-    public void SetStopFalse()
-    {
-        stop = false;
-        AnAtomIsMoving = true;
-
     }
 
     public int GetN()
@@ -240,9 +237,10 @@ public class AtomsManager : MonoBehaviour
         return M;
     }
     
-    public void SetM(int m)
+    public void SetM(float m)
     {
-        M = m;
+        M = (int)m;
+        FindObjectOfType<Detector>().SetDirty();
     }
 
     public int GetK()
@@ -260,16 +258,11 @@ public class AtomsManager : MonoBehaviour
         return centralCell.transform.right;
     }
     
-    public void Rotate(float angle)
+
+    public void Rotate(float degrees)
     {
-        //SetStopFalse();
-        foreach (var a in atoms)
-        {
-            a.RotationAngle = (int)angle;
-        }
-        workspace.GetComponent<Workspace>().SetAtomsManager(this);
-        workspace.GetComponent<Workspace>().RotationAngle = (int) angle;
-        centralCell.GetComponent<CentralCell>().RotationAngle = (int) angle;
+        moleculeSpace.transform.rotation = Quaternion.Euler(0, degrees, 0);
+        FindObjectOfType<Detector>().SetDirty();
     }
 
 
@@ -281,6 +274,7 @@ public class AtomsManager : MonoBehaviour
     public void SetR(float r)
     {
         R = (int)r;
+        FindObjectOfType<Detector>().SetDirty();
     }
 
     public bool GetCrystal()
@@ -312,7 +306,7 @@ public class AtomsManager : MonoBehaviour
             };
             for (int j = 0; j < i; j++)
             {
-                if (ris[j] != newPos) continue;
+                if (Vector3.Distance(ris[j], newPos) > 1) continue;
                 isEqual = true;
                 break;
             }
@@ -348,6 +342,21 @@ public class AtomsManager : MonoBehaviour
         solutionSpawnPositions = listPos;
     }
 
-    
-    
+    public GameObject GetPivot()
+    {
+        return pivot;
+    }
+
+    public void UpdateCells()
+    {
+        foreach (var cell in cells)
+        {
+            cell.GetComponent<Cell>().DestroyAtoms();
+            Destroy(cell);
+        }
+
+        cells = new List<GameObject>();
+        CalculateCellsPositions();
+        SpawnRepeatedCells();
+    }
 }

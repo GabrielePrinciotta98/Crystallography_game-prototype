@@ -7,9 +7,10 @@ public class Detector : MonoBehaviour
 {
     public Material[] materials;
     private bool swapped;
+    private bool isDirty = true;
     private Renderer _renderer;
     private AtomsManager atomsManager;
-    private LevelManager2 levelManager2;
+    private LevelManager _levelManager;
     private EmitterCone emitter;
     private Vector4[] positions;
     private readonly Vector4[] centers = new Vector4[100];
@@ -37,7 +38,7 @@ public class Detector : MonoBehaviour
     private void Awake()
     {
         atomsManager = FindObjectOfType<AtomsManager>();
-        levelManager2 = FindObjectOfType<LevelManager2>();
+        _levelManager = FindObjectOfType<LevelManager>();
         emitter = FindObjectOfType<EmitterCone>();
         arrows = GameObject.Find("Arrows");
     }
@@ -60,15 +61,18 @@ public class Detector : MonoBehaviour
         if (pwr < 0 && !pwrSetted)
         {
             pwr += 0.02f;
-            Diffraction();
-            crt.Update();
+            UpdatePattern();
         }
         //Debug.Log("move: " + atomsManager.AnAtomIsMoving);
-        if (!atomsManager.AnAtomIsMoving && !levelManager2.GetOver()) return;
+        if (isDirty) UpdatePattern();
+        //Debug.Log("update");
+        isDirty = false;
+    }
+    
+    public void UpdatePattern()
+    {
         Diffraction();
         crt.Update();
-        
-        
     }
     
     private void Ripple()
@@ -87,7 +91,6 @@ public class Detector : MonoBehaviour
     private void Diffraction()
     {
         positions = atomsManager.GetPositions();
-        //Debug.Log(positions[0]);
         a = atomsManager.GetCellRight() * atomsManager.GetK();
         c = atomsManager.GetCellForward() * atomsManager.GetK();
         
@@ -98,7 +101,7 @@ public class Detector : MonoBehaviour
         Shader.SetGlobalFloat(Pwr, Mathf.Pow(2, pwr));
         Shader.SetGlobalVector(A, a);
         Shader.SetGlobalVector(C, c);
-        Debug.Log("R: " + atomsManager.GetR());
+        //Debug.Log("R: " + atomsManager.GetR());
         Shader.SetGlobalInt(R, atomsManager.GetR());
         Shader.SetGlobalInt(M, atomsManager.GetM());
         Shader.SetGlobalFloat(Lambda, lambda);
@@ -107,8 +110,7 @@ public class Detector : MonoBehaviour
     public void SetZoom(float z)
     {
         zoom = z;
-        Diffraction();
-        crt.Update();
+        UpdatePattern();
     }
 
     public float GetZoom()
@@ -120,8 +122,7 @@ public class Detector : MonoBehaviour
     {
         pwr = p;
         pwrSetted = true;
-        Diffraction();
-        crt.Update();
+        UpdatePattern();
     }
 
     public float GetPwr()
@@ -132,8 +133,7 @@ public class Detector : MonoBehaviour
     public void SetLambda(float l)
     {
         lambda = l;
-        Diffraction();
-        crt.Update();
+        UpdatePattern();
     }
 
     public void SetAtomsManager(AtomsManager am)
@@ -166,5 +166,10 @@ public class Detector : MonoBehaviour
         emitter.gameObject.SetActive(true);
         swapped = false;
 
+    }
+
+    public void SetDirty()
+    {
+        isDirty = true;
     }
 }

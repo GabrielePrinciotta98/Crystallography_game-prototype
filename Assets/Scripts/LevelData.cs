@@ -8,17 +8,20 @@ public static class LevelData
     private const string YZ = "YZ";
     private const string XYZ = "XYZ";
     
-    private const string Desc1 = "Livello  1\n1 atomo sul piano XY";
-    private const string Desc2 = "Livello  2\n2 atomi sul piano XY";
-    private const string Desc3 = "Livello  3\n3 atomi sul piano XY";
-    private const string Desc4 = "Livello  4\n1 atomo sul piano XZ";
-    private const string Desc5 = "Livello  5\n2 atomi sul piano XZ";
-    private const string Desc6 = "Livello  6\n3 atomi sul piano XZ";
-    private const string Desc7 = "Livello  7\n1 atomo sul piano XYZ";
-    private const string Desc8 = "Livello  8\n2 atomi sul piano XYZ";
-    private const string DescCry1 = "Livello  9\nCristallo";
-    private const string DescCry2 = "Livello  10\nCristallo";
-    private const string DescCry3 = "Livello  11\nCristallo";
+    private const string Desc1 = "Livello  1\n2 atomi sul piano XY";
+    private const string Desc2 = "Livello  2\n3 atomi sul piano XY";
+    private const string Desc3 = "Livello  3\n4 atomi sul piano XY";
+    private const string Desc4 = "Livello  4\n2 atomi sul piano XZ";
+    private const string Desc5 = "Livello  5\n3 atomi sul piano XZ";
+    private const string Desc6 = "Livello  6\n4 atomi sul piano XZ";
+    private const string Desc7 = "Livello  7\n2 atomi sul piano XYZ";
+    private const string Desc8 = "Livello  8\n3 atomi sul piano XYZ";
+    private const string Desc9 = "Livello  9\n4 atomi sul piano XYZ";
+    private const string Desc11 = "Livello 11\n6 atomi sul piano XY";
+
+    private const string DescCry1 = "Livello  10\nCristallo";
+    private const string DescCry2 = "Livello  11\nCristallo";
+    private const string DescCry3 = "Livello  12\nCristallo";
 
     /*
     
@@ -76,25 +79,25 @@ public static class LevelData
             // Lv 8
             levels.Add(new Level(1, 1, 3, false, Desc8, XYZ));
           
-            /*
-            // LV 9 CRISTALLO PROVA
-            levels.Add(new Level(5, 125, 2, true, Desc1, XYZ));
-            lvPositions = new[] {new Vector3(-0.5f, 2.3f, 2.1f)};
-            levels[8].SolPositions = lvPositions;
-            
-            // LV 10 CRISTALLO PROVA (PIù ATOMI)
-            levels.Add(new Level(3, 27, 4, true, Desc1, XYZ));
-            lvPositions = new[] {new Vector3(-0.5f, 1.3f, 1.1f), 
-                                new Vector3(0.9f, -0.6f, 0),
-                                new Vector3(0.2f, 0.4f, -1.5f)};
+            // LV 9
+            levels.Add(new Level(1, 1, 4, false, Desc9, XYZ));
+
+            // LV 10 CRISTALLO PROVA
+            levels.Add(new Level(1, 1, 3, true, DescCry1, XYZ));
+            Vector3[] lvPositions = new[] {new Vector3(-0.5f, 2.3f, 2.1f), new Vector3(0.9f, -0.6f, 0)};
             levels[9].SolPositions = lvPositions;
             
-            // LV 11 CRISTALLO 5x5x5 PROVA
+            
+            // LV 11 XY 5 atomi 
+            levels.Add(new Level(1,1,6,false, Desc11, YZ));
+            
+            /*
+            // LV 12 CRISTALLO 5x5x5 PROVA
             levels.Add(new Level(5, 125, 2, true, Desc1, XYZ));
             lvPositions = new[] {new Vector3(-0.5f, 1.3f, 1.1f)};
             levels[10].SolPositions = lvPositions;
             
-            // LV 12 CRISTALLO 7x7x7 PROVA
+            // LV 13 CRISTALLO 7x7x7 PROVA
             levels.Add(new Level(7, 343, 2, true, Desc1, XYZ));
             lvPositions = new[] {new Vector3(-0.5f, 1.3f, 1.1f)};
             levels[11].SolPositions = lvPositions;

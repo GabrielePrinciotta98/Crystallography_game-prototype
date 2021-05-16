@@ -1,14 +1,14 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Runtime.Serialization;
+using System.Numerics;
+using UnityEditor;
 using UnityEngine;
+using Vector3 = UnityEngine.Vector3;
 
 public class Atom : MonoBehaviour
 {
     public Material[] materials;
-    private ControlPlane controlPlane;
-    private Renderer controlPlaneRenderer;
+    private ControlGizmo controlGizmo;
     private DottedLine dottedLineHoriz;
     private DottedLine dottedLineVert;
     private Renderer dottedLineHorizRenderer;
@@ -16,45 +16,30 @@ public class Atom : MonoBehaviour
     private Material dottedLineVertMaterial;
     private Vector3 controlPlanePosition;
     new Renderer renderer;
-    AtomsManager atomsManager;
-    SolutionManager solutionManager;
+    private AtomsManager atomsManager;
+    private SolutionManager solutionManager;
+    private MoleculeManager moleculeManager;
     private Collider _collider;
-    
-    private readonly Vector3 rotationPoint = new Vector3(25f, 6.6f, 10f);
-    private float dragSpeed = 0.05f;
-    Vector3 lastMousePos;
-    private AtomRep[] rep;
-    private bool selected = false;
-    
-    [SerializeField] private LayerMask layerMask;
-    private Collider[] collidersBuffer = new Collider[100];
-    
-    private Vector3 curPos;
-    private Quaternion originPlaneRotation;
-    private float rotationAngle;
-    
-    public float RotationAngle
-    {
-        get => rotationAngle;
-        set => rotationAngle = value;
-    }
+    private Detector detector;
+    public Vector3 PositionFromPivot { get; set; }
 
-    private static readonly Vector2 v = Vector3.Normalize(new Vector3(-1, 1, 0));
-    private static readonly Vector2 u = Vector3.Normalize(new Vector3(1, 1, 0));
+    private Vector3 lastMousePos;
+    private bool selected;
 
-    private bool solved = false;
-    private bool dragged = false;
-
-    public bool LastHovered { get; set; }
+    public GameObject molecularParent;
+    public List<Atom> molecularChildren;
+    public float distanceToMolecularParent;
+    public bool Snapped { get; set; }  
+    public bool solved;
+    private bool dragged;
+    
 
     private static readonly int _EmissionColor = Shader.PropertyToID("_EmissionColor");
 
+
     private void Start()
     {
-        
-        
-        curPos = transform.localPosition;
-        
+        detector = FindObjectOfType<Detector>();
         renderer = GetComponent<Renderer>();
         renderer.enabled = true;
         ChangeMaterial(0);
@@ -64,12 +49,11 @@ public class Atom : MonoBehaviour
         
         atomsManager = FindObjectOfType<AtomsManager>();
         solutionManager = FindObjectOfType<SolutionManager>();
+        moleculeManager = FindObjectOfType<MoleculeManager>();
+
         
-        controlPlane = FindObjectOfType<ControlPlane>();
-        originPlaneRotation = controlPlane.transform.localRotation;
-        controlPlaneRenderer = controlPlane.GetComponent<Renderer>();
-        controlPlaneRenderer.enabled = false;
-        controlPlanePosition = controlPlane.transform.position;
+        controlGizmo = FindObjectOfType<ControlGizmo>();
+        controlGizmo.DisableElements();
 
         dottedLineHoriz = GameObject.Find("DottedLineHoriz").GetComponent<DottedLine>();
         dottedLineHorizRenderer = dottedLineHoriz.GetComponent<Renderer>();
@@ -89,64 +73,22 @@ public class Atom : MonoBehaviour
     {
         if (atomsManager.GameStart)
             _collider.enabled = true;
-
-        if (!atomsManager.GetStop())
-        {
-            Quaternion rotation = Quaternion.Euler(0, rotationAngle, 0);
-            transform.localPosition = Matrix4x4.Rotate(rotation).MultiplyPoint3x4(curPos);
-        }
-        else
-            curPos = transform.localPosition;
-
-        var pos = transform.localPosition;
-        // CODICE PER USARE LA MOUSE WHEEL SULL'ULTIMO ATOMO HOVERED
-        /*
-        if (atomsManager.Plane.Equals("XYZ"))
-        {
-
-            var mouseScroll = Input.mouseScrollDelta.y;
-            if (mouseScroll != 0 && LastHovered)
-            {
-                atomsManager.AnAtomIsMoving = true;
-                pos.x -= mouseScroll * dragSpeed * 8;
-                if (!atomsManager.Plane.Equals("XZ"))
-                    dottedLineHoriz.SetAtom(this, true);
-                dottedLineHorizRenderer.enabled = true;
-            }
-            else
-            {
-                dottedLineHoriz.SetAtom(null, false);
-                atomsManager.AnAtomIsMoving = false;
-            }
-        }
-        */
-        //CLAMP DELLA POSIZIONE DEGLI ATOMI
-
-        pos = new Vector3(Mathf.Clamp(pos.x, -8, 8),
-                        Mathf.Clamp(pos.y, -8, 8),
-                        Mathf.Clamp(pos.z, -8, 8));
         
-        transform.localPosition = pos;
-
-
-
+        
         //INVIO DELLA POSIZIONE CORRENTE ALL'ATOMS MANAGER
+        PositionFromPivot = transform.position - new Vector3(22, 6.6f, 10); // IL LIVELLO DIVENTA IRRISOLVIBILE SE RUOTO 
+        //PositionFromPivot = transform.localPosition - Vector3.zero; 
+        //Debug.Log($"{PositionFromPivot}= {transform.localPosition} - {Vector3.zero}");
+        //Debug.Log(transform.localPosition);
         atomsManager.SetMyPosition(this);
         
     }
     
-    private bool isColliding()
-    {
-        int overlapSphereNonAlloc = Physics.OverlapSphereNonAlloc(transform.position, 0.5f, collidersBuffer, layerMask);
-        return overlapSphereNonAlloc > 1;
-    }
 
     private void OnMouseOver()
     {
         if (!dragged)
             ChangeMaterial(2);
-        LastHovered = true;
-        atomsManager.UnsetHoveredAtom(this);
     }
 
     private void OnMouseExit()
@@ -163,83 +105,113 @@ public class Atom : MonoBehaviour
         //blocca la posizione di tutti gli atomi eccetto quello che si sta trascinando
         atomsManager.FreezeAtoms();
         
-        controlPlane.SetAtom(this, true);
-        if (atomsManager.Plane.Equals("XZ"))
-        {   
-            //Debug.Log("prima: " + controlPlane.transform.rotation);
-            controlPlane.transform.Rotate(90, 0, 0, Space.Self);
-            //controlPlane.transform.localEulerAngles = new Vector3(-90, 0, 0);
-            //Debug.Log("piano ruotato: " + controlPlane.transform.rotation);
-        }
+        controlGizmo.EnableElements();
         
-        controlPlaneRenderer.enabled = true;
-        dottedLineVert.SetAtom(this, true);
-
-        dottedLineVertRenderer.enabled = true;
+        controlGizmo.SetAtom(this);
+        
+        
         ChangeMaterial(2);
         SetSelected(true);
-        atomsManager.AnAtomIsMoving = true;
-        lastMousePos = Input.mousePosition;
+    }
 
+    private bool ModifierActive()
+    {
+        bool result = Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift );
+        result = result && atomsManager.LevelType.Equals("XYZ");
+        return result;
     }
     
-    void OnMouseDrag()
+    private void OnMouseDrag()
     {
         if (solved) return;
-        //if (isColliding()) return;
+        
         ChangeMaterial(1);
         dragged = true;
-        Vector3 delta = Input.mousePosition - lastMousePos;
-        Vector3 pos = transform.position;
-        //pos.z += delta.x * Mathf.Abs(Vector3.Dot(Vector3.Normalize(delta), v)) * dragSpeed;
-
-        if (!atomsManager.Plane.Equals("XZ"))
+        Vector3 newPos;
+        
+        
+        bool fail;
+        if (ModifierActive())
         {
-            pos.z += delta.x * dragSpeed;       
-            pos.y += delta.y * dragSpeed;
-        }
-        else
-        {
-            pos.z -= Vector3.Magnitude(delta) * Vector3.Dot(Vector3.Normalize(delta), v) * dragSpeed;
-            pos.x -= Vector3.Magnitude(delta) * Vector3.Dot(Vector3.Normalize(delta), u) * dragSpeed;
 
-        }
-
-        if (atomsManager.Plane.Equals("XYZ"))
-        {
-            var mouseScroll = Input.mouseScrollDelta.y;
-            //Debug.Log(mouseScroll);
-            if (mouseScroll != 0)
+            if (moleculeManager.Activated)
             {
-                pos.x -= mouseScroll * dragSpeed * 8;
-                if (!atomsManager.Plane.Equals("XZ"))
-                    dottedLineHoriz.SetAtom(this, true);
-                dottedLineHorizRenderer.enabled = true;
+                newPos = controlGizmo.PositionUnderMouseLineAndSphere(out fail);
+                controlGizmo.HighlightSlice(true);
+                controlGizmo.HighlightCircle(false);
             }
             else
             {
-                dottedLineHoriz.SetAtom(null, false);
+                newPos = controlGizmo.PositionUnderMouseLine(out fail);
+                controlGizmo.HighlightLine(true);
+                controlGizmo.HighlightPlane(false);
             }
         }
-
-        transform.position = pos;
-        //atomsManager.SetMyPosition(this);
-        lastMousePos = Input.mousePosition;
+        else
+        {
+            if (moleculeManager.Activated)
+            {
+                newPos = controlGizmo.PositionUnderMousePlaneAndSphere(out fail);
+                controlGizmo.HighlightSlice(false);
+                controlGizmo.HighlightCircle(true);
+            }
+            else
+            {
+                newPos = controlGizmo.PositionUnderMousePlane(out fail);
+                controlGizmo.HighlightLine(false);
+                controlGizmo.HighlightPlane(true);
+            }
+        }
+        
+        if (fail) return;
+        
+        Vector3 offset = newPos - transform.position;
+        transform.position = newPos;
+        if (moleculeManager.Activated)
+        {
+            AddOffsetToChildren(offset);
+            controlGizmo.RefreshPositionDottedCircle();
+            controlGizmo.RefreshPositionSlice();
+        }
+            
+        EnforceInsideWorkspace();
+        controlGizmo.RefreshPositionLine();
+        controlGizmo.RefreshPositionPlane();
+        
+        detector.SetDirty();
     }
+
+    //fa muovere l'intero sotto-albero di un atomo
+    private void AddOffsetToChildren(Vector3 offset)
+    {
+        foreach (var child in molecularChildren)
+        {
+            child.transform.position = child.transform.position + offset;
+            child.AddOffsetToChildren(offset);
+        }
+    }
+
+    private void EnforceInsideWorkspace()
+    {
+        Vector3 pos = transform.localPosition;
+        pos = new Vector3(Mathf.Clamp(pos.x, -8, 8),
+                            Mathf.Clamp(pos.y, -8, 8),
+                            Mathf.Clamp(pos.z, -8, 8));
+        transform.localPosition = pos;
+    }
+
     
-    
+
     private void OnMouseUp()
     {
-        if (atomsManager.Plane.Equals("XZ"))
-            controlPlane.transform.localRotation = originPlaneRotation;
         SetSelected(false);
         dragged = false;
-        atomsManager.AnAtomIsMoving = false;
         dottedLineVert.SetAtom(null, false);
         dottedLineVertRenderer.enabled = false;
-        
-        controlPlaneRenderer.enabled = false;
-        controlPlane.SetAtom(null, false);
+        dottedLineHorizRenderer.enabled = false;
+
+        controlGizmo.DisableElements();
+
         //SBLOCCA LA POSIZIONE DI TUTTI GLI ATOMI PERCHè SI HA SMESSO DI TRASCINARE
         atomsManager.UnFreezeAtoms();
 
@@ -270,15 +242,12 @@ public class Atom : MonoBehaviour
         solved = flag;
     }
     
-    /*
-void OnMouseDrag()
-{
-    Vector3 mousePosition = new Vector3(Input.mousePosition.x, Input.mousePosition.y, 7f);
-    Vector3 objPosition = Camera.main.ScreenToWorldPoint(mousePosition);
-    objPosition.x = transform.position.x;
-    //objPosition.z = transform.position.z;
-    transform.position = objPosition;
-    atomsManager.SetMyPosition(this);
-}*/
 
+    public static Vector3 ClampMagnitude(Vector3 v, float max, float min)
+    {
+        double sm = v.sqrMagnitude;
+        if(sm > max * (double)max) return v.normalized * max;
+        if(sm < min * (double)min) return v.normalized * min;
+        return v;
+    }
 }

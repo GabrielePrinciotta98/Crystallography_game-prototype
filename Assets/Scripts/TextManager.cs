@@ -9,6 +9,7 @@ public class TextManager : MonoBehaviour
     private Text power;
     private Text rotation;
     private Text lambda;
+    private Text repetitions;
 
 
     public void SetZoomTextReference(Text text)
@@ -50,5 +51,17 @@ public class TextManager : MonoBehaviour
     {
         lambda.text = l.ToString("F2");
     }
+
+    public void SetRepetitionsTextReference(Text text)
+    {
+        repetitions = text;
+    }
+    
+    public void SetRepetitionsText(float r)
+    {
+        repetitions.text = r.ToString("F0");
+    }
+    
+    
 
 }

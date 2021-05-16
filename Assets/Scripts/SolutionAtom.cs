@@ -26,7 +26,8 @@ public class SolutionAtom : MonoBehaviour
 
     private void Update()
     {
-        PositionFromPivot = transform.position - new Vector3(22, 6.6f, -20);
+        PositionFromPivot = transform.position - new Vector3(22, 6.6f, -20); 
+        //PositionFromPivot = transform.localPosition - Vector3.zero;
         solutionManager.SetMyPosition(this);
     }
 

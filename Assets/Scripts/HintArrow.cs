@@ -1,9 +1,6 @@
-using System;
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
-using Random = UnityEngine.Random;
 
 public class HintArrow : MonoBehaviour
 {
@@ -16,7 +13,7 @@ public class HintArrow : MonoBehaviour
     private Vector3 target;
     private static readonly Vector3 pivotPos = new Vector3(22, 6.6f, 10);
     private AtomsManager atomsManager;
-    private LevelManager2 levelManager;
+    private LevelManager levelManager;
     private GameObject hintButton;
     private bool[] markedChosenAtoms;
     private bool[] markedTargets;
@@ -31,7 +28,7 @@ public class HintArrow : MonoBehaviour
         _rendererTail.enabled = false;
         _rendererHead = transform.GetChild(1).GetComponent<Renderer>();
         _rendererHead.enabled = false;
-        levelManager = FindObjectOfType<LevelManager2>();
+        levelManager = FindObjectOfType<LevelManager>();
         hintButton = GameObject.Find("HintButton");
 
     }
@@ -54,7 +51,7 @@ public class HintArrow : MonoBehaviour
             {
                 range = Random.Range(0, atomsManager.GetAtoms().Count);
             } 
-            while (markedChosenAtoms[range]);
+            while (markedChosenAtoms[range] || CheckSolvedParent(range));
                 
             Debug.Log("i-esimo atomo scelto: " + range);
             chosenAtom = atomsManager.GetAtoms()[range];
@@ -62,54 +59,43 @@ public class HintArrow : MonoBehaviour
             float minDistance = float.MaxValue;
             float minDistance1 = float.MaxValue;
             float minDistance2 = float.MaxValue; 
+            int j = -1;
             for (int i = 0; i < levelManager.SolAtomPos.Length; i++)
             {
                 if (markedTargets[i]) continue;
                 float d1 = Vector3.Distance(levelManager.SolAtomPos[i], chosenAtom.transform.localPosition);
                 float d2 = Vector3.Distance(-levelManager.SolAtomPos[i], chosenAtom.transform.localPosition);
-                float minDistanceTemp;
-                if (d1 < minDistance1)
+                if (d1 < minDistance)
                 {
-                    //target = pivotPos + levelManager.SolAtomPos[i];
                     minDistance1 = d1;
                 }
-
+                
                 if (d2 < minDistance2)
                 {
                     minDistance2 = d2;
                 }
-
-                minDistanceTemp = minDistance1 < minDistance2 ? minDistance1 : minDistance2;
+                
+                float minDistanceTemp = minDistance1 < minDistance2 ? minDistance1 : minDistance2;
 
                 if (!(minDistanceTemp < minDistance)) continue;
                 minDistance = minDistanceTemp;
                 target = pivotPos + levelManager.SolAtomPos[i];
-                markedTargets[i] = true;
+                j = i;
                 Debug.Log("target changed: " + i);
             }
-
+            markedTargets[j] = true;
             Debug.Log("target: " + target);
 
-            //this.transform.parent = chosenAtom.transform;
-            this.transform.position = (chosenAtom.transform.position + target) / 2;
-            this.transform.LookAt(target);
-            //transform.Translate(Vector3.up);
-
-            //transform.Rotate(90, 0, 0 );
+            transform.position = (chosenAtom.transform.position + target) / 2;
+            transform.LookAt(target);
             atomsChosed = true;
         }
 
         if (target == Vector3.zero) return;
-        this.transform.position = (chosenAtom.transform.position + target) / 2;
-        this.transform.LookAt(target);
+        transform.position = (chosenAtom.transform.position + target) / 2;
+        transform.LookAt(target);
         transform.Rotate(90, 0, 0);
-        /*
-                transform.localScale = new Vector3(transform.localScale.x,
-                    Mathf.Abs(target.y - chosenAtom.transform.position.y) * 2f,
-                    transform.localScale.z);
-                */
-
-
+        
         float distance = Vector3.Distance(target, chosenAtom.transform.position);
         transform.localScale = new Vector3(
             transform.localScale.x,
@@ -134,7 +120,6 @@ public class HintArrow : MonoBehaviour
         chosenAtom.GetComponent<Collider>().enabled = false;
         chosenAtom.GetComponent<Atom>().SetSolved(true);
         chosenAtom.GetComponent<Atom>().ChangeMaterial(3);
-        atomsManager.SetDraggingAtom(null);
         Debug.Log("done");
                     
         _rendererTail.enabled = false;
@@ -143,6 +128,12 @@ public class HintArrow : MonoBehaviour
         atomsChosed = false;
         hintButton.GetComponent<Button>().interactable = true;
         //target = Vector3.zero;
+    }
+
+    private bool CheckSolvedParent(int range)
+    {
+        return atomsManager.GetAtoms()[range].molecularParent.GetComponent<Atom>() != null 
+               && atomsManager.GetAtoms()[range].molecularParent.GetComponent<Atom>().solved;
     }
 
     private void OnDrawGizmos()
@@ -172,7 +163,7 @@ public class HintArrow : MonoBehaviour
             firstTime = false;
         }
 
-        //hintButton.GetComponent<Button>().interactable = false;
+        hintButton.GetComponent<Button>().interactable = false;
 
         Debug.Log("activate");
     }
@@ -186,7 +177,7 @@ public class HintArrow : MonoBehaviour
             posZ = atom.transform.position.z;
         while (t <= 1f)
         {
-            ease = EaseInCubic(t);
+            ease = EaseInQuartic(t);
             newPosX = Mathf.Lerp(posX, target.x, ease);
             newPosY = Mathf.Lerp(posY, target.y, ease);
             newPosZ = Mathf.Lerp(posZ, target.z, ease);
@@ -196,8 +187,8 @@ public class HintArrow : MonoBehaviour
         }
     }
     
-    private float EaseInCubic(float x)
+    private float EaseInQuartic(float x)
     {
-        return x * x * x;
+        return x * x * x * x;
     }
 }

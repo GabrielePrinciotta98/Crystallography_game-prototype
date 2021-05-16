@@ -108,7 +108,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fcbae156b8dfce847ae7fad1ded6f08c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  atom: {fileID: -4255410873414822321, guid: 4a1533c4e38bbd641a2e4ab2eba72b01, type: 3}
-  pivot: {fileID: 1628565725700111226, guid: 75f85351399622f4cafbe0e4f772e364, type: 3}
+  atom: {fileID: 4968323987487669519, guid: 4a1533c4e38bbd641a2e4ab2eba72b01, type: 3}
   pivotRep: {fileID: 1628565725700111226, guid: e7667a72b27d94d448192585a8009f70, type: 3}
   centralCell: {fileID: -8486727850640562079, guid: b44f0072792067040867ca4d975320dc, type: 3}

@@ -2,14 +2,28 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Numerics;
 using UnityEngine;
+using UnityEngine.UI;
+using Quaternion = UnityEngine.Quaternion;
+using Vector3 = UnityEngine.Vector3;
 
 public class MoleculeManager : MonoBehaviour
 {
+    [SerializeReference] private GameObject bond;
+    [SerializeReference] private GameObject shadow;
     public AtomsManager AtomsManager { get; set; }
     public SolutionManager SolutionManager { get; set; }
 
     private Vector3[] allSolutionAtomsPositions;
+    private Vector3[] allAtomsPositions;
+
+    private GameObject[] atoms;
+    private GameObject[] solutionAtoms;
+
+    private List<GameObject> bonds = new List<GameObject>();
+    private List<GameObject> bondShadows = new List<GameObject>(); 
+    
     private List<int[]> solutionBonds; 
     private List<float> distancesGraph = new List<float>();
     private Vertex[] solutionMST; // i vertici appartenenti all'MST come lista di vertici
@@ -20,61 +34,95 @@ public class MoleculeManager : MonoBehaviour
     private readonly Vector3 pivotPos = new Vector3(22, 6.6f, 10);
     private readonly Vector3 pivotPosSol = new Vector3(22, 6.6f, -20);
     private bool active;
-    private bool activeGizmo;
+    private bool firstActivation = true;
 
-    private Atom[] allAtoms;
+    public bool Activated { get; private set; }
+    //private bool activeGizmo;
+
+     
     // Start is called before the first frame update
     void Start()
     {
-        
+
+        allAtomsPositions = new Vector3[AtomsManager.GetN()];
+        allAtomsPositions[0] = Vector3.zero;
     }
 
-    // Update is called once per frame
-    void Update()
+    private void ParentingMolecule()
     {
-        Debug.Log("molecule active: " + active);
-        if (!active) return;
-        
-        CreateSolutionMST();
-        atomsMST = VertexListToAdjencyList(solutionMST);
-        atomsMST = VertexListToAdjencyList(Dfs(solutionMST[0])); //MST degli atomi gameplay come lista di adiacenza 
-        
-        
-        active = false;
+        for (int i = 0; i < atomsMST.Length; i++)
+        {
+            GameObject curFather = atoms[i];
+
+            for (int j = 0; j < atomsMST[i].Count; j++)
+            {
+                // aggiungi figli a ogni atomo eccetto il pivot
+                if (i > 0) curFather.GetComponent<Atom>().molecularChildren.Add(atoms[atomsMST[i][j].V].GetComponent<Atom>()); 
+                // aggiungi il padre a ogni atomo 
+                atoms[atomsMST[i][j].V].GetComponent<Atom>().molecularParent = atoms[atomsMST[i][j].Parent];
+                // aggiungi la distanza dal padre a ogni atomo
+                atoms[atomsMST[i][j].V].GetComponent<Atom>().distanceToMolecularParent =
+                    Vector3.Distance(atoms[atomsMST[i][j].V].transform.position,
+                        atoms[atomsMST[i][j].V].GetComponent<Atom>().molecularParent.transform.position);
+            }
+        }
     }
 
+    private void DisplayMoleculeBonds()
+    {
+        for (int i = 0; i < atomsMST.Length; i++)
+        {
+            GameObject start = atoms[i];
+            Vector3 bondStart = start.transform.position;
+            for (int j = 0; j < atomsMST[i].Count; j++)
+            {
+                GameObject end = atoms[atomsMST[i][j].V];
+                Vector3 bondEnd = end.transform.position;
+                //instanzia tubi dx
+                GameObject bondTemp = Instantiate(bond, (bondStart + bondEnd) / 2, Quaternion.identity);
+                bonds.Add(bondTemp);
+                bondTemp.GetComponent<Bond>().Start = start;
+                bondTemp.GetComponent<Bond>().End = end;
+                GameObject shadowTemp = Instantiate(shadow);
+                bondShadows.Add(shadowTemp);
+                //instanzia ombre dx
+                shadowTemp.GetComponent<BondShadow>().Start = start;
+                shadowTemp.GetComponent<BondShadow>().End = end;
+            }
+
+            start = solutionAtoms[i];
+            bondStart = start.transform.position;
+            for (int j = 0; j < atomsMST[i].Count; j++)
+            {
+                GameObject end = solutionAtoms[atomsMST[i][j].V];
+                Vector3 bondEnd = end.transform.position;
+                //instanzia tubi soluzione
+                GameObject bondTemp = Instantiate(bond, (bondStart + bondEnd) / 2, Quaternion.identity);
+                bonds.Add(bondTemp);
+                bondTemp.GetComponent<Bond>().Start = start;
+                bondTemp.GetComponent<Bond>().End = end;
+                //instanzia ombre soluzione
+                GameObject shadowTemp = Instantiate(shadow);
+                bondShadows.Add(shadowTemp);
+                shadowTemp.GetComponent<BondShadow>().Start = start;
+                shadowTemp.GetComponent<BondShadow>().End = end;
+            }
+        }
+    }
+    
+    
     private void CreateSolutionMST()
     {
         solutionBonds = CreateAtomsGraph(SolutionManager.GetAtomSpawnPositions());
         solutionMST = GetMST(BondListToWeightedMatrix(solutionBonds, distancesGraph));
         markedNodesSolMST = new bool[solutionMST.Length];
-        int totalWeight = 0;
         foreach (Vertex u in solutionMST)
         {
             if (u.Parent < 0) continue;
-            Debug.Log($"From father Vertex {u.Parent} to Vertex {u.V}, distance is: {u.Key}");
-            totalWeight += u.Key;
+            //Debug.Log($"From father Vertex {u.Parent} to Vertex {u.V}, distance is: {u.Key}");
         }
     }
-
-    private void OnDrawGizmos()
-    {
-        //Debug.Log("bonds length: " + bonds.Count);
-        //Debug.Log("distancesGraph length: " + distancesGraph.Count);
-        Debug.Log("active gizmo: " + activeGizmo);
-        if (!activeGizmo) return;
-        
-        Debug.Log("vertices length: " + solutionMST.Length);
-
-        foreach (var u in solutionMST)
-        {
-            if (u.Parent < 0) continue;
-            Gizmos.color = Color.blue;
-            Gizmos.DrawLine(allSolutionAtomsPositions[u.Parent] + pivotPosSol, 
-                allSolutionAtomsPositions[u.V] + pivotPosSol);
-        }
-    } 
-
+    
     private List<int[]> CreateAtomsGraph(Vector3[] atomsPositons)
     {
         List<int[]> ris = new List<int[]>();
@@ -84,7 +132,6 @@ public class MoleculeManager : MonoBehaviour
         {
             allSolutionAtomsPositions[i] = atomsPositons[i-1];
         }
-        //allSolutionAtomsPositions[atomsPositons.Length] = Vector3.zero; //l'ultimo posto dell'array è del pivot, dovrebbe essere il primo?
 
         for (int i = 0; i < allSolutionAtomsPositions.Length; i++)
         {
@@ -93,19 +140,12 @@ public class MoleculeManager : MonoBehaviour
                 if (i==j)
                     continue;
                 int[] possibleBond = {i, j};
-                //int[] possibleBondReverse = {j, i};
                 if (ris.Any(p => p.SequenceEqual(possibleBond))) continue;
                 ris.Add(possibleBond);
-                Debug.Log("added: " + possibleBond[0] + ", " + possibleBond[1]);
                 distancesGraph.Add(Vector3.Distance(allSolutionAtomsPositions[i], allSolutionAtomsPositions[j]));
             }
         }
 
-        foreach (var v in ris)
-        {
-            Debug.Log(v);
-        }
-        
         return ris;
     }
 
@@ -123,19 +163,7 @@ public class MoleculeManager : MonoBehaviour
 
             ris[k] = row;
         }
-
-        string print = "matrice: ";
-        for (int i = 0; i < allSolutionAtomsPositions.Length; i++)
-        {
-            for (int j = 0; j < allSolutionAtomsPositions.Length; j++)
-            {
-                print += ris[i][j];
-                print += " ";
-            }
-
-            print += "\n";
-        }
-        Debug.Log(print);
+        
         return ris;
     }
     
@@ -202,7 +230,7 @@ public class MoleculeManager : MonoBehaviour
             foreach (var child in father)
             {
                 
-                Debug.Log($"Father {child.Parent}, child {child.V}");
+                Debug.Log($"Father {child.Parent}, child {child.V}, distance {child.Key}");
 
             }
         }
@@ -211,32 +239,27 @@ public class MoleculeManager : MonoBehaviour
     }
     
 
-    private Vertex[] Dfs(Vertex s)
+    private void Dfs(Vertex s)
     {
         List<Vertex> ris = new List<Vertex>();
         Vertex radix = new Vertex {V = 0, Parent = -1, Key = 0};
         ris.Add(radix);
         DfsRecursive(ris, s);
-        return ris.ToArray();
+        //return ris.ToArray();
     }
 
     private void DfsRecursive(List<Vertex> ris, Vertex v)
     {
         markedNodesSolMST[v.V] = true; //marca il nodo v
-        Debug.Log("nodo visitato corrente: " + v.V); //stampa il nodo che sto visitando
-        Debug.Log("nodo padre corrente: " + v.Parent);
+        
+        // VISITA
+        //Debug.Log("nodo visitato corrente: " + v.V); //stampa il nodo che sto visitando
+        //Debug.Log("nodo padre corrente: " + v.Parent);
         
         if (v.Parent != -1) //skippa il pivot
-        {
-            Vector3 f = AtomsManager.GetAtoms()[v.V].transform.localPosition;
-            Vector3 p = AtomsManager.GetAtoms()[v.Parent].transform.localPosition;
-            Vector3 d = Vector3.Normalize(f - p);
-            Vector3 newF = p + d * v.Key;
-            AtomsManager.GetAtoms()[v.V].transform.localPosition = newF;
-        }
-        
-        //Debug.Log("ciao");
-        
+            EnforceMolecularBonds(v);
+
+        // VAI AVANTI CON LA VISITA
         foreach (var w in atomsMST[v.V])
         {
             if (!markedNodesSolMST[w.V])
@@ -246,10 +269,94 @@ public class MoleculeManager : MonoBehaviour
             }
         }
     }
-    
-    public void ActiveMolecule()
+
+    private void EnforceMolecularBonds(Vertex v)
     {
-        active = true;
-        activeGizmo = true;
+        
+        Vector3 f = AtomsManager.GetAtoms()[v.V - 1].transform.localPosition;
+        Vector3 p;
+        if (v.Parent == 0)
+            p = Vector3.zero; // il parent è il pivot
+        else
+            p = AtomsManager.GetAtoms()[v.Parent - 1].transform.localPosition;
+
+        Vector3 d = Vector3.Normalize(f - p);
+        Debug.Log(v.Key);
+        Vector3 newF = p + d * ((float) v.Key / 10);
+        AtomsManager.GetAtoms()[v.V - 1].transform.localPosition = newF;
+        allAtomsPositions[v.V] = newF;
+        Debug.Log("enforce");
+    }
+
+    public void ActivateMolecule(Button molecule, Button moleculeDisabled)
+    {
+        //active = true;
+        MoleculeActivation();
+        FindObjectOfType<Detector>().SetDirty();
+        //activeGizmo = true;
+        Activated = true;
+        GameObject.Find("ControlGizmo").GetComponent<ControlGizmo>().isSphere = true;
+        molecule.gameObject.SetActive(false);
+        moleculeDisabled.gameObject.SetActive(true);
+
+    }
+
+    public void DeactivateMolecule(Button molecule, Button moleculeDisabled)
+    {
+        molecule.gameObject.SetActive(true);
+        moleculeDisabled.gameObject.SetActive(false);
+        Activated = false;
+        GameObject.Find("ControlGizmo").GetComponent<ControlGizmo>().isSphere = false;
+        //TODO disabilita legami
+        MoleculeDeactivation();
+    }
+
+    private void MoleculeActivation()
+    {
+        if (firstActivation)
+        {
+            atoms = new GameObject[AtomsManager.GetN()];
+            atoms[0] = AtomsManager.GetPivot();
+
+            for (int i = 0; i < AtomsManager.GetAtoms().Count; i++)
+            {
+                atoms[i + 1] = AtomsManager.GetAtoms()[i].gameObject;
+            }
+
+            solutionAtoms = new GameObject[AtomsManager.GetN()];
+            solutionAtoms[0] = SolutionManager.GetPivot();
+
+            for (int i = 0; i < SolutionManager.GetAtoms().Count; i++)
+            {
+                solutionAtoms[i + 1] = SolutionManager.GetAtoms()[i].gameObject;
+            }
+
+            CreateSolutionMST();
+            atomsMST = VertexListToAdjencyList(solutionMST);
+            Dfs(solutionMST[0]);
+            
+            DisplayMoleculeBonds();
+            // IMPOSTA PARENTELE MOLECOLE
+            ParentingMolecule();
+            firstActivation = false;
+        }
+        else
+        {
+            Debug.Log("second");
+            Dfs(solutionMST[0]);
+            DisplayMoleculeBonds();
+        }
+    }
+
+    private void MoleculeDeactivation()
+    {
+        foreach (var bond in bonds)
+            Destroy(bond);
+        
+        foreach (var shadow in bondShadows)
+            Destroy(shadow);
+        
+        for (int i = 0; i < markedNodesSolMST.Length; i++)
+            markedNodesSolMST[i] = false;
     }
 }

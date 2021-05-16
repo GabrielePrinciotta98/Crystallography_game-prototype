@@ -24,9 +24,11 @@ public class HUDManager : MonoBehaviour
     [SerializeReference] private Button power; 
     [SerializeReference] private Button rotation;
     [SerializeReference] private Button molecule;
+    [SerializeReference] private Button moleculeDisabled;
     [SerializeReference] private Button swap;
+    [SerializeReference] private Button repetitions;
     [SerializeReference] private TextManager textManager;
-
+    
     private bool mapDisplayed;
     private GameObject minimapButton;
     private GameObject zoomLocked;
@@ -35,18 +37,9 @@ public class HUDManager : MonoBehaviour
     private GameObject rotationLocked;
 
     private static List<Button> buttonsWithSlider;
-    //[SerializeReference] private Button rotateButton; 
-    //[SerializeReference] private Button stopRotationButton;
 
     private void Awake()
     {
-        /*
-        minimapButton = GameObject.Find("MimimapButton");
-        zoomLocked = GameObject.Find("ZoomButtonLocked");
-        lambdaLocked = GameObject.Find("LambdaButtonLocked");
-        powerLocked = GameObject.Find("PowerButtonLocked");
-        rotationLocked = GameObject.Find("RotationButtonLocked");
-        */
         hint = GameObject.Find("HintButton").GetComponent<Button>();
         canvas = GameObject.Find("Canvas");
 
@@ -68,12 +61,11 @@ public class HUDManager : MonoBehaviour
         textManager = Instantiate(textManager);
         hint.onClick.AddListener(delegate { hintArrow.Activate(); });
         //INSTANZIO I BOTTONI E I RELATIVI LISTENER
-        //minimapButton.GetComponent<Button>().onClick.AddListener(DisplayMap);
+        
         
         
         if (PowerUpsManger.ZoomUnlocked)
         {
-            //zoomLocked.SetActive(false);
             zoom = Instantiate(zoom, canvas.transform);
             buttonsWithSlider.Add(zoom);
             
@@ -91,14 +83,9 @@ public class HUDManager : MonoBehaviour
             textManager.SetZoomTextReference(zoom.transform.GetChild(1).gameObject.GetComponent<Text>());
 
         }
-        else
-        {
-            //zoomLocked.GetComponent<Button>().onClick.AddListener(LevelLoader.LoadShop);
-        }
-        
+
         if (PowerUpsManger.LambdaUnlocked)
         {
-            //lambdaLocked.SetActive(false);
             lambda = Instantiate(lambda, canvas.transform);
             buttonsWithSlider.Add(lambda);
             
@@ -116,14 +103,9 @@ public class HUDManager : MonoBehaviour
             textManager.SetLambdaTextReference(lambda.transform.GetChild(1).gameObject.GetComponent<Text>());
 
         }
-        else
-        {
-            //lambdaLocked.GetComponent<Button>().onClick.AddListener(LevelLoader.LoadShop);
-        }
-        
+       
         if (PowerUpsManger.PowerUnlocked)
         {
-            //powerLocked.SetActive(false);
             power = Instantiate(power, canvas.transform);
             buttonsWithSlider.Add(power);
             
@@ -141,11 +123,7 @@ public class HUDManager : MonoBehaviour
             textManager.SetPowerTextReference(power.transform.GetChild(1).gameObject.GetComponent<Text>());
 
         }
-        else
-        {
-            //powerLocked.GetComponent<Button>().onClick.AddListener(LevelLoader.LoadShop);
-        }
-        
+
         if (PowerUpsManger.RotationUnlocked)
         {
             //rotationLocked.SetActive(false);
@@ -166,27 +144,75 @@ public class HUDManager : MonoBehaviour
             textManager.SetRotationTextReference(rotation.transform.GetChild(1).gameObject.GetComponent<Text>());
 
         }
-        else
-        {
-            //rotationLocked.GetComponent<Button>().onClick.AddListener(LevelLoader.LoadShop);
-        }
-        Debug.Log("swap unlocked: " + PowerUpsManger.SwapUnlocked);
+        
         if (PowerUpsManger.SwapUnlocked)
         {
             swap = Instantiate(swap, canvas.transform);
             swap.onClick.RemoveAllListeners();
-            
-            //swap.onClick.AddListener(delegate { detector.Compare(); });
         }
 
         if (PowerUpsManger.MoleculeUnlocked)
         {
             molecule = Instantiate(molecule, canvas.transform);
+            moleculeDisabled = Instantiate(moleculeDisabled, canvas.transform);
+            
             molecule.onClick.RemoveAllListeners();
-            molecule.onClick.AddListener(delegate { moleculeManager.ActiveMolecule(); });
+            molecule.onClick.AddListener(delegate { moleculeManager.ActivateMolecule(molecule, moleculeDisabled); });
+            
+            moleculeDisabled.onClick.RemoveAllListeners();
+            moleculeDisabled.onClick.AddListener(delegate { moleculeManager.DeactivateMolecule(molecule, moleculeDisabled); });
+            moleculeDisabled.gameObject.SetActive(false);
+        }
+
+        if (atomsManager.isCrystal)
+        {
+            repetitions = Instantiate(repetitions, canvas.transform);
+            buttonsWithSlider.Add(repetitions);
+            
+            repetitions.onClick.RemoveAllListeners();
+            repetitions.onClick.AddListener(delegate { DisplaySlider(repetitions); });
+            
+            Slider repetitionsSlider = repetitions.transform.GetChild(0).gameObject.GetComponent<Slider>();
+            repetitionsSlider.onValueChanged.RemoveAllListeners();
+
+            
+            repetitionsSlider.onValueChanged.AddListener(delegate { atomsManager.SetR(Repetitions(repetitionsSlider.value)); });
+            repetitionsSlider.onValueChanged.AddListener(delegate { atomsManager.SetM(Repetitions(repetitionsSlider.value)*
+                                                                                        Repetitions(repetitionsSlider.value)*
+                                                                                        Repetitions(repetitionsSlider.value)); });
+
+            repetitionsSlider.onValueChanged.AddListener(delegate { solutionManager.SetR(Repetitions(repetitionsSlider.value)); });
+            repetitionsSlider.onValueChanged.AddListener(delegate { solutionManager.SetM(Repetitions(repetitionsSlider.value)*
+                                                                                            Repetitions(repetitionsSlider.value)*
+                                                                                            Repetitions(repetitionsSlider.value)); });
+            
+            repetitionsSlider.onValueChanged.AddListener(delegate { atomsManager.UpdateCells(); });
+            repetitionsSlider.onValueChanged.AddListener(delegate { solutionManager.UpdateCells(); });
+
+            repetitionsSlider.onValueChanged.AddListener(delegate { textManager.SetRepetitionsText(Repetitions(repetitionsSlider.value)); });
+            
+            textManager.SetRepetitionsTextReference(repetitions.transform.GetChild(1).gameObject.GetComponent<Text>());
+
         }
     }
-        
+
+    private float Repetitions(float value)
+    {
+        switch (value)
+        {
+            case 0:
+                return 1;
+            case 1:
+                return 3;
+            case 2:
+                return 5;
+            case 3:
+                return 7;
+        }
+
+        return 0;
+    }
+
     public void DisplaySlider(Button powerUp)
     {
         powerUp.transform.GetChild(0).gameObject.SetActive(true);

@@ -5,7 +5,7 @@ using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 using Random = UnityEngine.Random;
 
-public class LevelManager2 : MonoBehaviour
+public class LevelManager : MonoBehaviour
 {
     [SerializeReference] private HUDManager hudManager;
     [SerializeReference] private AtomsManager atomsManager;
@@ -53,7 +53,9 @@ public class LevelManager2 : MonoBehaviour
         Debug.Log("Lv counter: " + LevelLoader.LevelCounter);
         Level lv = LevelData.Levels[LevelLoader.LevelCounter-1];
 
-        lv.SolPositions = RandomPositions(lv.Plane, lv.N - 1);
+        //Debug.Log(lv.SolPositions);
+        if (!lv.IsCrystal)
+            lv.SolPositions = RandomPositions(lv.Plane, lv.N - 1);
         
         atomsManager = InstantiateAtomsManager(lv.R,lv.M,lv.N, lv.IsCrystal, lv.Plane, lv.SolPositions);
         solutionManager = InstantiateSolutionManager(lv.R,lv.M,lv.N, lv.IsCrystal, lv.Plane, lv.SolPositions); 
@@ -64,7 +66,6 @@ public class LevelManager2 : MonoBehaviour
         FindObjectOfType<Detector>().SetAtomsManager(atomsManager);
         FindObjectOfType<SolutionDetector>().SetSolutionManager(solutionManager);
         FindObjectOfType<ControlGizmo>().SetPlane(lv.Plane);
-        //GameObject.Find("SolutionDetectorSwap").GetComponent<SolutionDetector>().SetSolutionManager(solutionManager);
         solAtomPos = lv.SolPositions;
         markedSolAtomPos = new bool[solAtomPos.Length];
         for (int i = 0; i < markedSolAtomPos.Length; i++)
@@ -127,7 +128,7 @@ public class LevelManager2 : MonoBehaviour
     void Update()
     {
         
-        if (updateTime && !over)
+        if (updateTime && !over && time > 0)
         {
             time -= Time.deltaTime;
             Timer.Time = time;
@@ -136,8 +137,9 @@ public class LevelManager2 : MonoBehaviour
         {
             solAtomPos = solutionManager.Positions3.ToArray();
         }
-        if (frames == 20 && !over && !Input.GetMouseButton(0))
+        if (!over && Input.GetMouseButtonUp(0))
         {
+            //Debug.Log("test");
             TestVictory();
             frames = 0;
         }
@@ -185,8 +187,6 @@ public class LevelManager2 : MonoBehaviour
 
             for (int j = 0; j < solAtomPos.Length; j++)
             {
-                //float d1 = Vector3.Distance(atomsManager.GetAtoms()[i].transform.localPosition, solAtomPos[j]);
-                //float d2 = Vector3.Distance(atomsManager.GetAtoms()[i].transform.localPosition, -solAtomPos[j]);
                 float d1 = Vector3.Distance(atomsManager.GetPositions()[i], solAtomPos[j]);
                 float d2 = Vector3.Distance(atomsManager.GetPositions()[i], -solAtomPos[j]);
                 if (d1 < shortest1)
@@ -209,12 +209,11 @@ public class LevelManager2 : MonoBehaviour
     IEnumerator StartLevel()
     {
 
-        //yield return new WaitForSeconds(0.8f);
-        //levelIndicatorBackGroundUI.SetActive(true);
+        yield return new WaitForSeconds(0.8f);
+        levelIndicatorBackGroundUI.SetActive(true);
         
-        //yield return StartCoroutine(ExitLevelIndicator(levelIndicatorText));
+        yield return StartCoroutine(ExitLevelIndicator(levelIndicatorText));
         
-        //yield return new WaitForSeconds(1);
         levelIndicatorBackGroundUI.SetActive(false);
         atomsManager.GameStart = true;
         emitterCone.GameStart = true;

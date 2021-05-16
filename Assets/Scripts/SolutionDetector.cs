@@ -11,7 +11,7 @@ public class SolutionDetector : MonoBehaviour
     private float zoom = 4f;
     private float pwr = -3f;
     private bool pwrSetted;
-
+    private bool isDirty = true;
     private Vector3 a, c;
     private float lambda = 0.5f;
     private EmitterConeSol emitter;
@@ -52,11 +52,16 @@ public class SolutionDetector : MonoBehaviour
         if (pwr < 0 && !pwrSetted)
         {
             pwr += 0.02f;
-            Diffraction();
-            crt.Update();
+            UpdatePattern();
         }
         
-        if (!solutionManager.AnAtomIsMoving) return;
+        if (isDirty) UpdatePattern();
+
+        isDirty = false;
+    }
+
+    public void UpdatePattern()
+    {
         Diffraction();
         crt.Update();
     }
@@ -94,27 +99,30 @@ public class SolutionDetector : MonoBehaviour
     public void SetZoom(float z)
     {
         zoom = z;
-        Diffraction();
-        crt.Update();
+        UpdatePattern();
     }
 
     public void SetPwr(float p)
     {
         pwr = p;
         pwrSetted = true;
-        Diffraction();
-        crt.Update();
+        UpdatePattern();
     }
     
     public void SetLambda(float l)
     {
         lambda = l;
-        Diffraction();
-        crt.Update();
+        UpdatePattern();
     }
 
     public void SetSolutionManager(SolutionManager sm)
     {
         solutionManager = sm;
     }
+
+    public void SetDirty()
+    {
+        isDirty = true;
+    }
+    
 }
