@@ -10,6 +10,7 @@ public class Detector : MonoBehaviour
     private bool isDirty = true;
     private Renderer _renderer;
     private AtomsManager atomsManager;
+    private SolutionManager solutionManager;
     private LevelManager _levelManager;
     private EmitterCone emitter;
     private Vector4[] positions;
@@ -27,17 +28,18 @@ public class Detector : MonoBehaviour
     private static readonly int Zoom = Shader.PropertyToID("zoom");
     private static readonly int K = Shader.PropertyToID("K");
     private static readonly int Pwr = Shader.PropertyToID("pwr");
-    private static readonly int Centers = Shader.PropertyToID("centers");
     private static readonly int A = Shader.PropertyToID("a");
     private static readonly int C = Shader.PropertyToID("c");
     private static readonly int R = Shader.PropertyToID("R");
     private static readonly int M = Shader.PropertyToID("M");
     private static readonly int Lambda = Shader.PropertyToID("lambda");
     private static readonly int MainTex = Shader.PropertyToID("_MainTex");
+    public bool TransitionHappened { get; set; }
 
     private void Awake()
     {
-        atomsManager = FindObjectOfType<AtomsManager>();
+        //atomsManager = FindObjectOfType<AtomsManager>();
+        //solutionManager = FindObjectOfType<SolutionManager>();
         _levelManager = FindObjectOfType<LevelManager>();
         emitter = FindObjectOfType<EmitterCone>();
         arrows = GameObject.Find("Arrows");
@@ -51,6 +53,7 @@ public class Detector : MonoBehaviour
         _renderer.enabled = false;
         crt = (CustomRenderTexture) _renderer.material.GetTexture(MainTex);
         crt.Initialize();
+        
     }
 
     private void Update()
@@ -75,36 +78,50 @@ public class Detector : MonoBehaviour
         crt.Update();
     }
     
-    private void Ripple()
-    {
-        positions = atomsManager.GetPositions();
-
-        for (int i = 0; i < atomsManager.GetAtoms().Count; i++)
-        {
-            centers[i] = new Vector4(positions[i].x, positions[i].y / 14f, positions[i].z / 22f, 0f);
-        }
-        Shader.SetGlobalVectorArray(Centers, centers);
-        Shader.SetGlobalInt(NAtoms, atomsManager.GetAtoms().Count);
-    }
-
-
+    
     private void Diffraction()
     {
         positions = atomsManager.GetPositions();
-        a = atomsManager.GetCellRight() * atomsManager.GetK();
-        c = atomsManager.GetCellForward() * atomsManager.GetK();
+        //uso i metodi del solutionManager per avere i vettori a,c corretti della soluzione
+        a = solutionManager.GetCellRight() * atomsManager.GetK();
+        c = solutionManager.GetCellForward() * atomsManager.GetK();
+
+        
+        
+        Debug.Log("A: " + a);
+        Debug.Log("C: " + c);
         
         Shader.SetGlobalVectorArray(AtomsPos, positions);
         Shader.SetGlobalInt(NAtoms, atomsManager.GetAtoms().Count);
         Shader.SetGlobalFloat(Zoom, zoom);
         Shader.SetGlobalInt(K, atomsManager.GetK());
-        Shader.SetGlobalFloat(Pwr, Mathf.Pow(2, pwr));
+        if (atomsManager.isCrystal) 
+        {
+            Shader.SetGlobalFloat(Pwr, Mathf.Pow(2, pwr + 2));
+            Shader.SetGlobalInt(R, TransitionR()); // 1 sara poi una variabile che varra 1 PRIMA della transizione, e atomsManager.GetR() DOPO
+            Shader.SetGlobalInt(M, TransitionM()); // 1 sara poi una variabile che varra 1 PRIMA della transizione, e atomsManager.GetM() DOPO
+        }
+        else
+        {
+            Shader.SetGlobalFloat(Pwr, Mathf.Pow(2, pwr));        
+            Shader.SetGlobalInt(R, atomsManager.GetR());
+            Shader.SetGlobalInt(M, atomsManager.GetM());
+        }
+
         Shader.SetGlobalVector(A, a);
         Shader.SetGlobalVector(C, c);
         //Debug.Log("R: " + atomsManager.GetR());
-        Shader.SetGlobalInt(R, atomsManager.GetR());
-        Shader.SetGlobalInt(M, atomsManager.GetM());
         Shader.SetGlobalFloat(Lambda, lambda);
+    }
+
+    private int TransitionR()
+    {
+        return TransitionHappened ? atomsManager.GetR() : 1;
+    }
+
+    private int TransitionM()
+    {
+        return TransitionHappened ? atomsManager.GetM() : 1;
     }
 
     public void SetZoom(float z)
@@ -152,7 +169,6 @@ public class Detector : MonoBehaviour
     public void Swap()
     {
         _renderer.sharedMaterial = materials[1];
-        Debug.Log("Swap: " + _renderer.sharedMaterial);
         arrows.SetActive(true);
         emitter.gameObject.SetActive(false);
         swapped = true;
@@ -161,7 +177,6 @@ public class Detector : MonoBehaviour
     public void UnSwap()
     {
         _renderer.sharedMaterial = materials[0];
-        Debug.Log(_renderer.sharedMaterial);
         arrows.SetActive(false);
         emitter.gameObject.SetActive(true);
         swapped = false;
@@ -171,5 +186,10 @@ public class Detector : MonoBehaviour
     public void SetDirty()
     {
         isDirty = true;
+    }
+    
+    public void SetSolutionManager(SolutionManager sm)
+    {
+        solutionManager = sm;
     }
 }

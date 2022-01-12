@@ -43,12 +43,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 81e1009d50c274e4fbac6fbdc314cd08, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  zoom: {fileID: 9122564486138684743, guid: d70e108ee021b1c4298752ac5ed651ff, type: 3}
-  lambda: {fileID: 5779861530515566403, guid: 4426913d509d92e40baab365c24bc36e, type: 3}
-  power: {fileID: 1981010693554859553, guid: 5946e4efd85ab3147a00ffc33befc9fa, type: 3}
-  rotation: {fileID: 442465426168867116, guid: ee60a1776eec1584c9996720a023fc9a, type: 3}
+  zoom: {fileID: 3732747683930336226, guid: d45b48326e212074295370ed5a45277e, type: 3}
+  lambda: {fileID: 2773067814052144028, guid: b1dcf50badf915b43b3624d17d854a75, type: 3}
+  power: {fileID: 2455696309423555606, guid: 4086dbb277c759a47ac7dde2b07c76b3, type: 3}
+  rotation: {fileID: 5516561036510961948, guid: 3c1b644289095544ea8861f59d97f9f6, type: 3}
   molecule: {fileID: 3614252748492943199, guid: f20002db51c959c40a6227de187e3440, type: 3}
   moleculeDisabled: {fileID: 3614252748492943199, guid: ac3fccc787aa52f45be459d0b582d37c, type: 3}
+  moleculeForbidden: {fileID: 3614252748492943199, guid: 861a76ef01793954fb6872bef0c3d5b4, type: 3}
   swap: {fileID: 3184064519747410915, guid: a41479023419fbd4cba90175a13630f9, type: 3}
-  repetitions: {fileID: 5779861530515566403, guid: 77051e90f45223c49864c77f8744ae04, type: 3}
+  crystal: {fileID: 7795036844934560492, guid: 7ff41de1643a6544d99d3b3853d3a032, type: 3}
   textManager: {fileID: 6273631944732598851, guid: bde7273f3efb4064db2d49c8e5cb5f0c, type: 3}

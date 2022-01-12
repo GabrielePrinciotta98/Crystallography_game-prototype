@@ -15,6 +15,7 @@ public class SolutionAtom : MonoBehaviour
     {
         solutionManager = GameObject.FindObjectOfType<SolutionManager>();
         solutionManager.AddAtom(this);
+        solutionManager.AddAtomPositionToAll(gameObject);
        // Debug.Log("Soluzione: " + transform.position);
 
     }

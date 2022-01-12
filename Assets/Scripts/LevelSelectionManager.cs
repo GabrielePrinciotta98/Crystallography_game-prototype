@@ -7,8 +7,8 @@ public class LevelSelectionManager : MonoBehaviour
 {
     private int levelButtonsCounter;
     //private int levelButtonsNumber = 20;
-    
 
+    private AudioManager audioManager;
     private GameObject canvas;
     [SerializeReference] private GameObject levelButton;
     private Vector3 originPos = new Vector3(-500, -600, 0);
@@ -24,10 +24,13 @@ public class LevelSelectionManager : MonoBehaviour
 
     void Start()
     {
+        audioManager = FindObjectOfType<AudioManager>();
         backButton = GameObject.Find("BackButton");
         backButton.GetComponent<Button>().onClick.AddListener(LevelLoader.LoadMenu);
+        backButton.GetComponent<Button>().onClick.AddListener(delegate { audioManager.Play("MenuButtonSelection"); });
         shopButton = GameObject.Find("ShopButton");
         shopButton.GetComponent<Button>().onClick.AddListener(LevelLoader.LoadShop);
+        shopButton.GetComponent<Button>().onClick.AddListener(delegate { audioManager.Play("MenuButtonSelection"); });
         score = GameObject.Find("Score");
         score.GetComponent<ScoreDisplay>().DisplayScore();
         canvas = GameObject.Find("Canvas");
@@ -45,10 +48,7 @@ public class LevelSelectionManager : MonoBehaviour
         }
 
     }
-
-    // Start is called before the first frame update
-
-    // Update is called once per frame
+    
     public void UpdateInteractable()
     {
         int c = 0;

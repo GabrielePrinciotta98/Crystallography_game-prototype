@@ -4,10 +4,8 @@ using UnityEngine;
 
 public class CellSolution : MonoBehaviour
 {
-    //private List<Vector3> atomsSpawnPositions = new List<Vector3>();
     private SolutionManager solutionManager;
 
-    //public SolutionAtom atom;
     public GameObject atom;
     public GameObject pivotRep;
     public GameObject pivot;
@@ -20,14 +18,14 @@ public class CellSolution : MonoBehaviour
 
     void Awake()
     {
-        solutionManager = GameObject.FindObjectOfType<SolutionManager>();
-        centralCell = GameObject.FindObjectOfType<CentralCellSolution>();
+        solutionManager = FindObjectOfType<SolutionManager>();
+        centralCell = FindObjectOfType<CentralCellSolution>();
         
     }
     
     private void Start()
     {
-        pivotPos = this.transform.position;
+        pivotPos = transform.position;
         pivot = centralCell.GetPivot();
         centralCellAtoms = centralCell.GetAtoms();
         var pivotTemp = Instantiate(pivotRep, pivotPos, Quaternion.identity, centralCell.transform);
@@ -36,11 +34,10 @@ public class CellSolution : MonoBehaviour
         InstantiateAtoms();
     }
 
-    public void InstantiateAtoms()
+    private void InstantiateAtoms()
     {
         atomSpawnPositions = solutionManager.GetAtomSpawnPositions();
 
-        //Debug.Log(pivot.transform);
         for (int i = 0; i < solutionManager.GetN()-1; i++)
         {
             if (atomSpawnPositions[i] != Vector3.zero)

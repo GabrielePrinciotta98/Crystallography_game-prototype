@@ -17,13 +17,13 @@ public class SolutionManager : MonoBehaviour
     [SerializeField] int M = 1;
     [SerializeField] int K = 5;
     [SerializeField] int R = 4;
-    private List<Vector3> cellsSpawnPositions;
+    private List<Vector3> cellsSpawnPositions = new List<Vector3>();
     private Vector3 centralCellSpawnPos;
     private Vector3[] atomSpawnPositions = new Vector3[8];
     private bool stop = true;
     List<SolutionAtom> atoms = new List<SolutionAtom>();
     private List<GameObject> cells = new List<GameObject>();
-    Vector4[] positions = new Vector4[20];
+    Vector4[] positions = new Vector4[60];
     private List<Vector3> positions3 = new List<Vector3>();
     
     //private List<float> distancesMST = new List<float>();
@@ -31,12 +31,8 @@ public class SolutionManager : MonoBehaviour
     public List<Vector3> Positions3 => positions3;
     private GameObject workspace;
 
-    private Vector3[] allAtomsPositions;
-    private List<int[]> bonds; 
-    private List<float> distancesGraph = new List<float>();
-    private Vertex[] vertices; // i vertici appartenenti all'MST
+    public List<GameObject> AllAtoms { get; } = new List<GameObject>(); //tutti gli atomi (anche cristallo) meno IL pivot
 
-    public bool AnAtomIsMoving { get; set; }
 
     public string Plane { get; set; }
 
@@ -44,24 +40,7 @@ public class SolutionManager : MonoBehaviour
     private void Awake()
     {
         centralCellSpawnPos = pivot.transform.position;
-        /*
-        if (K > 5)
-        {
-            for (int x = -K; x < 2*K; x+=K)
-            for (int y = -K; y < 2*K; y+=K)
-            for (int z = -K; z < 2*K; z+=K)    
-                if (x != 0 || y != 0 || z != 0)
-                    cellsSpawnPositions.Add(new Vector3(x, y, z));
-        }
-        else
-        {
-            for (float x = -5f; x < 10f; x+=5f)
-            for (float y = -5f; y < 10f; y+=5f)
-            for (float z = -5f; z < 10f; z+=5f)    
-                if (x != 0 || y != 0 || z != 0)
-                    cellsSpawnPositions.Add(new Vector3(x, y, z));
-        }
-        */
+        
         
     }
     
@@ -70,16 +49,7 @@ public class SolutionManager : MonoBehaviour
     {
         workspace = GameObject.Find("WorkspaceSol");
         moleculeSpace = GameObject.Find("MoleculeSpaceSolution");
-        /*
-        for (int i = 0; i < rows; i++)
-        {
-            for (int j = 0; j < columns; j++)
-            {
-                for (int k=0; k<depth; k++)
-                    Instantiate(atom, new Vector3(22f+ k, 2f + i, -26f + j), Quaternion.identity, pivot.transform);
-            }
-        }
-        */
+        
         
         if (K > 5)
         {
@@ -98,8 +68,8 @@ public class SolutionManager : MonoBehaviour
         
         if (isCrystal)
         {
-            workspace = Instantiate(platforms[1]);
-            centralCell = Instantiate(centralCell, centralCellSpawnPos, Quaternion.identity);
+            workspace = Instantiate(platforms[1], moleculeSpace.transform);
+            centralCell = Instantiate(centralCell, centralCellSpawnPos, Quaternion.identity, moleculeSpace.transform);
             if (K >= 5)
                 centralCell.transform.localScale *= K; // scalo la dimensione del modulo centrale
             else
@@ -107,6 +77,7 @@ public class SolutionManager : MonoBehaviour
 
             // SPAWN CELLE RIPETUTE
             SpawnRepeatedCells();
+            
         }
         else
         {
@@ -126,7 +97,6 @@ public class SolutionManager : MonoBehaviour
 
     private void CalculateCellsPositions()
     {
-        cellsSpawnPositions = new List<Vector3>();
         
         if (R == 3)
         {
@@ -285,7 +255,7 @@ public class SolutionManager : MonoBehaviour
     {
         return pivot;
     }
-    
+    /*
     public void UpdateCells()
     {
         foreach (var cell in cells)
@@ -297,5 +267,13 @@ public class SolutionManager : MonoBehaviour
         cells = new List<GameObject>();
         CalculateCellsPositions();
         SpawnRepeatedCells();
+    }
+    */
+
+    public void AddAtomPositionToAll(GameObject atom)
+    {
+        //Debug.Log(atom.transform.position);
+        AllAtoms.Add(atom);
+        //Debug.Log("allAtoms.count: " + AllAtoms.Count);
     }
 }

@@ -7,7 +7,6 @@ public class SolutionDetector : MonoBehaviour
     private Renderer _renderer;
     private SolutionManager solutionManager;
     private Vector4[] positions;
-    private Vector4[] centers = new Vector4[100];
     private float zoom = 4f;
     private float pwr = -3f;
     private bool pwrSetted;
@@ -40,7 +39,7 @@ public class SolutionDetector : MonoBehaviour
         _renderer = GetComponent<Renderer>();
         _renderer.enabled = false;
         crt = (CustomRenderTexture) _renderer.material.GetTexture(MainTexx);
-        //solutionManager = GameObject.FindObjectOfType<SolutionManager>();
+        //solutionManager = FindObjectOfType<SolutionManager>();
         //Debug.Log(solutionManager);
     }
     
@@ -65,29 +64,23 @@ public class SolutionDetector : MonoBehaviour
         Diffraction();
         crt.Update();
     }
-
-    private void Ripple()
-    {
-        positions = solutionManager.GetPositions();
-
-        for (int i = 0; i < solutionManager.GetAtoms().Count; i++)
-        {
-            centers[i] = new Vector4(positions[i].x, positions[i].y / 14f, 1f - ((positions[i].z + 10f) / -22f), 0f);
-        }
-        Shader.SetGlobalVectorArray("centerss", centers);
-        Shader.SetGlobalInt("nAtoms", solutionManager.GetAtoms().Count);
-    }
+    
 
     private void Diffraction()
     {
         positions = solutionManager.GetPositions();
         a = solutionManager.GetCellRight() * solutionManager.GetK();
         c = solutionManager.GetCellForward() * solutionManager.GetK();
+        Debug.Log("solutionA: " + a);
+        Debug.Log("solutionC: " + c);
         Shader.SetGlobalVectorArray(AtomsPoss, positions);
         Shader.SetGlobalInt(NAToms, solutionManager.GetAtoms().Count);
         Shader.SetGlobalFloat(_Zoom, zoom);
         Shader.SetGlobalInt(_K, solutionManager.GetK());
-        Shader.SetGlobalFloat(_Pwr, Mathf.Pow(2, pwr));
+        if (solutionManager.GetCrystal())
+            Shader.SetGlobalFloat(_Pwr, Mathf.Pow(2, pwr + 2));
+        else
+            Shader.SetGlobalFloat(_Pwr, Mathf.Pow(2, pwr));
         Shader.SetGlobalVector(_A, a);
         Shader.SetGlobalVector(_C, c);
         Shader.SetGlobalInt(_R, solutionManager.GetR());

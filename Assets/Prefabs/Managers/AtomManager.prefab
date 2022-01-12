@@ -43,6 +43,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 34ef9dcfaff35c641a4c51598337be57, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  isCrystal: 0
+  crystalActivated: 0
   atom: {fileID: 4968323987487669519, guid: c7217618e7aa66d4c80cf652da976612, type: 3}
   pivot: {fileID: 1628565725700111226, guid: 75f85351399622f4cafbe0e4f772e364, type: 3}
   centralCell: {fileID: 5119748466361776041, guid: b44f0072792067040867ca4d975320dc, type: 3}
@@ -52,5 +54,8 @@ MonoBehaviour:
   - {fileID: 6964083292426311379, guid: 758e26d329e1b4441a22370ac9152ebe, type: 3}
   N: 9
   M: 27
-  K: 5
+  K: 6
   R: 3
+  pivotRep: {fileID: 1628565725700111226, guid: e7667a72b27d94d448192585a8009f70, type: 3}
+  atomRep: {fileID: 4968323987487669519, guid: 4a1533c4e38bbd641a2e4ab2eba72b01, type: 3}
+  selectedAtomRep: {fileID: 2100000, guid: cfc1795efa0336843bb1d4d647e36a2b, type: 2}

@@ -8,6 +8,7 @@ using UnityEngine.UI;
 // fa i setup necessari
 public class GameStart : MonoBehaviour
 {
+    private AudioManager audioManager;
     public Button startGameButton;
     public Button quitButton;
     public int debugLevelCounter = -1;
@@ -29,16 +30,24 @@ public class GameStart : MonoBehaviour
             Debug.Log("loaded");
         }
 
+        audioManager = FindObjectOfType<AudioManager>();
+        
         LevelLoader.LoadedData = true;
         if (quitButton)
-            quitButton.onClick.AddListener(LevelLoader.QuitGame);
+        {
+            quitButton.onClick.AddListener(LevelLoader.QuitGame);            
+            quitButton.onClick.AddListener(delegate { audioManager.Play("MenuButtonSelection"); });
+        }
+
         switch (debugLevelCounter)
         {
             case -1:
                 startGameButton.onClick.AddListener(LevelLoader.LoadNextLevel);
+                startGameButton.onClick.AddListener(delegate { audioManager.Play("MenuButtonSelection"); });
                 break;
             case -2:
                 startGameButton.onClick.AddListener(LoadLevelSelection);
+                startGameButton.onClick.AddListener(delegate { audioManager.Play("MenuButtonSelection"); });
                 break;
             default:
                 LevelLoader.LevelCounter = debugLevelCounter;

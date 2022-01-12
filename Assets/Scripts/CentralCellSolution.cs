@@ -12,11 +12,9 @@ public class CentralCellSolution : MonoBehaviour
     private SolutionAtom[] centralCellAtoms = new SolutionAtom[9];
     private Vector3 curPos;
     private float rotationAngle;
-    public float RotationAngle
-    {
-        get => rotationAngle;
-        set => rotationAngle = value;
-    }
+    private GameObject moleculeSpace;
+    
+    
     private Vector3[] atomSpawnPositions = new Vector3[8];
 
     void Awake()
@@ -25,6 +23,7 @@ public class CentralCellSolution : MonoBehaviour
         
         pivotPos = pivot.transform.position;
         solutionManager = FindObjectOfType<SolutionManager>();
+        moleculeSpace = GameObject.Find("MoleculeSpaceSolution");
         /*
         for (float x = -1.5f; x < 2f; x+=1.5f)
         for (float y = -1.5f; y < 2f; y+=1.5f)
@@ -42,7 +41,7 @@ public class CentralCellSolution : MonoBehaviour
     void Start()
     {
         curPos = transform.localPosition;
-        pivot = Instantiate(pivot, pivotPos, Quaternion.identity);
+        pivot = Instantiate(pivot, pivotPos, Quaternion.identity, moleculeSpace.transform);
         InstantiateAtoms();
     }
 

@@ -12,6 +12,7 @@ public class ControlGizmo : MonoBehaviour
     private string levelType; 
     private GameObject moleculeSpace;
     private Atom atom;
+    private AtomsManager atomsManager;
     
     private Transform frontPlane;
     private Transform backPlane;
@@ -36,7 +37,8 @@ public class ControlGizmo : MonoBehaviour
     void Start()
     {
         if (levelType.Equals("XYZ")) is3D = true;
-        
+
+        atomsManager = FindObjectOfType<AtomsManager>();
         moleculeSpace = GameObject.Find("MoleculeSpace");
         frontPlane = transform.Find("FrontPlane");
         backPlane = transform.Find("BackPlane");
@@ -80,12 +82,21 @@ public class ControlGizmo : MonoBehaviour
 
         frontPlane.GetComponent<Renderer>().enabled = on;
         backPlane.GetComponent<Renderer>().enabled = on;
+
+        if (!atomsManager.crystalActivated) return;
+        frontPlane.localScale = new Vector3(4.5f, 5, 1);
+        backPlane.localScale = new Vector3(4.5f, 5, 1);
+
     }
 
     private void EnableLine(bool on)
     {
         frontLine.GetComponent<Renderer>().enabled = on;
         backLine.GetComponent<Renderer>().enabled = on;
+
+        if (!atomsManager.crystalActivated) return;
+        frontLine.localScale = new Vector3(0.2f, 5, 1);
+        backLine.localScale = new Vector3(0.2f, 5, 1);
     }
 
     private void EnableSphere(bool on)

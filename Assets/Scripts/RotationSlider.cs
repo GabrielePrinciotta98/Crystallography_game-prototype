@@ -8,11 +8,13 @@ using UnityEngine.UI;
 
 public class RotationSlider : MonoBehaviour, IPointerUpHandler, IPointerDownHandler
 {
+    private AudioManager audioManager;
     private AtomsManager atomsManager;
     private SolutionManager solutionManager;
 
     private void Start()
     {
+        audioManager = FindObjectOfType<AudioManager>();
         atomsManager = FindObjectOfType<AtomsManager>();
         solutionManager = FindObjectOfType<SolutionManager>();
     }
@@ -20,14 +22,13 @@ public class RotationSlider : MonoBehaviour, IPointerUpHandler, IPointerDownHand
     //OnPointerDown is also required to receive OnPointerUp callbacks
     public void OnPointerDown(PointerEventData eventData)
     {
-        
+        //audioManager.PlayInLoop("Slider");
     }
 
     //Do this when the mouse click on this selectable UI object is released.
     public void OnPointerUp(PointerEventData eventData)
     {
-        
-        Debug.Log("The mouse click was released");
+        audioManager.Stop("Slider");
         float curValue = GetComponent<Slider>().value;
         // SNAP PER I MULTIPLI DI 45
         if (curValue % 45 <= 5)

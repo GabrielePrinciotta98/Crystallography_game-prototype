@@ -9,7 +9,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 7053125821553677508}
-  - component: {fileID: 7053125821553677509}
+  - component: {fileID: 661577400}
   m_Layer: 0
   m_Name: LevelManager
   m_TagString: Untagged
@@ -31,7 +31,7 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &7053125821553677509
+--- !u!114 &661577400
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -40,19 +40,20 @@ MonoBehaviour:
   m_GameObject: {fileID: 7053125821553677510}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 245a97916373093489a05ed520051a55, type: 3}
+  m_Script: {fileID: 11500000, guid: 4d615ae7ae30a4740b57efc29d0317a5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   hudManager: {fileID: 3593359962789404769, guid: 26a22f11ab0477d49bc5a396cd7481bb, type: 3}
   atomsManager: {fileID: 4323790100589642198, guid: aa8b2af32cbd6df4885c2c5868d12177, type: 3}
   solutionManager: {fileID: 7036924550722588422, guid: 4a012981ae663b346bbc5f8e2dd25720, type: 3}
   youWonUI: {fileID: 0}
-  curtain: {fileID: 919132149155446097, guid: 433655628fdb8b64faadbacae2ed0d39, type: 3}
+  curtain: {fileID: 0}
   youWonBackGroundUI: {fileID: 0}
   addedScoreText: {fileID: 0}
-  controlPlane: {fileID: 486711999808616672, guid: 0602a71fdf6712e40981b092b5964977, type: 3}
+  addedBonusScoreText: {fileID: 0}
   dottedLine: {fileID: 3421961755772950661, guid: 0d138a957a61b654cb78de08f681e7c9, type: 3}
   levelIndicatorBackGroundUI: {fileID: 0}
   levelIndicatorText: {fileID: 0}
   nextLevelButton: {fileID: 0}
   backButton: {fileID: 0}
+  moleculeManager: {fileID: 4089497616635442538, guid: f62cdcfaf57cb8e4c827515cc255f101, type: 3}

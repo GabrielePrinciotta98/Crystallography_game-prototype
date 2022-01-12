@@ -14,6 +14,8 @@ public class AtomRepSolution : MonoBehaviour
         atomFather = transform.parent;
         solutionManager = FindObjectOfType<SolutionManager>();
         centralCellSolution = FindObjectOfType<CentralCellSolution>();
+        solutionManager.AddAtomPositionToAll(gameObject);
+
     }
 
 

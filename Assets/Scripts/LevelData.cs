@@ -89,8 +89,10 @@ public static class LevelData
             
             
             // LV 11 XY 5 atomi 
-            levels.Add(new Level(1,1,6,false, Desc11, YZ));
-            
+            levels.Add(new Level(3,27,2,true, Desc11, XYZ));
+            lvPositions = new[] {new Vector3(Random.Range(-2f, 2f), Random.Range(-2f, 2f), Random.Range(-2f, 2f))};
+            levels[10].SolPositions = lvPositions;
+
             /*
             // LV 12 CRISTALLO 5x5x5 PROVA
             levels.Add(new Level(5, 125, 2, true, Desc1, XYZ));

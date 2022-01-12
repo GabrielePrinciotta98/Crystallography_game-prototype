@@ -18,11 +18,11 @@ Shader "Custom/DiffractionShaderCrystal"
             uniform int K = 5;
             uniform int R;
             uniform int M;
-            uniform half4 atomsPos[20];
+            uniform half4 atomsPos[60];
             uniform int n_atoms = 0;
             uniform half4 a;
             uniform half4 c;
-            half phi[20];
+            half phi[60];
             
             half3 ks(half2 screenCoords)
             {

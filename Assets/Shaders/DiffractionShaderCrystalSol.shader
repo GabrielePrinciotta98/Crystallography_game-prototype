@@ -13,7 +13,7 @@ Shader "Custom/DiffractionShaderCrystalSol"
             static const half3 k0 = half3(1,0,0);
             static const half PI = 3.14159265;
             uniform half _lambda = 0.5;
-            uniform half4 atomsPoss[20];
+            uniform half4 atomsPoss[60];
             uniform int nAtoms = 0;
             uniform half4 _a;
             uniform half4 _c;
@@ -22,7 +22,7 @@ Shader "Custom/DiffractionShaderCrystalSol"
             uniform int _K = 5;
             uniform int _R = 4;
             uniform int _M = 1;
-            half phi[20];
+            half phi[60];
 
 
             half3 ks(half2 screenCoords)

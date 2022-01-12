@@ -6,6 +6,7 @@ using UnityEngine.UI;
 public class LevelButton : MonoBehaviour
 {
     private LevelSelectionManager levelSelectionManager;
+    private AudioManager audioManager;
     private int levelNumber;
     private int availableLevels;
 
@@ -18,13 +19,17 @@ public class LevelButton : MonoBehaviour
     // Start is called before the first frame update
     protected void Start()
     {
+        audioManager = FindObjectOfType<AudioManager>();
         levelSelectionManager = FindObjectOfType<LevelSelectionManager>();
         levelSelectionManager.UpdateLevelButtonsCounter();
         LevelNumber = levelSelectionManager.LevelButtonsCounter;
         transform.GetChild(0).GetComponent<Text>().text = LevelNumber.ToString();
         availableLevels = 11;
-        if (LevelNumber <= availableLevels) 
+        if (LevelNumber <= availableLevels)
+        {
             GetComponent<Button>().onClick.AddListener(delegate { LevelLoader.LoadLevel(levelNumber); });
+            GetComponent<Button>().onClick.AddListener(delegate { audioManager.Play("MenuButtonSelection"); });
+        }
         else
         {
             transform.GetChild(2).gameObject.SetActive(true);

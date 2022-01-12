@@ -76,6 +76,7 @@ public class Atom : MonoBehaviour
         
         
         //INVIO DELLA POSIZIONE CORRENTE ALL'ATOMS MANAGER
+        
         PositionFromPivot = transform.position - new Vector3(22, 6.6f, 10); // IL LIVELLO DIVENTA IRRISOLVIBILE SE RUOTO 
         //PositionFromPivot = transform.localPosition - Vector3.zero; 
         //Debug.Log($"{PositionFromPivot}= {transform.localPosition} - {Vector3.zero}");
@@ -167,6 +168,18 @@ public class Atom : MonoBehaviour
         
         Vector3 offset = newPos - transform.position;
         transform.position = newPos;
+        
+        
+        if (atomsManager.crystalActivated)
+        {
+            Vector3 newLocalPos = transform.localPosition;
+            //newLocalPos.x = Mathf.Clamp(newLocalPos.x, -2f, 2f);
+            //newLocalPos.y = Mathf.Clamp(newLocalPos.y, -2f, 2f);
+            //newLocalPos.z = Mathf.Clamp(newLocalPos.z, -2f, 2f);
+            transform.localPosition = newLocalPos;
+        }
+        
+        
         if (moleculeManager.Activated)
         {
             AddOffsetToChildren(offset);
@@ -242,12 +255,5 @@ public class Atom : MonoBehaviour
         solved = flag;
     }
     
-
-    public static Vector3 ClampMagnitude(Vector3 v, float max, float min)
-    {
-        double sm = v.sqrMagnitude;
-        if(sm > max * (double)max) return v.normalized * max;
-        if(sm < min * (double)min) return v.normalized * min;
-        return v;
-    }
+    
 }

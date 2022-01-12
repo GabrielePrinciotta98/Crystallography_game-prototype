@@ -22,12 +22,14 @@ public class LevelManager : MonoBehaviour
     [SerializeReference] private GameObject backButton;
     [SerializeReference] private MoleculeManager moleculeManager; 
     //[SerializeReference] private GameObject hintArrow;
+    private AudioManager audioManager;
     private EmitterCone emitterCone;
     private EmitterConeSol emitterConeSol;
     private int frames;
     private Vector3 atomPos;
     private Vector3[] solAtomPos;
 
+    
     public Vector3[] SolAtomPos
     {
         get => solAtomPos;
@@ -42,7 +44,7 @@ public class LevelManager : MonoBehaviour
 
     private ScoreDisplay scoreDisplay;
     
-    private float time = 300; //in secondi
+    private float time = 300; // 300 secondi
     private Timer timer;
     private bool updateTime;
 
@@ -56,7 +58,7 @@ public class LevelManager : MonoBehaviour
         //Debug.Log(lv.SolPositions);
         if (!lv.IsCrystal)
             lv.SolPositions = RandomPositions(lv.Plane, lv.N - 1);
-        
+        solAtomPos = lv.SolPositions;
         atomsManager = InstantiateAtomsManager(lv.R,lv.M,lv.N, lv.IsCrystal, lv.Plane, lv.SolPositions);
         solutionManager = InstantiateSolutionManager(lv.R,lv.M,lv.N, lv.IsCrystal, lv.Plane, lv.SolPositions); 
         InstantiateMoleculeManager(atomsManager, solutionManager);
@@ -64,9 +66,9 @@ public class LevelManager : MonoBehaviour
         hudManager = Instantiate(hudManager);
         
         FindObjectOfType<Detector>().SetAtomsManager(atomsManager);
+        FindObjectOfType<Detector>().SetSolutionManager(solutionManager);
         FindObjectOfType<SolutionDetector>().SetSolutionManager(solutionManager);
         FindObjectOfType<ControlGizmo>().SetPlane(lv.Plane);
-        solAtomPos = lv.SolPositions;
         markedSolAtomPos = new bool[solAtomPos.Length];
         for (int i = 0; i < markedSolAtomPos.Length; i++)
             markedSolAtomPos[i] = false;
@@ -78,14 +80,21 @@ public class LevelManager : MonoBehaviour
         dottedLineVert.GetComponent<DottedLine>().Vertical = true;
         dottedLineVert.transform.Rotate(0,90,0);
         levelIndicatorText.GetComponent<Text>().text = lv.Description;
+        
+        audioManager = FindObjectOfType<AudioManager>();
+
         nextLevelButton.GetComponent<Button>().onClick.AddListener(LevelLoader.LoadNextLevel);
+        nextLevelButton.GetComponent<Button>().onClick.AddListener(delegate { audioManager.Play("MenuButtonSelection"); });
         backButton.GetComponent<Button>().onClick.AddListener(LevelLoader.LoadMenu);
+        backButton.GetComponent<Button>().onClick.AddListener(delegate { audioManager.Play("MenuButtonSelection"); });
+
 
         emitterCone = FindObjectOfType<EmitterCone>();
         emitterConeSol = FindObjectOfType<EmitterConeSol>();
 
         scoreDisplay = FindObjectOfType<ScoreDisplay>();
         scoreDisplay.DisplayScore();
+        
         
         Timer.Time = time;
 
@@ -136,6 +145,7 @@ public class LevelManager : MonoBehaviour
         if (!solutionManager.GetStop())
         {
             solAtomPos = solutionManager.Positions3.ToArray();
+            
         }
         if (!over && Input.GetMouseButtonUp(0))
         {
@@ -165,6 +175,7 @@ public class LevelManager : MonoBehaviour
             over = true;
             //atomsManager.AnAtomIsMoving = true;
             StartCoroutine(Victory());
+            audioManager.Play("Victory");
             ScoreDisplay.CurScore = ScoreManager.Score;
             //Debug.Log("time remaining: " + time);
             ScoreManager.TimeBonus += Mathf.RoundToInt(time);
@@ -265,7 +276,7 @@ public class LevelManager : MonoBehaviour
 
         yield return new WaitForSeconds(1.5f);
         addedScoreText.GetComponent<Text>().text = "+ " + 100;
-        addedBonusScoreText.GetComponent<Text>().text = "+ " + string.Format("{0:00}", time);
+        addedBonusScoreText.GetComponent<Text>().text = "+ " + $"{time:00}";
         youWonBackGroundUI.SetActive(true);
         StartCoroutine(ShowYouWon(youWonUI));
         yield return new WaitForSeconds(1.5f);
@@ -465,7 +476,7 @@ public class LevelManager : MonoBehaviour
             t += 0.01f;
             yield return new WaitForFixedUpdate();
         }
-        
+        FindObjectOfType<Detector>().SetDirty();
         atom.Snapped = true;
         n--;
     }

@@ -5,83 +5,33 @@ using System.Drawing;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.UI;
+using Color = UnityEngine.Color;
 
 public class CentralCell : MonoBehaviour
 {
-    private List<Vector3> atomsSpawnPositions = new List<Vector3>();
-    private AtomsManager atomManager;
-    public GameObject pivot;
-    public Atom atom;
-    private Vector3 pivotPos;
-    private Atom[] centralCellAtoms = new Atom[9];
-    private Vector3 curPos;
-    private float rotationAngle;
 
-    public float RotationAngle
+    private Material mat;
+
+    private void Start()
     {
-        get => rotationAngle;
-        set => rotationAngle = value;
+        mat = GetComponent<Renderer>().material;
+        Color start = new Color(mat.color.r, mat.color.g, mat.color.b, 0);
+        Color end = new Color(mat.color.r, mat.color.g, mat.color.b, 120f/255f);
+        StartCoroutine(FadeIn(start, end, 2f));
     }
     
-    void Awake()
+    //animazione fade-in per comparire in scena
+    IEnumerator FadeIn(Color start, Color end, float duration)
     {
-
-        pivotPos = pivot.transform.position; 
-        atomManager = FindObjectOfType<AtomsManager>();
-        for (float x = -1.5f; x < 2f; x+=1.5f)
-            for (float y = -1.5f; y < 2f; y+=1.5f)
-            {
-                if (x != 0 || y != 0)
-                {
-                    atomsSpawnPositions.Add(atomManager.GetK() > 5
-                        ? new Vector3(0, y * (atomManager.GetK() - 5), x * (atomManager.GetK() - 5))
-                        : new Vector3(0, y, x));
-                }
-            }
-    }
-
-    void Start()
-    {
-        curPos = transform.localPosition;
-
-        pivot = Instantiate(pivot, pivotPos, Quaternion.identity);
-        InstantiateAtoms();
-    }
-
-    public void InstantiateAtoms()
-    {
-        
-        for (int i = 0; i < atomManager.GetN() - 1; i++)
+        for (float t = 0; t <= duration; t += Time.deltaTime)
         {
-            centralCellAtoms[i] = Instantiate(atom, pivotPos + atomsSpawnPositions[i], Quaternion.identity, pivot.transform);
-            
+            float normalizedTime = t / duration;
+            mat.color = Color.Lerp(start, end, normalizedTime);
+            yield return null;
         }
-    }
-    
-    private void Update()
-    {
-        if (atomManager.GetStop()) return;
-        Quaternion rotation = Quaternion.Euler(0, rotationAngle, 0);
-        transform.rotation = rotation;
+        mat.color = end;
     }
 
-    private Vector3 RotatePointAroundPivot(Vector3 point, Vector3 pivot, float angle)
-    {
-        return Quaternion.Euler(0, angle, 0) * (point - pivot) + pivot;
-    }
-
-    public Atom[] GetAtoms()
-    {
-        return centralCellAtoms;
-    }
-
-    public void Rotate(float angle)
-    {
-        
-        transform.position = curPos;
-        transform.RotateAround(pivotPos, Vector3.up, angle);
-        curPos = transform.position;
-    }
 }
 
 
