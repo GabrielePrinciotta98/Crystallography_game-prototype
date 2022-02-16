@@ -3618,10 +3618,6 @@ MonoBehaviour:
     clip: {fileID: 8300000, guid: e73677b1deb14d848a4511c6efd4b248, type: 3}
     volume: 1
     pitch: 1
-  - name: Victory
-    clip: {fileID: 8300000, guid: e73677b1deb14d848a4511c6efd4b248, type: 3}
-    volume: 1
-    pitch: 1
 --- !u!4 &1456721603
 Transform:
   m_ObjectHideFlags: 0
@@ -4353,7 +4349,8 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: Bug nella DFS con aggiustamento delle posizioni
+  m_Text: Fare EnforceInsideCell, ma per farlo bisogna accoppiare l'atomo rosso al
+    centro della rispettiva cella (cioe il pivot di quella cella)
 --- !u!222 &1740832829
 CanvasRenderer:
   m_ObjectHideFlags: 0

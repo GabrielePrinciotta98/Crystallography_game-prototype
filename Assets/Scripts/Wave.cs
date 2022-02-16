@@ -43,7 +43,6 @@ public class Wave : MonoBehaviour
                 newX = 0;
 
             newX += 0.001f;
-            
             mat.mainTextureOffset = new Vector2(newX, 0.15f + -2.15f / -6 * (power - 3));
             mat.mainTextureScale = new Vector2(1 + 3 / 1.7f * (lambda - 0.3f), 0.7f + 4.3f / -6 * (power - 3));
             mat.SetColor(_Color, Color.HSVToRGB(0.75f / 1.7f * (lambda - 0.3f), 1, value, true));

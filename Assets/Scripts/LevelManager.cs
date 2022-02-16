@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
@@ -11,6 +12,7 @@ public class LevelManager : MonoBehaviour
     [SerializeReference] private AtomsManager atomsManager;
     [SerializeReference] private SolutionManager solutionManager;
     [SerializeReference] private GameObject youWonUI;
+    [SerializeReference] private GameObject gameWonUI;
     [SerializeReference] private GameObject curtain;
     [SerializeReference] private GameObject youWonBackGroundUI;
     [SerializeReference] private GameObject addedScoreText;
@@ -72,8 +74,9 @@ public class LevelManager : MonoBehaviour
         markedSolAtomPos = new bool[solAtomPos.Length];
         for (int i = 0; i < markedSolAtomPos.Length; i++)
             markedSolAtomPos[i] = false;
-        n = lv.N-1; // n sono gli atomi ancora da risolvere
-        
+
+        n = atomsManager.crystalActivated ? lv.M * lv.N - 1 : lv.N - 1; //n sono gli atomi ancora da risolvere
+
         Instantiate(dottedLine).gameObject.name = "DottedLineHoriz";
         var dottedLineVert = Instantiate(dottedLine);
         dottedLineVert.gameObject.name = "DottedLineVert";
@@ -85,8 +88,10 @@ public class LevelManager : MonoBehaviour
 
         nextLevelButton.GetComponent<Button>().onClick.AddListener(LevelLoader.LoadNextLevel);
         nextLevelButton.GetComponent<Button>().onClick.AddListener(delegate { audioManager.Play("MenuButtonSelection"); });
-        backButton.GetComponent<Button>().onClick.AddListener(LevelLoader.LoadMenu);
+        backButton.GetComponent<Button>().onClick.AddListener(LevelLoader.LoadPrevScene);
         backButton.GetComponent<Button>().onClick.AddListener(delegate { audioManager.Play("MenuButtonSelection"); });
+        backButton.GetComponent<Button>().onClick.AddListener(delegate { audioManager.PlayInLoop("MenuTheme"); });
+        backButton.GetComponent<Button>().onClick.AddListener(delegate { audioManager.Stop("GameplayTheme"); });
 
 
         emitterCone = FindObjectOfType<EmitterCone>();
@@ -149,7 +154,6 @@ public class LevelManager : MonoBehaviour
         }
         if (!over && Input.GetMouseButtonUp(0))
         {
-            //Debug.Log("test");
             TestVictory();
             frames = 0;
         }
@@ -173,6 +177,7 @@ public class LevelManager : MonoBehaviour
             }
 
             over = true;
+            atomsManager.GameStart = false;
             //atomsManager.AnAtomIsMoving = true;
             StartCoroutine(Victory());
             audioManager.Play("Victory");
@@ -271,6 +276,7 @@ public class LevelManager : MonoBehaviour
     
     IEnumerator Victory()
     {
+        hudManager.DisablePowerUps();
         yield return SnapAll();
         curtain.GetComponent<Curtain>().ShowSolution();
 
@@ -278,7 +284,13 @@ public class LevelManager : MonoBehaviour
         addedScoreText.GetComponent<Text>().text = "+ " + 100;
         addedBonusScoreText.GetComponent<Text>().text = "+ " + $"{time:00}";
         youWonBackGroundUI.SetActive(true);
-        StartCoroutine(ShowYouWon(youWonUI));
+        if (atomsManager.crystalActivated)
+        {
+            nextLevelButton.gameObject.SetActive(false);
+            StartCoroutine(ShowYouWon(gameWonUI));
+        }
+        else
+            StartCoroutine(ShowYouWon(youWonUI));
         yield return new WaitForSeconds(1.5f);
         
         StartCoroutine(ShowAddedBonusScore(addedBonusScoreText));
@@ -379,37 +391,28 @@ public class LevelManager : MonoBehaviour
         }
         else
         {
+            int numberOfAtomsToBeSnapped = atomsManager.crystalActivated ? atomsManager.newAtoms.Count : atomsManager.GetAtoms().Count;
             if (!isSymmetric)
             {
-                for (int i = 0; i < atomsManager.GetAtoms().Count; i++)
+                for (int i = 0; i < numberOfAtomsToBeSnapped; i++)
                 {
-                    Atom atom = atomsManager.GetAtoms()[i];
+                    Atom atom = atomsManager.crystalActivated ? atomsManager.newAtoms[i].GetComponent<Atom>() : atomsManager.GetAtoms()[i];
                     StartCoroutine(MarkAsCorrect(atom));
-                }
-                
-                for (int i = 0; i < atomsManager.GetAtoms().Count; i++)
-                {
-                    Atom atom = atomsManager.GetAtoms()[i];
                     StartCoroutine(Snap(atom));
                 }
             }
             else
             {
-                for (int i = atomsManager.GetAtoms().Count - 1; i >= 0; i--)
+                for (int i = numberOfAtomsToBeSnapped - 1; i >= 0; i--)
                 {
-                    Atom atom = atomsManager.GetAtoms()[i];
+                    Atom atom = atomsManager.crystalActivated ? atomsManager.newAtoms[i].GetComponent<Atom>() : atomsManager.GetAtoms()[i];
                     StartCoroutine(MarkAsCorrect(atom));
-                }
-                
-                for (int i = atomsManager.GetAtoms().Count - 1; i >= 0; i--)
-                {
-                    Atom atom = atomsManager.GetAtoms()[i];
                     StartCoroutine(Snap(atom));
                 }
             }
         }
 
-        yield return new WaitUntil(() => n == 0);
+        yield return new WaitUntil(() => n <= 0);
     }
 
     IEnumerator MarkAsCorrect(Atom atom)
@@ -471,7 +474,12 @@ public class LevelManager : MonoBehaviour
             newPosX = Mathf.Lerp(posX, targetPos.x, ease);
             newPosY = Mathf.Lerp(posY, targetPos.y, ease);
             newPosZ = Mathf.Lerp(posZ, targetPos.z, ease);
-            atom.transform.localPosition = new Vector3(newPosX, newPosY, newPosZ); 
+            Vector3 newPos = new Vector3(newPosX, newPosY, newPosZ);
+            Vector3 offset = newPos - atom.transform.localPosition;
+            
+            if (atomsManager.crystalActivated)
+                atom.AddOffsetToReplicas(offset);
+            atom.transform.localPosition = newPos; 
             FindObjectOfType<Detector>().SetDirty();
             t += 0.01f;
             yield return new WaitForFixedUpdate();
@@ -490,8 +498,8 @@ public class LevelManager : MonoBehaviour
         while (t <= 1f)
         {
             ease = EaseOutBounce(t);
-            newScaleX = Mathf.Lerp(0.4f, 10f, ease);
-            newScaleY = Mathf.Lerp(0.4f, 10f, ease);
+            newScaleX = Mathf.Lerp(0.4f, 4f, ease);
+            newScaleY = Mathf.Lerp(0.4f, 4f, ease);
             youWonUI.transform.localScale = new Vector3(newScaleX, newScaleY, 0.4f);                
             t += 0.02f;
             yield return new WaitForFixedUpdate();

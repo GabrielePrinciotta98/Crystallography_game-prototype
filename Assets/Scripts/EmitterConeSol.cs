@@ -56,13 +56,11 @@ public class EmitterConeSol : MonoBehaviour
         }
         
         newScale = transform.localScale;
-        //newPos = transform.localPosition;
-        //newPos.z = -0.25f - 0.4f / 9f * (power - 1f);
+        
 
-        newScale.x = 0.3f + 0.7f / 9f * (zoom - 1f);
-        newScale.z = 0.3f + 0.7f / 9f * (zoom - 1f);
+        newScale.x = 0.4f + 0.4f / 9f * (zoom - 1f);
+        newScale.z = 0.4f + 0.4f / 9f * (zoom - 1f);
         transform.localScale = newScale;
-        //transform.localPosition = newPos;
 
         SetEmissionColor(PowerLevel);
 

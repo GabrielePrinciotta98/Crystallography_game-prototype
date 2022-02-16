@@ -17,6 +17,7 @@ public static class LevelData
     private const string Desc7 = "Livello  7\n2 atomi sul piano XYZ";
     private const string Desc8 = "Livello  8\n3 atomi sul piano XYZ";
     private const string Desc9 = "Livello  9\n4 atomi sul piano XYZ";
+    private const string Desc10 = "Livello  10\n Boss Finale";
     private const string Desc11 = "Livello 11\n6 atomi sul piano XY";
 
     private const string DescCry1 = "Livello  10\nCristallo";
@@ -82,16 +83,10 @@ public static class LevelData
             // LV 9
             levels.Add(new Level(1, 1, 4, false, Desc9, XYZ));
 
-            // LV 10 CRISTALLO PROVA
-            levels.Add(new Level(1, 1, 3, true, DescCry1, XYZ));
-            Vector3[] lvPositions = new[] {new Vector3(-0.5f, 2.3f, 2.1f), new Vector3(0.9f, -0.6f, 0)};
+            // LV 10 CRISTALLO LIVELLO FINALE 
+            levels.Add(new Level(3,27,2,true, Desc10, XYZ));
+            Vector3[] lvPositions = {new Vector3(Random.Range(-2f, 2f), Random.Range(-2f, 2f), Random.Range(-2f, 2f))};
             levels[9].SolPositions = lvPositions;
-            
-            
-            // LV 11 XY 5 atomi 
-            levels.Add(new Level(3,27,2,true, Desc11, XYZ));
-            lvPositions = new[] {new Vector3(Random.Range(-2f, 2f), Random.Range(-2f, 2f), Random.Range(-2f, 2f))};
-            levels[10].SolPositions = lvPositions;
 
             /*
             // LV 12 CRISTALLO 5x5x5 PROVA

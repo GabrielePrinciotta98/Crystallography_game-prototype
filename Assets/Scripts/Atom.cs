@@ -28,11 +28,14 @@ public class Atom : MonoBehaviour
 
     public GameObject molecularParent;
     public List<Atom> molecularChildren;
+    public List<GameObject> crystalReplicas;
+    public GameObject cell;
+    private List<Cell> cells;
+    
     public float distanceToMolecularParent;
     public bool Snapped { get; set; }  
     public bool solved;
     private bool dragged;
-    
 
     private static readonly int _EmissionColor = Shader.PropertyToID("_EmissionColor");
 
@@ -71,9 +74,7 @@ public class Atom : MonoBehaviour
     
     private void Update()
     {
-        if (atomsManager.GameStart)
-            _collider.enabled = true;
-        
+        _collider.enabled = atomsManager.GameStart;
         
         //INVIO DELLA POSIZIONE CORRENTE ALL'ATOMS MANAGER
         
@@ -81,8 +82,19 @@ public class Atom : MonoBehaviour
         //PositionFromPivot = transform.localPosition - Vector3.zero; 
         //Debug.Log($"{PositionFromPivot}= {transform.localPosition} - {Vector3.zero}");
         //Debug.Log(transform.localPosition);
-        atomsManager.SetMyPosition(this);
-        
+
+        if (atomsManager.crystalActivated)
+        {
+            if (atomsManager.centralCellAtom == this)
+                atomsManager.SetMyPosition(this);
+            EnforceInsideCell();
+        }
+        else
+        {
+            atomsManager.SetMyPosition(this);
+            EnforceInsideWorkspace();
+        }
+
     }
     
 
@@ -96,6 +108,8 @@ public class Atom : MonoBehaviour
     {
         if (!solved)
           ChangeMaterial(0);
+
+        
     }
 
     private void OnMouseDown()
@@ -109,8 +123,11 @@ public class Atom : MonoBehaviour
         controlGizmo.EnableElements();
         
         controlGizmo.SetAtom(this);
-        
-        
+
+        if (atomsManager.crystalActivated)
+            foreach (var c in cells)
+                c.ChangeAlpha(transform.position);
+
         ChangeMaterial(2);
         SetSelected(true);
     }
@@ -168,15 +185,12 @@ public class Atom : MonoBehaviour
         
         Vector3 offset = newPos - transform.position;
         transform.position = newPos;
-        
+
         
         if (atomsManager.crystalActivated)
         {
-            Vector3 newLocalPos = transform.localPosition;
-            //newLocalPos.x = Mathf.Clamp(newLocalPos.x, -2f, 2f);
-            //newLocalPos.y = Mathf.Clamp(newLocalPos.y, -2f, 2f);
-            //newLocalPos.z = Mathf.Clamp(newLocalPos.z, -2f, 2f);
-            transform.localPosition = newLocalPos;
+            AddOffsetToReplicas(offset);
+            EnforceInsideCell();
         }
         
         
@@ -187,6 +201,7 @@ public class Atom : MonoBehaviour
             controlGizmo.RefreshPositionSlice();
         }
             
+
         EnforceInsideWorkspace();
         controlGizmo.RefreshPositionLine();
         controlGizmo.RefreshPositionPlane();
@@ -203,6 +218,15 @@ public class Atom : MonoBehaviour
             child.AddOffsetToChildren(offset);
         }
     }
+    
+    public void AddOffsetToReplicas(Vector3 offset)
+    {
+        foreach (var replica in crystalReplicas)
+        {
+            if (replica != gameObject)
+                replica.transform.position = replica.transform.position + offset;
+        }
+    }
 
     private void EnforceInsideWorkspace()
     {
@@ -213,6 +237,24 @@ public class Atom : MonoBehaviour
         transform.localPosition = pos;
     }
 
+    public void CrystalActivation(List<GameObject> newCrystalAtoms, List<Cell> cellComponents)
+    {
+        crystalReplicas = newCrystalAtoms;
+        cell = atomsManager.GetMyCell(gameObject);
+        cells = cellComponents;
+    }
+    
+    private void EnforceInsideCell()
+    {
+        Vector3 cellPosition = cell.transform.localPosition;
+        Vector3 pos = transform.localPosition;
+        pos = new Vector3(Mathf.Clamp(pos.x, cellPosition.x - 2, cellPosition.x + 2),
+                            Mathf.Clamp(pos.y, cellPosition.y - 2, cellPosition.y + 2),
+                            Mathf.Clamp(pos.z, cellPosition.z - 2, cellPosition.z + 2));
+        transform.localPosition = pos;
+    }
+
+    
     
 
     private void OnMouseUp()
@@ -231,6 +273,10 @@ public class Atom : MonoBehaviour
 
         if (!solved)
             ChangeMaterial(0);
+        
+        if (!atomsManager.crystalActivated) return;
+        foreach (var c in cells)
+            c.ResetAlpha();
     }
 
 
@@ -254,6 +300,8 @@ public class Atom : MonoBehaviour
     {
         solved = flag;
     }
+
     
-    
+
+
 }

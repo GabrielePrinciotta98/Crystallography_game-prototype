@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Net;
 using UnityEditor.UIElements;
 using UnityEngine;
 using UnityEngine.UI;
@@ -30,6 +31,7 @@ public class AtomsManager : MonoBehaviour
     [SerializeReference] private Material selectedAtomRep;
     
     List<Atom> atoms = new List<Atom>();
+    private List<Atom> oldAtoms;
     Vector4[] positions = new Vector4[60];
 
 
@@ -37,11 +39,15 @@ public class AtomsManager : MonoBehaviour
     private List<Vector3> atomsSpawnPositions = new List<Vector3>();
     private Vector3[] solutionSpawnPositions;
     private Atom draggingAtom;
-    private List<GameObject> cells = new List<GameObject>();
+    public List<GameObject> cells = new List<GameObject>();
     public string LevelType { get; set; }
     private int atomInPositionCrystalCounter = 0;
     private static readonly Vector3 Center = new Vector3(22, 6.6f, 10);
-
+    public Atom centralCellAtom;
+    private List<Vector3> pivotRepPositions;
+    private List<GameObject> newPivots; 
+    public List<GameObject> newAtoms;
+    public List<int> atomRelatedCellPositions = new List<int>(); 
     
 
     // Start is called before the first frame update
@@ -73,7 +79,7 @@ public class AtomsManager : MonoBehaviour
             // POSIZIONI DI SPAWN DEGLI ATOMI
             GenerateRandomPositions(LevelType, M*N - 1);
             Instantiate(LevelType.Equals("YZ") ? platforms[0] : platforms[1], moleculeSpace.transform);
-            //centralCellSpawnPos ha la posizione del pivot
+            //Center ha la posizione del pivot
             pivot = Instantiate(pivot, Center, Quaternion.identity, moleculeSpace.transform);
             for (int i=0; i < M*N - 1; i++)
                 Instantiate(atom, new Vector3(Center.x + atomsSpawnPositions[i].x,
@@ -365,12 +371,322 @@ public class AtomsManager : MonoBehaviour
     }
     */
 
-    public void TriggerWhistle()
+    public void TriggerCrystalActivation(Button crystal, Button crystalDisabled)
     {
+        
         GameStart = false; //disattivo la possibilita di trascinare gli atomi durante l'animazione
         //StartCoroutine(Whistle());
         StartCoroutine(ActivateCrystal());
+        crystal.gameObject.SetActive(false);
+        crystalDisabled.gameObject.SetActive(true);
     }
+    
+    public void TriggerCrystalDeactivation(Button crystal, Button crystalDisabled)
+    {
+        GameStart = false; //disattivo la possibilita di trascinare gli atomi durante l'animazione
+        StartCoroutine(DeactivateCrystal());
+        crystal.gameObject.SetActive(true);
+        crystalDisabled.gameObject.SetActive(false);
+    }
+    
+    
+
+    public GameObject GetMyCell(GameObject a)
+    {
+        return cells[newAtoms.IndexOf(a)];
+    }
+    
+    private IEnumerator ActivateCrystal()
+    {
+        solutionManager = FindObjectOfType<SolutionManager>();
+        GameObject[] solutionAtoms = solutionManager.AllAtoms.ToArray(); //tutti i solution atoms senza il pivot
+        
+        bool[] isOccupied = new bool[atoms.Count];
+        Vector3[] targetPositions = new Vector3[atoms.Count]; // array che conterra le posizioni finali
+        
+        
+        pivotRepPositions = GetPivotRepPositions(solutionAtoms);
+        Debug.Log(pivotRepPositions.Count);
+        //Assegno gli atomi alle posizioni dei pivot ripetuti
+        newPivots = AssignPivotPositions(isOccupied, targetPositions);
+
+        
+        //Trovo il vettore che connette il centro della scena (22, 6.6, 10) al baricentro degli atomi rimasti
+        Vector3 d = FindBarycenterToCenterVector(isOccupied);
+        //Assegno gli atomi alle posizioni degli atomi rossi ripetuti
+        newAtoms = AssignAtomPositions(isOccupied, targetPositions, d);
+
+        yield return StartCoroutine(MoveAllToTargetPositions(targetPositions));
+
+        
+        
+        for (int i = 0; i < atoms.Count; i++)
+        {
+            atoms[i].transform.position = targetPositions[i];
+        }
+        
+        //LAMPO
+        yield return new WaitForSeconds(0.5f);
+        SpawnCells(); //genera la lista cells
+        
+        
+        yield return StartCoroutine(ChangeAtomsType(newPivots));
+        Debug.Log("tipo cambiato");
+        
+        List<Cell> cellComponents = new List<Cell>();
+        foreach (var c in cells)
+        {
+            cellComponents.Add(c.GetComponent<Cell>());
+        }
+        
+        //Setto alcuni attributi legati al cristallo per ogni atomo
+        foreach (var a in newAtoms)
+        {
+            a.GetComponent<Atom>().CrystalActivation(newAtoms, cellComponents);
+        }
+        
+        //il numero di atomi nella lista Atoms deve passare da 53 a 1, l'unico atomo della cella centrale
+        oldAtoms = atoms;
+        atoms = new List<Atom> {centralCellAtom};
+        
+        //passare allo shader i parametri della modalita cristallo
+        detector.TransitionHappened = true;
+        detector.SetDirty();
+        
+        crystalActivated = true;
+        GameStart = true; //riattivo il trascinamento degli atomi
+    }
+
+    
+
+
+    private Vector3 FindBarycenterToCenterVector(bool[] isOccupied)
+    {
+        Vector3 sum = Vector3.zero;
+        int nFreeAtoms = 0;
+        for (int i = 0; i < atoms.Count; i++)
+        {
+            if (isOccupied[i]) continue;
+            sum += atoms[i].transform.position;
+            nFreeAtoms++;
+        }
+        Vector3 barycenter = sum / nFreeAtoms;
+        return barycenter - Center;
+    }
+
+
+    private List<Vector3> GetPivotRepPositions(GameObject[] solutionAtoms)
+    {
+        List<Vector3> ris = new List<Vector3>();
+
+        foreach (var a in solutionAtoms)
+        {
+            if (a.GetComponent<PivotAtomRepSol>())
+                ris.Add(a.transform.position + new Vector3(0,0,30));
+        }
+        ris.Add(Center);
+        return ris;
+    }
+
+    private List<GameObject> AssignPivotPositions(bool[] isOccupied, Vector3[] targetPositions)
+    {
+        List<GameObject> ris = new List<GameObject>();
+        foreach (var pivotRepPosition in pivotRepPositions)
+        {
+            float minDistance = Single.MaxValue;
+            int closestAtom = -1;
+            if (pivotRepPosition == Center) continue;
+            
+            for (int j = 0; j < atoms.Count; j++)
+            {
+                float distance = Vector3.Distance(pivotRepPosition, atoms[j].transform.position);
+                
+                if (!isOccupied[j] && distance < minDistance)
+                {
+                    minDistance = distance;
+                    closestAtom = j;
+                }
+            }
+            isOccupied[closestAtom] = true;
+            targetPositions[closestAtom] = pivotRepPosition;
+            ris.Add(atoms[closestAtom].gameObject);
+        }
+
+        return ris;
+    }
+    
+    private List<GameObject> AssignAtomPositions(bool[] isOccupied, Vector3[] targetPositions, Vector3 d)
+    {
+        List<GameObject> ris = new List<GameObject>();
+        
+        Vector3[] tempTargetPositions = new Vector3[atoms.Count - M + 1]; 
+        int[] atomsIndexes =  new int[atoms.Count - M + 1];
+        int j = -1;
+        for (int i = 0; i < atoms.Count; i++)
+        {
+            if (isOccupied[i]) continue;
+            j++;
+            tempTargetPositions[j] = atoms[i].transform.position - (d + Vector3.one);
+            atomsIndexes[j] = i;
+        }
+
+        for (var i = 0; i < pivotRepPositions.Count; i++)
+        {
+            var pivotRepPosition = pivotRepPositions[i];
+            float minDistance = Single.MaxValue;
+            int closestAtom = -1;
+            for (int k = 0; k < tempTargetPositions.Length; k++)
+            {
+                float distance = Vector3.Distance(pivotRepPosition, tempTargetPositions[k]);
+                if (!isOccupied[atomsIndexes[k]] && distance < minDistance)
+                {
+                    minDistance = distance;
+                    closestAtom = k;
+                }
+            }
+
+            if (pivotRepPosition == Center)
+                centralCellAtom = atoms[atomsIndexes[closestAtom]];
+
+            isOccupied[atomsIndexes[closestAtom]] = true;
+            targetPositions[atomsIndexes[closestAtom]] = pivotRepPosition + (d + Vector3.one);
+            ris.Add(atoms[atomsIndexes[closestAtom]].gameObject);
+            atomRelatedCellPositions.Add(i);
+        }
+
+        return ris;
+    }
+    
+    private IEnumerator MoveAllToTargetPositions(Vector3[] targetPositions)
+    {
+        for (int i = 0; i < atoms.Count; i++)
+        {
+            StartCoroutine(MoveToTargetPosition(atoms[i], atoms[i].transform.position, targetPositions[i], 1f));
+            yield return new WaitForSeconds(0.04f);
+        }
+
+        yield return null;
+    }
+    
+    private IEnumerator MoveToTargetPosition(Atom a, Vector3 start, Vector3 end, float duration)
+    {
+        for (float t = 0; t <= duration; t += Time.deltaTime)
+        {
+            float normalizedTime = t / duration;
+            a.transform.position = Vector3.Lerp(start, end, EaseInOutExpo(normalizedTime));
+            detector.SetDirty();
+            yield return null;
+        }
+
+        a.transform.position = end;
+        detector.SetDirty();
+        atomInPositionCrystalCounter++;
+    }
+    
+    private IEnumerator ChangeAtomsType(List<GameObject> futurePivots)
+    {
+        yield return new WaitUntil(() => atomInPositionCrystalCounter == 53);
+        foreach (var futurePivot in futurePivots)
+        {
+            ChangeToPivotAtomRep(futurePivot);
+        }
+    }
+    
+    private void ChangeToPivotAtomRep(GameObject a)
+    {
+        // - Tolgo script Atom
+        //Destroy(a.GetComponent<Atom>());
+        a.GetComponent<Atom>().enabled = false;
+        a.GetComponent<Atom>().cell = cells[newPivots.IndexOf(a)];
+        a.GetComponent<Collider>().enabled = false;
+        // - Tolgo rigidbody
+        Destroy(a.GetComponent<Rigidbody>());
+        // - Cambio materiale da Red Atom a Pivot Atom Rep
+        a.GetComponent<Renderer>().sharedMaterial = pivot.GetComponent<Renderer>().sharedMaterial;
+    }
+    
+    private void SpawnCells()
+    {
+        // SPAWN CELLE RIPETUTE
+        Debug.Log(M);
+        foreach (var pos in pivotRepPositions)
+        {
+            var cellTemp = Instantiate(cell, pos, Quaternion.identity, moleculeSpace.transform);
+            cellTemp.transform.localScale *= K;
+            cellTemp.transform.rotation = moleculeSpace.transform.rotation;
+            cells.Add(cellTemp);
+        }
+    }
+    
+    
+    private float EaseInOutExpo(float x) {
+        return x == 0
+            ? 0
+            : Math.Abs(x - 1) < 0.0001f
+                ? 1
+                : x < 0.5 ? Mathf.Pow(2, 20 * x - 10) / 2
+                    : (2 - Mathf.Pow(2, -20 * x + 10)) / 2;
+    }
+
+    //------------------------------------------------------------------
+
+    private IEnumerator DeactivateCrystal()
+    {
+        atoms = oldAtoms; // OLDATOMS AVRA RIFERIMENTI A ATOM DISTRUTTI, DA RISOLVERE
+        
+        //sposto gli atomi in una posizione random dentro la cella
+        Vector3[] targetPositions = RandomPositionsInsideCell();
+        yield return StartCoroutine(MoveAll(targetPositions));
+        
+        //resetto il tipo
+        
+        
+        //distruggo le celle
+        foreach (var c in cells)
+        {
+            Destroy(c);
+        }
+        cells.Clear();
+        
+        //resetto i parametri
+        //atoms = oldAtoms; // OLDATOMS AVRA RIFERIMENTI A ATOM DISTRUTTI, DA RISOLVERE
+        detector.TransitionHappened = false;
+        detector.SetDirty();
+
+        crystalActivated = false;
+        GameStart = true;
+        
+        
+    }
+
+    private Vector3[] RandomPositionsInsideCell()
+    {
+        Vector3[] ris = new Vector3[M*N-1];
+        for (int i = 0; i < oldAtoms.Count; i++)
+        {
+            Vector3 cellPosition = oldAtoms[i].cell.transform.position;
+            ris[i] = new Vector3(Random.Range(cellPosition.x - 2, cellPosition.x + 2),
+                                    Random.Range(cellPosition.y - 2, cellPosition.y + 2),
+                                    Random.Range(cellPosition.z - 2, cellPosition.z + 2));
+
+        }
+        return ris;
+    }
+
+    private IEnumerator MoveAll(Vector3[] targetPositions)
+    {
+        for (int i = 0; i < oldAtoms.Count; i++)
+        {
+            StartCoroutine(MoveToTargetPosition(atoms[i], atoms[i].transform.position, targetPositions[i], 1f));
+            yield return new WaitForSeconds(0.04f);
+        }
+
+        yield return null;
+    }
+     
+    
+    //------------------------------------------------------------------
+
     /*
     private IEnumerator Whistle()
     {
@@ -518,155 +834,5 @@ public class AtomsManager : MonoBehaviour
 
     }
     */
-    
-    //------------------------------------------------------------------
-
-    private IEnumerator ActivateCrystal()
-    {
-        solutionManager = FindObjectOfType<SolutionManager>();
-        GameObject[] solutionAtoms = solutionManager.AllAtoms.ToArray(); //tutti i solution atoms senza il pivot
-        
-        bool[] isOccupied = new bool[atoms.Count];
-        Vector3[] targetPositions = new Vector3[atoms.Count]; // array che conterra le posizioni finali
-        
-        //1) Mi occupo dei pivot:
-        List<Vector3> pivotRepPositions = GetPivotRepPositions(solutionAtoms);
-        Debug.Log(pivotRepPositions.Count);
-        //Assegno gli atomi alle posizioni dei pivot ripetuti
-        AssignPivotPositions(pivotRepPositions, isOccupied, targetPositions);
-        
-        //Trovo il vettore che connette il centro della scena (22, 6.6, 10) al baricentro degli atomi rimasti
-        Vector3 d = FindBarycenterToCenterVector(isOccupied);
-        AssignAtomPositions(pivotRepPositions, isOccupied, targetPositions, d);
-
-        StartCoroutine(MoveAllToTargetPositions(targetPositions));
-        
-        yield return null;
-    }
-
-    
-
-
-    private Vector3 FindBarycenterToCenterVector(bool[] isOccupied)
-    {
-        Vector3 sum = Vector3.zero;
-        int nFreeAtoms = 0;
-        for (int i = 0; i < atoms.Count; i++)
-        {
-            if (isOccupied[i]) continue;
-            sum += atoms[i].transform.position;
-            nFreeAtoms++;
-        }
-        Vector3 barycenter = sum / nFreeAtoms;
-        return barycenter - Center;
-    }
-
-
-    private List<Vector3> GetPivotRepPositions(GameObject[] solutionAtoms)
-    {
-        List<Vector3> ris = new List<Vector3>();
-
-        foreach (var a in solutionAtoms)
-        {
-            if (a.GetComponent<PivotAtomRepSol>())
-                ris.Add(a.transform.position + new Vector3(0,0,30));
-        }
-        ris.Add(Center);
-        return ris;
-    }
-
-    private void AssignPivotPositions(List<Vector3> pivotRepPositions, bool[] isOccupied, Vector3[] targetPositions)
-    {
-        foreach (var pivotRepPosition in pivotRepPositions)
-        {
-            float minDistance = Single.MaxValue;
-            int closestAtom = -1;
-            if (pivotRepPosition == Center) continue;
-            
-            for (int j = 0; j < atoms.Count; j++)
-            {
-                float distance = Vector3.Distance(pivotRepPosition, atoms[j].transform.position);
-                
-                if (!isOccupied[j] && distance < minDistance)
-                {
-                    minDistance = distance;
-                    closestAtom = j;
-                }
-            }
-            isOccupied[closestAtom] = true;
-            targetPositions[closestAtom] = pivotRepPosition;
-        }
-    }
-    
-    private void AssignAtomPositions(List<Vector3> pivotRepPositions, bool[] isOccupied, Vector3[] targetPositions, Vector3 d)
-    {
-        Vector3[] tempTargetPositions = new Vector3[atoms.Count - M + 1]; 
-        int[] atomsIndexes =  new int[atoms.Count - M + 1];
-        int j = -1;
-        for (int i = 0; i < atoms.Count; i++)
-        {
-            if (isOccupied[i]) continue;
-            j++;
-            tempTargetPositions[j] = atoms[i].transform.position - (d + Vector3.one);
-            atomsIndexes[j] = i;
-        }
-        
-        foreach (var pivotRepPosition in pivotRepPositions)
-        {
-            float minDistance = Single.MaxValue;
-            int closestAtom = -1;
-            for (int k = 0; k < tempTargetPositions.Length; k++)
-            {
-                float distance = Vector3.Distance(pivotRepPosition, tempTargetPositions[k]);
-                if (!isOccupied[atomsIndexes[k]] && distance < minDistance)
-                {
-                    minDistance = distance;
-                    closestAtom = k;
-                }
-            }
-            isOccupied[atomsIndexes[closestAtom]] = true;
-            targetPositions[atomsIndexes[closestAtom]] = pivotRepPosition + (d + Vector3.one);
-        }
-
-    }
-    
-    private IEnumerator MoveAllToTargetPositions(Vector3[] targetPositions)
-    {
-        for (int i = 0; i < atoms.Count; i++)
-        {
-            StartCoroutine(MoveToTargetPosition(atoms[i], atoms[i].transform.position, targetPositions[i], 1f));
-            yield return new WaitForSeconds(0.05f);
-        }
-
-        yield return null;
-    }
-    
-    private IEnumerator MoveToTargetPosition(Atom a, Vector3 start, Vector3 end, float duration)
-    {
-        for (float t = 0; t <= duration; t += Time.deltaTime)
-        {
-            float normalizedTime = t / duration;
-            a.transform.position = Vector3.Lerp(start, end, EaseInOutExpo(normalizedTime));
-            detector.SetDirty();
-            yield return null;
-        }
-
-        a.transform.position = end;
-        detector.SetDirty();
-        atomInPositionCrystalCounter++;
-    }
-    
-    private float EaseInOutQuart(float x){
-        return x < 0.5 ? 8 * x * x * x * x : 1 - Mathf.Pow(-2 * x + 2, 4) / 2;
-    }
-    
-    private float EaseInOutExpo(float x) {
-        return x == 0
-            ? 0
-            : Math.Abs(x - 1) < 0.0001f
-                ? 1
-                : x < 0.5 ? Mathf.Pow(2, 20 * x - 10) / 2
-                    : (2 - Mathf.Pow(2, -20 * x + 10)) / 2;
-    }
     
 }

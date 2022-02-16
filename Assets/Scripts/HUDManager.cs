@@ -30,10 +30,12 @@ public class HUDManager : MonoBehaviour
     [SerializeReference] private Button moleculeForbidden;
     [SerializeReference] private Button swap;
     [SerializeReference] private Button crystal;
+    [SerializeReference] private Button crystalDisabled;
     [SerializeReference] private TextManager textManager;
     
 
     private static List<GameObject> buttonsWithSlider;
+    private List<Button> allButtons = new List<Button>();
 
     private void Awake()
     {
@@ -76,6 +78,7 @@ public class HUDManager : MonoBehaviour
             
         }
         
+        allButtons.Add(hint);
         
         //INSTANZIO I BOTTONI E I RELATIVI LISTENER
         if (PowerUpsManger.ZoomUnlocked)
@@ -83,6 +86,7 @@ public class HUDManager : MonoBehaviour
             zoom = Instantiate(zoom, canvas.transform);
             buttonsWithSlider.Add(zoom);
             Button zoomButton = zoom.GetComponentInChildren<Button>();
+            allButtons.Add(zoomButton);
             
             zoomButton.onClick.RemoveAllListeners();
             zoomButton.onClick.AddListener(delegate { DisplaySlider(zoom); });
@@ -111,6 +115,7 @@ public class HUDManager : MonoBehaviour
             lambda = Instantiate(lambda, canvas.transform);
             buttonsWithSlider.Add(lambda);
             Button lambdaButton = lambda.GetComponentInChildren<Button>();
+            allButtons.Add(lambdaButton);
             
             lambdaButton.onClick.RemoveAllListeners();
             lambdaButton.onClick.AddListener(delegate { DisplaySlider(lambda); });
@@ -134,7 +139,7 @@ public class HUDManager : MonoBehaviour
             power = Instantiate(power, canvas.transform);
             buttonsWithSlider.Add(power);
             Button powerButton = power.GetComponentInChildren<Button>();
-
+            allButtons.Add(powerButton);
             
             powerButton.onClick.RemoveAllListeners();
             powerButton.onClick.AddListener(delegate { DisplaySlider(power); });
@@ -158,7 +163,7 @@ public class HUDManager : MonoBehaviour
             rotation = Instantiate(rotation, canvas.transform);
             buttonsWithSlider.Add(rotation);
             Button rotationButton = rotation.GetComponentInChildren<Button>();
-
+            allButtons.Add(rotationButton);
             
             rotationButton.onClick.RemoveAllListeners();
             rotationButton.onClick.AddListener(delegate { DisplaySlider(rotation); });
@@ -180,6 +185,7 @@ public class HUDManager : MonoBehaviour
         if (PowerUpsManger.SwapUnlocked)
         {
             swap = Instantiate(swap, canvas.transform);
+            allButtons.Add(swap);
             swap.onClick.RemoveAllListeners();
             swap.onClick.AddListener(delegate { audioManager.Play("MenuButtonSelection"); });
             
@@ -188,7 +194,9 @@ public class HUDManager : MonoBehaviour
         if (PowerUpsManger.MoleculeUnlocked)
         {
             molecule = Instantiate(molecule, canvas.transform);
+            allButtons.Add(molecule);
             moleculeDisabled = Instantiate(moleculeDisabled, canvas.transform);
+            allButtons.Add(moleculeDisabled);
             moleculeForbidden = Instantiate(moleculeForbidden, canvas.transform);
 
             if (atomsManager.isCrystal)
@@ -225,9 +233,16 @@ public class HUDManager : MonoBehaviour
         if (atomsManager.isCrystal)
         {
             crystal = Instantiate(crystal, canvas.transform);
+            allButtons.Add(crystal);
+            crystalDisabled = Instantiate(crystalDisabled, canvas.transform);
+            allButtons.Add(crystalDisabled);
             crystal.onClick.RemoveAllListeners();
 
-            crystal.onClick.AddListener(delegate { atomsManager.TriggerWhistle(); });
+            crystal.onClick.AddListener(delegate { atomsManager.TriggerCrystalActivation(crystal, crystalDisabled); });
+            
+            crystalDisabled.onClick.RemoveAllListeners();
+            crystalDisabled.onClick.AddListener(delegate { atomsManager.TriggerCrystalDeactivation(crystal, crystalDisabled); });
+            crystalDisabled.gameObject.SetActive(false);
         }
     }
     
@@ -254,9 +269,16 @@ public class HUDManager : MonoBehaviour
         }
     }
 
-    
+    public void DisablePowerUps()
+    {
+        foreach (var button in allButtons)
+        {
+            button.interactable = false;
+        }
+    }
 
     
-    
-   
+
+
+
 }

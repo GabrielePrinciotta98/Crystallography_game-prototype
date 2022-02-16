@@ -3,9 +3,15 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+[Serializable] public enum SoundType
+{
+    Music,
+    Sound
+}
+
 [Serializable] public class Sound
 {
-
+    [SerializeField] private SoundType soundType;
     [SerializeField] private string name;
     [SerializeField] private AudioClip clip;
     
@@ -16,6 +22,12 @@ using UnityEngine;
 
     private AudioSource source;
 
+    public SoundType SoundType
+    {
+        get => soundType;
+        set => soundType = value;
+    }
+    
     public AudioClip Clip
     {
         get => clip;

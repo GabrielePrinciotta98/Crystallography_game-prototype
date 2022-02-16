@@ -5,22 +5,17 @@ using UnityEngine.UI;
 
 public class LevelSelectionManager : MonoBehaviour
 {
-    private int levelButtonsCounter;
     //private int levelButtonsNumber = 20;
 
     private AudioManager audioManager;
     private GameObject canvas;
     [SerializeReference] private GameObject levelButton;
-    private Vector3 originPos = new Vector3(-500, -600, 0);
+    private readonly Vector3 originPos = new Vector3(-400, -300, 0);
     private GameObject backButton;
     private GameObject shopButton;
     private GameObject score;
     private List<GameObject> levelButtons = new List<GameObject>();
-    public int LevelButtonsCounter
-    {
-        get => levelButtonsCounter;
-        private set => levelButtonsCounter = value;
-    }
+    public int LevelButtonsCounter { get; private set; }
 
     void Start()
     {
@@ -35,8 +30,8 @@ public class LevelSelectionManager : MonoBehaviour
         score.GetComponent<ScoreDisplay>().DisplayScore();
         canvas = GameObject.Find("Canvas");
         int c = 0;
-        for (int i = 4; i > 0; i--)
-        for (int j = 0; j < 6; j++)
+        for (int i = 2; i > 0; i--)
+        for (int j = 0; j < 5; j++)
         {
             var cur = Instantiate(levelButton, canvas.transform);
             levelButtons.Add(cur);

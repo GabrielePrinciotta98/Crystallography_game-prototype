@@ -229,7 +229,9 @@ MonoBehaviour:
   - {fileID: 2100000, guid: c485360be9d220a46b5cdb417cbdb8b6, type: 2}
   molecularParent: {fileID: 0}
   molecularChildren: []
+  crystalReplicas: []
   distanceToMolecularParent: 0
+  solved: 0
 --- !u!54 &7642621506531618648
 Rigidbody:
   m_ObjectHideFlags: 0

@@ -7,7 +7,7 @@ using UnityEngine.UI;
 
 public class ShopManager : MonoBehaviour
 {
-
+    private AudioManager audioManager;
     private GameObject score;
     private GameObject backButton;
     private GameObject textBG;
@@ -45,12 +45,14 @@ public class ShopManager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        audioManager = FindObjectOfType<AudioManager>();
         score = GameObject.Find("Score");
         score.GetComponent<ScoreDisplay>().DisplayScore();
         backButton = GameObject.Find("BackButton");
         backButton.GetComponent<Button>().onClick.AddListener(LevelLoader.LoadPrevScene);
         buyButton = GameObject.Find("BuyButton");
         buyButton.GetComponent<Button>().onClick.AddListener(Buy);
+        buyButton.GetComponent<Button>().onClick.AddListener(delegate { audioManager.Play("Selling"); });
         infoButton = GameObject.Find("InfoButton");
         infoButton.GetComponent<Button>().onClick.AddListener(DisplayInfo);
         closeInfoButton = GameObject.Find("CloseInfoButton");
@@ -66,6 +68,7 @@ public class ShopManager : MonoBehaviour
         textBG.transform.GetChild(1).gameObject.SetActive(false);
         textBG.transform.GetChild(3).gameObject.SetActive(false);
         textBG.transform.GetChild(4).gameObject.SetActive(false);
+        textBG.transform.GetChild(5).gameObject.SetActive(false);
 
         // INIZIALIZZO I POWER UP DA COMPRARE   
 
@@ -89,10 +92,8 @@ public class ShopManager : MonoBehaviour
         buttons[3].GetComponent<Button>().onClick.AddListener(delegate { DisplayItem(3); });
         buttons[4].GetComponent<Button>().onClick.AddListener(delegate { DisplayItem(4); });
         buttons[5].GetComponent<Button>().onClick.AddListener(delegate { DisplayItem(5); });
-
-
-        VerifyBuyableItems();
         
+        VerifyBuyableItems();
         
         if (items[0].Sold)
             buttons[0].GetComponent<Image>().sprite = zoomSprites[1];
@@ -362,13 +363,22 @@ public class ShopManager : MonoBehaviour
     
     public void DisplayItem(int id)
     {
-        
         currentItem = id;
        
         textBG.transform.GetChild(0).GetComponent<Text>().text = items[id].Description;
-        textBG.transform.GetChild(1).gameObject.SetActive(true);
         textBG.transform.GetChild(1).GetComponent<Text>().text = items[id].Price.ToString();
-        textBG.transform.GetChild(3).gameObject.SetActive(true);
+        if (ShopItemsData.ShopItems[currentItem].Sold == false)
+        {
+            textBG.transform.GetChild(1).gameObject.SetActive(true);
+            textBG.transform.GetChild(3).gameObject.SetActive(true);
+            textBG.transform.GetChild(5).gameObject.SetActive(false);
+        }
+        else
+        {
+            textBG.transform.GetChild(1).gameObject.SetActive(false);
+            textBG.transform.GetChild(3).gameObject.SetActive(false);
+            textBG.transform.GetChild(5).gameObject.SetActive(true);
+        }
         textBG.transform.GetChild(4).gameObject.SetActive(true);
     }
 
@@ -393,26 +403,44 @@ public class ShopManager : MonoBehaviour
             case 0: buttons[0].GetComponent<Image>().sprite = zoomSprites[1];
                 PowerUpsManger.ZoomUnlocked = true;
                 ShopItemsData.ShopItems[0].Sold = true;
+                textBG.transform.GetChild(1).gameObject.SetActive(false);
+                textBG.transform.GetChild(3).gameObject.SetActive(false);
+                textBG.transform.GetChild(5).gameObject.SetActive(true);
                 break;
             case 1: buttons[1].GetComponent<Image>().sprite = lambdaSprites[1];
                 PowerUpsManger.LambdaUnlocked = true;
                 ShopItemsData.ShopItems[1].Sold = true;
+                textBG.transform.GetChild(1).gameObject.SetActive(false);
+                textBG.transform.GetChild(3).gameObject.SetActive(false);
+                textBG.transform.GetChild(5).gameObject.SetActive(true);
                 break;
             case 2: buttons[2].GetComponent<Image>().sprite = powerSprites[1];
                 PowerUpsManger.PowerUnlocked = true;
                 ShopItemsData.ShopItems[2].Sold = true;
+                textBG.transform.GetChild(1).gameObject.SetActive(false);
+                textBG.transform.GetChild(3).gameObject.SetActive(false);
+                textBG.transform.GetChild(5).gameObject.SetActive(true);
                 break;
             case 3: buttons[3].GetComponent<Image>().sprite = rotationSprites[1];
                 PowerUpsManger.RotationUnlocked = true;
                 ShopItemsData.ShopItems[3].Sold = true;
+                textBG.transform.GetChild(1).gameObject.SetActive(false);
+                textBG.transform.GetChild(3).gameObject.SetActive(false);
+                textBG.transform.GetChild(5).gameObject.SetActive(true);
                 break;
             case 4: buttons[4].GetComponent<Image>().sprite = swapSprites[1];
                 PowerUpsManger.SwapUnlocked = true;
                 ShopItemsData.ShopItems[4].Sold = true;
+                textBG.transform.GetChild(1).gameObject.SetActive(false);
+                textBG.transform.GetChild(3).gameObject.SetActive(false);
+                textBG.transform.GetChild(5).gameObject.SetActive(true);
                 break;
             case 5: buttons[5].GetComponent<Image>().sprite = moleculeSprites[1];
                 PowerUpsManger.MoleculeUnlocked = true;
                 ShopItemsData.ShopItems[5].Sold = true;
+                textBG.transform.GetChild(1).gameObject.SetActive(false);
+                textBG.transform.GetChild(3).gameObject.SetActive(false);
+                textBG.transform.GetChild(5).gameObject.SetActive(true);
                 break;
         }
         

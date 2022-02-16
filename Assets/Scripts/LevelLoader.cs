@@ -39,7 +39,7 @@ public static class LevelLoader
 
     public static void LoadNextLevel()
     {
-        prevScene = SceneManager.GetActiveScene().buildIndex;
+        prevScene = 2;
 
         Debug.Log(levelCounter);
         levelCounter++;

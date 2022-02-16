@@ -26,7 +26,7 @@ public class CheatCode : MonoBehaviour
         if (!Input.GetKey("up") || !Input.GetKey("down") || alreadyActivated) return;
         alreadyActivated = true;
         print("cheatcode activated");
-        LevelsUnlocked.NumberOfLevelsUnlocked = 11;
+        LevelsUnlocked.NumberOfLevelsUnlocked = 10;
         ScoreManager.Score = 99999;
         if (scoreDisplay)
             scoreDisplay.DisplayScore();

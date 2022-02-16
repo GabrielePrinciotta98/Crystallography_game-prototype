@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -11,14 +12,22 @@ public class GameStart : MonoBehaviour
     private AudioManager audioManager;
     public Button startGameButton;
     public Button quitButton;
+    public Button musicButton;
+    public Button musicButtonDisabled;
+    public Button sfxButton;
+    public Button sfxButtonDisabled;
+    public Button creditsButton;
+    public Button backButton;
+    public GameObject creditsBG;
     public int debugLevelCounter = -1;
-    public bool debugMode; 
+    public bool debugMode;
     public bool zoomUnlocked;
     public bool lambdaUnlocked;
     public bool powerUnlocked;
     public bool rotationUnlocked;
     public bool swapUnlocked;
     public bool moleculeUnlocked;
+
     void Awake()
     {
         print("build 1.3");
@@ -31,11 +40,11 @@ public class GameStart : MonoBehaviour
         }
 
         audioManager = FindObjectOfType<AudioManager>();
-        
+
         LevelLoader.LoadedData = true;
         if (quitButton)
         {
-            quitButton.onClick.AddListener(LevelLoader.QuitGame);            
+            quitButton.onClick.AddListener(LevelLoader.QuitGame);
             quitButton.onClick.AddListener(delegate { audioManager.Play("MenuButtonSelection"); });
         }
 
@@ -54,6 +63,24 @@ public class GameStart : MonoBehaviour
                 break;
         }
 
+        musicButton.onClick.AddListener(StopMusic);
+        musicButton.onClick.AddListener(delegate { audioManager.Play("MenuButtonSelection"); });
+        
+        musicButtonDisabled.onClick.AddListener(PlayMusic);
+        musicButtonDisabled.onClick.AddListener(delegate { audioManager.Play("MenuButtonSelection"); });
+
+        sfxButton.onClick.AddListener(StopSfx);
+        sfxButton.onClick.AddListener(delegate { audioManager.Play("MenuButtonSelection"); });
+        
+        sfxButtonDisabled.onClick.AddListener(PlaySfx);
+        sfxButtonDisabled.onClick.AddListener(delegate { audioManager.Play("MenuButtonSelection"); });
+
+        creditsButton.onClick.AddListener(ShowCredits);
+        creditsButton.onClick.AddListener(delegate { audioManager.Play("MenuButtonSelection"); });
+
+        backButton.onClick.AddListener(ExitCredits);
+        backButton.onClick.AddListener(delegate { audioManager.Play("MenuButtonSelection"); });
+        
         if (!debugMode) return;
         PowerUpsManger.ZoomUnlocked = zoomUnlocked;
         PowerUpsManger.LambdaUnlocked = lambdaUnlocked;
@@ -63,10 +90,60 @@ public class GameStart : MonoBehaviour
         PowerUpsManger.MoleculeUnlocked = moleculeUnlocked;
     }
 
+    private void Start()
+    {
+        if (AudioManager.musicOn)
+            PlayMusic();
+        else
+            StopMusic();
+        
+        if (AudioManager.sfxOn)
+            PlaySfx();
+        else
+            StopSfx();
+    }
+
     void LoadLevelSelection()
     {
         SceneManager.LoadScene(2);
     }
-    
-    
+
+    private void StopMusic()
+    {
+        audioManager.StopAll(SoundType.Music);
+        musicButton.gameObject.SetActive(false);
+        musicButtonDisabled.gameObject.SetActive(true);
+    }
+
+    private void PlayMusic()
+    {
+        audioManager.PlayAll(SoundType.Music);
+        musicButton.gameObject.SetActive(true);
+        musicButtonDisabled.gameObject.SetActive(false);
+        audioManager.PlayInLoop("MenuTheme");
+    }
+
+    private void StopSfx()
+    {
+        audioManager.StopAll(SoundType.Sound);
+        sfxButton.gameObject.SetActive(false);
+        sfxButtonDisabled.gameObject.SetActive(true);
+    }
+
+    private void PlaySfx()
+    {
+        audioManager.PlayAll(SoundType.Sound);
+        sfxButton.gameObject.SetActive(true);
+        sfxButtonDisabled.gameObject.SetActive(false);
+    }
+
+    private void ShowCredits()
+    {
+        creditsBG.SetActive(true);
+    }
+
+    private void ExitCredits()
+    {
+        creditsBG.SetActive(false);
+    }
 }

@@ -123,6 +123,11 @@ public class ControlGizmo : MonoBehaviour
     {
         Vector3 p = Vector3.zero;
         p[axis] = atom.transform.localPosition[axis];
+        if (atomsManager.crystalActivated)
+        {
+            p[0] = atom.cell.transform.localPosition[0];
+            p[2] = atom.cell.transform.localPosition[2];
+        }
         frontPlane.transform.localPosition = p;
         backPlane.transform.localPosition = p;
         
@@ -135,6 +140,10 @@ public class ControlGizmo : MonoBehaviour
         Vector3 p = Vector3.zero;
         p[(axis+1)%3] = atom.transform.localPosition[(axis+1)%3];
         p[(axis+2)%3] = atom.transform.localPosition[(axis+2)%3];
+        if (atomsManager.crystalActivated)
+        {
+            p[1] = atom.cell.transform.localPosition[1];
+        }
         frontLine.transform.localPosition = p;
         backLine.transform.localPosition = p;
         
@@ -217,9 +226,9 @@ public class ControlGizmo : MonoBehaviour
     }
 
 
-    public void SetAtom(Atom atom)
+    public void SetAtom(Atom a)
     {
-        this.atom = atom;
+        this.atom = a;
         RefreshPositionPlane();
         RefreshPositionLine();
         if (isSphere)
