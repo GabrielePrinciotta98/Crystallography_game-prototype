@@ -1104,6 +1104,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: CheatCodeText
       objectReference: {fileID: 0}
+    - target: {fileID: 5039190512143395423, guid: eb661283e4b98b840907c1544502b5bb, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: eb661283e4b98b840907c1544502b5bb, type: 3}
 --- !u!224 &804658680 stripped

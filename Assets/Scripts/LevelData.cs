@@ -14,9 +14,9 @@ public static class LevelData
     private const string Desc4 = "Livello  4\n2 atomi sul piano XZ";
     private const string Desc5 = "Livello  5\n3 atomi sul piano XZ";
     private const string Desc6 = "Livello  6\n4 atomi sul piano XZ";
-    private const string Desc7 = "Livello  7\n2 atomi sul piano XYZ";
-    private const string Desc8 = "Livello  8\n3 atomi sul piano XYZ";
-    private const string Desc9 = "Livello  9\n4 atomi sul piano XYZ";
+    private const string Desc7 = "Livello  7\n2 atomi nello spazio XYZ";
+    private const string Desc8 = "Livello  8\n3 atomi nello spazio XYZ";
+    private const string Desc9 = "Livello  9\n4 atomi nello spazio XYZ";
     private const string Desc10 = "Livello  10\n Boss Finale";
     private const string Desc11 = "Livello 11\n6 atomi sul piano XY";
 

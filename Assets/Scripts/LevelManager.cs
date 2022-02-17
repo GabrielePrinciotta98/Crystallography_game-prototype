@@ -287,10 +287,17 @@ public class LevelManager : MonoBehaviour
         if (atomsManager.crystalActivated)
         {
             nextLevelButton.gameObject.SetActive(false);
+            gameWonUI.SetActive(true);
+            youWonUI.SetActive(false);
             StartCoroutine(ShowYouWon(gameWonUI));
         }
         else
+        {
+            gameWonUI.SetActive(false);
+            youWonUI.SetActive(true);
             StartCoroutine(ShowYouWon(youWonUI));
+        }
+
         yield return new WaitForSeconds(1.5f);
         
         StartCoroutine(ShowAddedBonusScore(addedBonusScoreText));
@@ -491,7 +498,6 @@ public class LevelManager : MonoBehaviour
 
     IEnumerator ShowYouWon(GameObject youWonUI)
     {
-        youWonUI.SetActive(true);
         float t = 0;
         float ease;
         float newScaleX, newScaleY;
