@@ -63,25 +63,29 @@ public class GameStart : MonoBehaviour
                 break;
         }
 
-        musicButton.onClick.AddListener(StopMusic);
-        musicButton.onClick.AddListener(delegate { audioManager.Play("MenuButtonSelection"); });
-        
-        musicButtonDisabled.onClick.AddListener(PlayMusic);
-        musicButtonDisabled.onClick.AddListener(delegate { audioManager.Play("MenuButtonSelection"); });
+        if (!debugMode)
+        {
+            musicButton.onClick.AddListener(StopMusic);
+            musicButton.onClick.AddListener(delegate { audioManager.Play("MenuButtonSelection"); });
 
-        sfxButton.onClick.AddListener(StopSfx);
-        sfxButton.onClick.AddListener(delegate { audioManager.Play("MenuButtonSelection"); });
-        
-        sfxButtonDisabled.onClick.AddListener(PlaySfx);
-        sfxButtonDisabled.onClick.AddListener(delegate { audioManager.Play("MenuButtonSelection"); });
+            musicButtonDisabled.onClick.AddListener(PlayMusic);
+            musicButtonDisabled.onClick.AddListener(delegate { audioManager.Play("MenuButtonSelection"); });
 
-        creditsButton.onClick.AddListener(ShowCredits);
-        creditsButton.onClick.AddListener(delegate { audioManager.Play("MenuButtonSelection"); });
+            sfxButton.onClick.AddListener(StopSfx);
+            sfxButton.onClick.AddListener(delegate { audioManager.Play("MenuButtonSelection"); });
 
-        backButton.onClick.AddListener(ExitCredits);
-        backButton.onClick.AddListener(delegate { audioManager.Play("MenuButtonSelection"); });
-        
-        if (!debugMode) return;
+            sfxButtonDisabled.onClick.AddListener(PlaySfx);
+            sfxButtonDisabled.onClick.AddListener(delegate { audioManager.Play("MenuButtonSelection"); });
+
+            creditsButton.onClick.AddListener(ShowCredits);
+            creditsButton.onClick.AddListener(delegate { audioManager.Play("MenuButtonSelection"); });
+
+            backButton.onClick.AddListener(ExitCredits);
+            backButton.onClick.AddListener(delegate { audioManager.Play("MenuButtonSelection"); });
+
+            return;
+        }
+
         PowerUpsManger.ZoomUnlocked = zoomUnlocked;
         PowerUpsManger.LambdaUnlocked = lambdaUnlocked;
         PowerUpsManger.PowerUnlocked = powerUnlocked;
@@ -92,6 +96,7 @@ public class GameStart : MonoBehaviour
 
     private void Start()
     {
+        if (debugMode) return;
         if (AudioManager.musicOn)
             PlayMusic();
         else

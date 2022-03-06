@@ -4,13 +4,11 @@ using UnityEngine;
 
 public class CentralCellSolution : MonoBehaviour
 {
-    //private List<Vector3> atomsSpawnPositions = new List<Vector3>();
     private SolutionManager solutionManager;
     public GameObject pivot;
     public SolutionAtom atom;
     private Vector3 pivotPos;
     private SolutionAtom[] centralCellAtoms = new SolutionAtom[9];
-    private Vector3 curPos;
     private float rotationAngle;
     private GameObject moleculeSpace;
     
@@ -24,23 +22,11 @@ public class CentralCellSolution : MonoBehaviour
         pivotPos = pivot.transform.position;
         solutionManager = FindObjectOfType<SolutionManager>();
         moleculeSpace = GameObject.Find("MoleculeSpaceSolution");
-        /*
-        for (float x = -1.5f; x < 2f; x+=1.5f)
-        for (float y = -1.5f; y < 2f; y+=1.5f)
-        {
-            if (x != 0 || y != 0)
-            {
-                atomsSpawnPositions.Add(solutionManager.GetK() > 5
-                    ? new Vector3(0, y * (solutionManager.GetK() - 5), x * (solutionManager.GetK() - 5))
-                    : new Vector3(0, y, x));
-            }
-        }
-        */
+
     }
 
     void Start()
     {
-        curPos = transform.localPosition;
         pivot = Instantiate(pivot, pivotPos, Quaternion.identity, moleculeSpace.transform);
         InstantiateAtoms();
     }
@@ -57,9 +43,9 @@ public class CentralCellSolution : MonoBehaviour
     
     private void Update()
     {
-        if (solutionManager.GetStop()) return;
-        Quaternion rotation = Quaternion.Euler(0, rotationAngle, 0);
-        transform.rotation = rotation;
+        //if (solutionManager.GetStop()) return;
+        //Quaternion rotation = Quaternion.Euler(0, rotationAngle, 0);
+        //transform.rotation = rotation;
 
     }
 
@@ -73,10 +59,4 @@ public class CentralCellSolution : MonoBehaviour
         return pivot;
     }
     
-    public void Rotate(float angle)
-    {
-        transform.position = curPos;
-        transform.RotateAround(pivotPos, Vector3.up, angle);
-        curPos = transform.position;
-    }
 }

@@ -323,6 +323,7 @@ public class AtomsManager : MonoBehaviour
             for (int j = 0; j < N-1; j++)
             {
                 if (!(Vector3.Distance(newPos, solutionSpawnPositions[j]) < 1)) continue;
+                if (!(Vector3.Distance(newPos, -solutionSpawnPositions[j]) < 1)) continue;
                 isSpawn = true;
                 break;
             }

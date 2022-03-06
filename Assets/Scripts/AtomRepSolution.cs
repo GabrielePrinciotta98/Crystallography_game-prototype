@@ -22,14 +22,7 @@ public class AtomRepSolution : MonoBehaviour
     void Update()
     {
         if (!solutionManager.GetCrystal()) return;
-        if (!solutionManager.GetStop())
-        {
-            transform.parent = centralCellSolution.transform;
-        }
-        else
-        {
-            transform.parent = atomFather;
-        }
+        transform.parent = atomFather;
     }
     
 }

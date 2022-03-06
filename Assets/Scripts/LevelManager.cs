@@ -27,7 +27,6 @@ public class LevelManager : MonoBehaviour
     private AudioManager audioManager;
     private EmitterCone emitterCone;
     private EmitterConeSol emitterConeSol;
-    private int frames;
     private Vector3 atomPos;
     private Vector3[] solAtomPos;
 
@@ -147,18 +146,12 @@ public class LevelManager : MonoBehaviour
             time -= Time.deltaTime;
             Timer.Time = time;
         }
-        if (!solutionManager.GetStop())
-        {
-            solAtomPos = solutionManager.Positions3.ToArray();
-            
-        }
+        
         if (!over && Input.GetMouseButtonUp(0))
         {
             TestVictory();
-            frames = 0;
         }
         
-        frames++;
     }
 
     private void TestVictory()
@@ -167,6 +160,16 @@ public class LevelManager : MonoBehaviour
         //Debug.Log("atom: " + atomsManager.SumPos);
         //Debug.Log("distance: " + Vector4.Distance(atomsManager.SumPos, solutionManager.SumPos));
         float h = Haussdorf();
+        //foreach (var v4 in atomsManager.GetPositions())
+        //{
+        //    Debug.Log("amPos: " + v4);
+        //}
+        Debug.Log("amPos: " + atomsManager.GetPositions()[0]);
+        //foreach (var sap in solAtomPos)
+        //{
+        //    Debug.Log("saPos: " + sap);
+        //}
+        Debug.Log("saPos: " + solutionManager.GetPositions()[0]);
         //Debug.Log("Hausdorff: " + h);
         if (h <= haussdorfThreshold)
         {
@@ -203,8 +206,10 @@ public class LevelManager : MonoBehaviour
 
             for (int j = 0; j < solAtomPos.Length; j++)
             {
-                float d1 = Vector3.Distance(atomsManager.GetPositions()[i], solAtomPos[j]);
-                float d2 = Vector3.Distance(atomsManager.GetPositions()[i], -solAtomPos[j]);
+                //float d1 = Vector3.Distance(atomsManager.GetPositions()[i], solAtomPos[j]);
+                //float d2 = Vector3.Distance(atomsManager.GetPositions()[i], -solAtomPos[j]);
+                float d1 = Vector3.Distance(atomsManager.GetPositions()[i], solutionManager.GetPositions()[j]);
+                float d2 = Vector3.Distance(atomsManager.GetPositions()[i], -solutionManager.GetPositions()[j]);
                 if (d1 < shortest1)
                     shortest1 = d1;
                 if (d2 < shortest2)
@@ -453,6 +458,7 @@ public class LevelManager : MonoBehaviour
         }
         for (int i = 0; i < solAtomPos.Length; i++)
         {
+            Debug.Log("minsaPos:" + solutionManager.GetPositions()[i]);
             float curDist = Vector3.Distance(atomPos, solutionManager.GetPositions()[i]);
             if (!(curDist < minDist)) continue;
             minDist = curDist;
@@ -461,7 +467,7 @@ public class LevelManager : MonoBehaviour
         
         float t = 0;
         float ease, newPosX, newPosY, newPosZ;
-        
+        //Debug.Log("Pos//: " + solutionManager.GetPositions()[j]);
         Vector3 targetPosFromPivot = new Vector3(solutionManager.GetPositions()[j].x, solutionManager.GetPositions()[j].y, solutionManager.GetPositions()[j].z);
         Vector3 targetPos;
         Atom father = atom.transform.parent.GetComponent<Atom>();
@@ -473,7 +479,9 @@ public class LevelManager : MonoBehaviour
         {
             targetPos = targetPosFromPivot;
         }
-        
+
+        targetPos = solutionManager.antiRotation * targetPos;
+        Debug.Log("tPos: " + targetPos);
         while (t <= 1f)
         {
             ease = EaseInCubic(t);

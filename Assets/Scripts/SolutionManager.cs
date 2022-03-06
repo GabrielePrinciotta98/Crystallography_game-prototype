@@ -20,16 +20,12 @@ public class SolutionManager : MonoBehaviour
     private List<Vector3> cellsSpawnPositions = new List<Vector3>();
     private Vector3 centralCellSpawnPos;
     private Vector3[] atomSpawnPositions = new Vector3[8];
-    private bool stop = true;
     List<SolutionAtom> atoms = new List<SolutionAtom>();
     private List<GameObject> cells = new List<GameObject>();
     Vector4[] positions = new Vector4[60];
-    private List<Vector3> positions3 = new List<Vector3>();
     
-    //private List<float> distancesMST = new List<float>();
- 
-    public List<Vector3> Positions3 => positions3;
     private GameObject workspace;
+    public Quaternion antiRotation;
 
     public List<GameObject> AllAtoms { get; } = new List<GameObject>(); //tutti gli atomi (anche cristallo) meno IL pivot
 
@@ -139,15 +135,11 @@ public class SolutionManager : MonoBehaviour
         }
     }
 
-    public bool GetStop()
-    {
-        return stop;
-    }
+    
 
     public void AddAtom(SolutionAtom atom)
     {
         atoms.Add(atom);
-        positions3.Add(atom.PositionFromPivot);
         positions[atoms.IndexOf(atom)] = atom.PositionFromPivot;
 
     }
@@ -155,7 +147,6 @@ public class SolutionManager : MonoBehaviour
     public void SetMyPosition(SolutionAtom atom)
     {
         positions[atoms.IndexOf(atom)] = atom.PositionFromPivot;
-        positions3[atoms.IndexOf(atom)] = atom.PositionFromPivot;
     }
     
     
@@ -219,6 +210,7 @@ public class SolutionManager : MonoBehaviour
     public void Rotate(float degrees)
     {
         moleculeSpace.transform.rotation = Quaternion.Euler(0, degrees, 0);
+        antiRotation = Quaternion.Euler(0, -degrees, 0);
         FindObjectOfType<SolutionDetector>().SetDirty();
     }
     

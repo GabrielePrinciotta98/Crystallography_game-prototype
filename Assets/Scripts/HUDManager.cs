@@ -1,10 +1,12 @@
 using System.Collections.Generic;
+using UnityEditor.UIElements;
 using UnityEngine;
 using UnityEngine.UI;
 
 public class HUDManager : MonoBehaviour
 {
     private AudioManager audioManager;
+    private DialogueBox dialogueBox;
     private GameObject canvas;
     private Detector detector;
     private SolutionDetector solutionDetector;
@@ -37,6 +39,9 @@ public class HUDManager : MonoBehaviour
     private static List<GameObject> buttonsWithSlider;
     private List<Button> allButtons = new List<Button>();
 
+    private float[] spawnPositionsY = {486, 386, 286, 186, 86, -16};
+    private const float SpawnPositionX = -905;
+
     private void Awake()
     {
         hint = GameObject.Find("HintButton").GetComponent<Button>();
@@ -57,6 +62,7 @@ public class HUDManager : MonoBehaviour
         moleculeManager = FindObjectOfType<MoleculeManager>();
         wave = FindObjectOfType<Wave>();
         hintArrow = FindObjectOfType<HintArrow>();
+        dialogueBox = FindObjectOfType<DialogueBox>();
     }
 
     void Start()
@@ -68,7 +74,9 @@ public class HUDManager : MonoBehaviour
         {
             hint.gameObject.SetActive(false);
             hintForbidden.gameObject.SetActive(true);
-            //TODO hintForbidden.addListener.DisplayMessage
+            hintForbidden.onClick.AddListener(delegate { dialogueBox.StartFinalLevelInterference(); });
+            hintForbidden.onClick.AddListener(delegate { audioManager.Play("MenuError"); });
+
         }
         else
         {
@@ -79,11 +87,13 @@ public class HUDManager : MonoBehaviour
         }
         
         allButtons.Add(hint);
-        
+        allButtons.Add(hintForbidden);
         //INSTANZIO I BOTTONI E I RELATIVI LISTENER
         if (PowerUpsManger.ZoomUnlocked)
         {
+            //zoom = Instantiate(zoom, Position(), Quaternion.identity, canvas.transform);
             zoom = Instantiate(zoom, canvas.transform);
+
             buttonsWithSlider.Add(zoom);
             Button zoomButton = zoom.GetComponentInChildren<Button>();
             allButtons.Add(zoomButton);
@@ -113,6 +123,7 @@ public class HUDManager : MonoBehaviour
         if (PowerUpsManger.LambdaUnlocked)
         {
             lambda = Instantiate(lambda, canvas.transform);
+            //lambda = Instantiate(lambda, Position(), Quaternion.identity, canvas.transform);
             buttonsWithSlider.Add(lambda);
             Button lambdaButton = lambda.GetComponentInChildren<Button>();
             allButtons.Add(lambdaButton);
@@ -137,6 +148,7 @@ public class HUDManager : MonoBehaviour
         if (PowerUpsManger.PowerUnlocked)
         {
             power = Instantiate(power, canvas.transform);
+            //power = Instantiate(power, Position(), Quaternion.identity, canvas.transform);
             buttonsWithSlider.Add(power);
             Button powerButton = power.GetComponentInChildren<Button>();
             allButtons.Add(powerButton);
@@ -161,6 +173,7 @@ public class HUDManager : MonoBehaviour
         if (PowerUpsManger.RotationUnlocked)
         {
             rotation = Instantiate(rotation, canvas.transform);
+            //rotation = Instantiate(rotation, Position(), Quaternion.identity, canvas.transform);
             buttonsWithSlider.Add(rotation);
             Button rotationButton = rotation.GetComponentInChildren<Button>();
             allButtons.Add(rotationButton);
@@ -185,6 +198,7 @@ public class HUDManager : MonoBehaviour
         if (PowerUpsManger.SwapUnlocked)
         {
             swap = Instantiate(swap, canvas.transform);
+            //swap = Instantiate(swap, Position(), Quaternion.identity, canvas.transform);
             allButtons.Add(swap);
             swap.onClick.RemoveAllListeners();
             swap.onClick.AddListener(delegate { audioManager.Play("MenuButtonSelection"); });
@@ -193,17 +207,23 @@ public class HUDManager : MonoBehaviour
 
         if (PowerUpsManger.MoleculeUnlocked)
         {
+            //Vector3 moleculeButtonPos = Position();
+            //molecule = Instantiate(molecule, moleculeButtonPos, Quaternion.identity, canvas.transform);
             molecule = Instantiate(molecule, canvas.transform);
             allButtons.Add(molecule);
+            //moleculeDisabled = Instantiate(moleculeDisabled, moleculeButtonPos, Quaternion.identity, canvas.transform);
             moleculeDisabled = Instantiate(moleculeDisabled, canvas.transform);
             allButtons.Add(moleculeDisabled);
+            //moleculeForbidden = Instantiate(moleculeForbidden, moleculeButtonPos, Quaternion.identity, canvas.transform);
             moleculeForbidden = Instantiate(moleculeForbidden, canvas.transform);
+            allButtons.Add(moleculeForbidden);
 
             if (atomsManager.isCrystal)
             {
                 moleculeForbidden.gameObject.SetActive(true);
-                //TODO moleculeForbidden.addListener.DisplayMessage
-                
+                moleculeForbidden.onClick.AddListener(delegate { dialogueBox.StartFinalLevelInterference(); });
+                moleculeForbidden.onClick.AddListener(delegate { audioManager.Play("MenuError"); });
+
                 molecule.gameObject.SetActive(false);
                 moleculeDisabled.gameObject.SetActive(false);
             }
@@ -245,7 +265,12 @@ public class HUDManager : MonoBehaviour
             crystalDisabled.gameObject.SetActive(false);
         }
     }
-    
+
+    private Vector3 Position()
+    {
+        return new Vector3(SpawnPositionX, spawnPositionsY[PowerUpsManger.boughtPowerUpsCounter], 0);
+    }
+
 
     public void DisplaySlider(GameObject powerUp)
     {
@@ -274,6 +299,14 @@ public class HUDManager : MonoBehaviour
         foreach (var button in allButtons)
         {
             button.interactable = false;
+        }
+    }
+    
+    public void EnablePowerUps()
+    {
+        foreach (var button in allButtons)
+        {
+            button.interactable = true;
         }
     }
 

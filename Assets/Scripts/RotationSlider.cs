@@ -22,13 +22,11 @@ public class RotationSlider : MonoBehaviour, IPointerUpHandler, IPointerDownHand
     //OnPointerDown is also required to receive OnPointerUp callbacks
     public void OnPointerDown(PointerEventData eventData)
     {
-        //audioManager.PlayInLoop("Slider");
     }
 
     //Do this when the mouse click on this selectable UI object is released.
     public void OnPointerUp(PointerEventData eventData)
     {
-        audioManager.Stop("Slider");
         float curValue = GetComponent<Slider>().value;
         // SNAP PER I MULTIPLI DI 45
         if (curValue % 45 <= 5)

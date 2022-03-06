@@ -50,17 +50,29 @@ public class ShopManager : MonoBehaviour
         score.GetComponent<ScoreDisplay>().DisplayScore();
         backButton = GameObject.Find("BackButton");
         backButton.GetComponent<Button>().onClick.AddListener(LevelLoader.LoadPrevScene);
+        backButton.GetComponent<Button>().onClick.AddListener(delegate { audioManager.Play("MenuButtonSelection"); });
+
+        
         buyButton = GameObject.Find("BuyButton");
         buyButton.GetComponent<Button>().onClick.AddListener(Buy);
         buyButton.GetComponent<Button>().onClick.AddListener(delegate { audioManager.Play("Selling"); });
+        
         infoButton = GameObject.Find("InfoButton");
         infoButton.GetComponent<Button>().onClick.AddListener(DisplayInfo);
+        infoButton.GetComponent<Button>().onClick.AddListener(delegate { audioManager.Play("MenuButtonSelection"); });
+
         closeInfoButton = GameObject.Find("CloseInfoButton");
         closeInfoButton.GetComponent<Button>().onClick.AddListener(CloseInfo);
+        closeInfoButton.GetComponent<Button>().onClick.AddListener(delegate { audioManager.Play("MenuButtonSelection"); });
+
         nextPageButton = GameObject.Find("NextPageButton");
         nextPageButton.GetComponent<Button>().onClick.AddListener(NextPage);
+        nextPageButton.GetComponent<Button>().onClick.AddListener(delegate { audioManager.Play("MenuButtonSelection"); });
+
         prevPageButton = GameObject.Find("PrevPageButton");
         prevPageButton.GetComponent<Button>().onClick.AddListener(PreviousPage);
+        prevPageButton.GetComponent<Button>().onClick.AddListener(delegate { audioManager.Play("MenuButtonSelection"); });
+
         
         infoPanel = GameObject.Find("InfoPanel");
         infoPanel.SetActive(false);
@@ -87,11 +99,17 @@ public class ShopManager : MonoBehaviour
         };
         
         buttons[0].GetComponent<Button>().onClick.AddListener(delegate { DisplayItem(0); });
+        buttons[0].GetComponent<Button>().onClick.AddListener(delegate { audioManager.Play("MenuButtonSelection"); });
         buttons[1].GetComponent<Button>().onClick.AddListener(delegate { DisplayItem(1); });
+        buttons[1].GetComponent<Button>().onClick.AddListener(delegate { audioManager.Play("MenuButtonSelection"); });
         buttons[2].GetComponent<Button>().onClick.AddListener(delegate { DisplayItem(2); });
+        buttons[2].GetComponent<Button>().onClick.AddListener(delegate { audioManager.Play("MenuButtonSelection"); });
         buttons[3].GetComponent<Button>().onClick.AddListener(delegate { DisplayItem(3); });
+        buttons[3].GetComponent<Button>().onClick.AddListener(delegate { audioManager.Play("MenuButtonSelection"); });
         buttons[4].GetComponent<Button>().onClick.AddListener(delegate { DisplayItem(4); });
+        buttons[4].GetComponent<Button>().onClick.AddListener(delegate { audioManager.Play("MenuButtonSelection"); });
         buttons[5].GetComponent<Button>().onClick.AddListener(delegate { DisplayItem(5); });
+        buttons[5].GetComponent<Button>().onClick.AddListener(delegate { audioManager.Play("MenuButtonSelection"); });
         
         VerifyBuyableItems();
         
