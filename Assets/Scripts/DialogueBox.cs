@@ -19,36 +19,42 @@ public class DialogueBox : MonoBehaviour
         hudManager = FindObjectOfType<HUDManager>();
         dialogue = GetComponentInChildren<Text>();
         dialogue.text = string.Empty;
-        gameObject.SetActive(false);
+        ShowDialogBox(false);
         Debug.Log("dialogue box started");
     }
     
     public void StartShiftButtonTutorial()
     {
-        Debug.Log(TutorialData.ShiftButtonTutorial);
+        Debug.Log(TutorialData.firstTimeLevel7);
+        Debug.Log("StartShift started");
+        Debug.Log(gameObject);
+        Debug.Log("pippo");
         if (!TutorialData.firstTimeLevel7) return;
-        Debug.Log("gameobject: " + gameObject);
-        gameObject.SetActive(true);
+        ShowDialogBox(true);
+        Debug.Log("ciao");
         StartCoroutine(BuildText(TutorialData.ShiftButtonTutorial));
         TutorialData.firstTimeLevel7 = false;
     }
     
     public void StartFinalLevelInterference()
     {
-        gameObject.SetActive(true);
+        if (gameObject == null)
+            Debug.Log("NULLO");
+        ShowDialogBox(true);
+        Debug.Log("ciao");
         StartCoroutine(BuildText(TutorialData.FinalLevelInterference));
     }
     
     public void StartMoleculeModeImpossibleAfterHint()
     {
-        gameObject.SetActive(true);
+        ShowDialogBox(true);
         StartCoroutine(BuildText(TutorialData.MoleculeModeImpossibleAfterHint));
     }
 
     public void StartAlertMoleculeModeImpossibleAfterHint()
     {
         if (moleculeManager.Activated) return;
-        gameObject.SetActive(true);
+        ShowDialogBox(true);
         StartCoroutine(BuildText(TutorialData.AlertMoleculeModeImpossibleAfterHint));
     }
     
@@ -84,6 +90,7 @@ public class DialogueBox : MonoBehaviour
     */
     private IEnumerator BuildText(string[] dialogues)
     {
+        Debug.Log("BuildText started");
         hudManager.DisablePowerUps();
         foreach (var sentence in dialogues)
         {
@@ -100,5 +107,11 @@ public class DialogueBox : MonoBehaviour
     private void Update()
     {
         keyDown = Input.anyKeyDown;
+    }
+
+    private void ShowDialogBox(bool flag)
+    {
+        transform.GetChild(0).gameObject.SetActive(flag);
+        transform.GetChild(1).gameObject.SetActive(flag);
     }
 }

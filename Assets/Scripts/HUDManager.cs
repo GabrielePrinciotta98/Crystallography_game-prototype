@@ -7,7 +7,7 @@ using UnityEngine.UI;
 public class HUDManager : MonoBehaviour
 {
     private AudioManager audioManager;
-    private DialogueBox dialogueBox;
+    
     private GameObject canvas;
     private Detector detector;
     private SolutionDetector solutionDetector;
@@ -35,7 +35,7 @@ public class HUDManager : MonoBehaviour
     [SerializeReference] private Button crystal;
     [SerializeReference] private Button crystalDisabled;
     [SerializeReference] private TextManager textManager;
-    
+    public DialogueBox dialogueBox;
 
     private static List<GameObject> buttonsWithSlider;
     private List<Button> allButtons = new List<Button>();
@@ -62,14 +62,16 @@ public class HUDManager : MonoBehaviour
         moleculeManager = FindObjectOfType<MoleculeManager>();
         wave = FindObjectOfType<Wave>();
         hintArrow = FindObjectOfType<HintArrow>();
-        dialogueBox = FindObjectOfType<DialogueBox>();
     }
 
     void Start()
     {
         buttonsWithSlider = new List<GameObject>();
         textManager = Instantiate(textManager);
-
+        if (dialogueBox == null)
+        {
+            Debug.Log("HUD dialog null");
+        }
         if (atomsManager.isCrystal)
         {
             hint.gameObject.SetActive(false);

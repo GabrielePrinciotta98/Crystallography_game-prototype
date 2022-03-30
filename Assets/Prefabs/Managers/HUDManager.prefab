@@ -54,3 +54,4 @@ MonoBehaviour:
   crystal: {fileID: 7795036844934560492, guid: 7ff41de1643a6544d99d3b3853d3a032, type: 3}
   crystalDisabled: {fileID: 3202582221204184640, guid: 021a8e47effe00b47a5d04a7a1d24c93, type: 3}
   textManager: {fileID: 6273631944732598851, guid: bde7273f3efb4064db2d49c8e5cb5f0c, type: 3}
+  dialogueBox: {fileID: 0}

@@ -25,6 +25,8 @@ public class LevelManager : MonoBehaviour
     [SerializeReference] private GameObject nextLevelButton;
     [SerializeReference] private GameObject backButton;
     [SerializeReference] private MoleculeManager moleculeManager; 
+    [SerializeReference] private DialogueBox dialogueBox;
+
     //[SerializeReference] private GameObject hintArrow;
     private AudioManager audioManager;
     private EmitterCone emitterCone;
@@ -47,7 +49,6 @@ public class LevelManager : MonoBehaviour
     private float haussdorfThreshold = 0.8f;
 
     private ScoreDisplay scoreDisplay;
-    private DialogueBox dialogueBox;
     
     private float time = 300; // 300 secondi
     private bool updateTime;
@@ -68,7 +69,7 @@ public class LevelManager : MonoBehaviour
         InstantiateMoleculeManager(atomsManager, solutionManager);
         
         hudManager = Instantiate(hudManager);
-
+        hudManager.dialogueBox = dialogueBox;
         FindObjectOfType<Detector>().SetAtomsManager(atomsManager);
         FindObjectOfType<Detector>().SetSolutionManager(solutionManager);
         FindObjectOfType<SolutionDetector>().SetSolutionManager(solutionManager);

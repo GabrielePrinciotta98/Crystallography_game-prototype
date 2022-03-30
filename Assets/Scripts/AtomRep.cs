@@ -5,14 +5,14 @@ using UnityEngine;
 public class AtomRep : MonoBehaviour
 {
     public Material[] materials;
-    new Renderer renderer;
+    private Renderer _renderer;
     public Atom Parent { get; set; }
 
     // Start is called before the first frame update
     void Start()
     {
-        renderer = GetComponent<Renderer>();
-        renderer.enabled = true;
+        _renderer = GetComponent<Renderer>();
+        _renderer.enabled = true;
         //renderer.sharedMaterial = materials[0];
     }
 
@@ -20,7 +20,7 @@ public class AtomRep : MonoBehaviour
     
     void Update()
     {
-        renderer.sharedMaterial = Parent.GetSelected() ? materials[1] : materials[0];
+        _renderer.sharedMaterial = Parent.GetSelected() ? materials[1] : materials[0];
         //if (Parent.GetSelected()) renderer.sharedMaterial = materials[1];
         
 

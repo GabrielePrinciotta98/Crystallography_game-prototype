@@ -9,14 +9,14 @@ public class Shadow : MonoBehaviour
 
     public Color color;
     public Color selectedColor;
-    private new Renderer renderer;
+    private Renderer _renderer;
     //private AtomsManager atomsManager;
 
     private void Start()
     {
-        renderer = GetComponent<Renderer>();
-        renderer.enabled = true;
-        renderer.material.color = color;
+        _renderer = GetComponent<Renderer>();
+        _renderer.enabled = true;
+        _renderer.material.color = color;
         transform.localPosition = Vector3.zero;
     }
 

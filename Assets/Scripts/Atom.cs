@@ -16,7 +16,7 @@ public class Atom : MonoBehaviour
     private Renderer dottedLineVertRenderer;
     private Material dottedLineVertMaterial;
     private Vector3 controlPlanePosition;
-    new Renderer renderer;
+    private Renderer _renderer;
     private AtomsManager atomsManager;
     private MoleculeManager moleculeManager;
     private LevelManager levelManager;
@@ -48,8 +48,8 @@ public class Atom : MonoBehaviour
         Physics.IgnoreCollision(GetComponent<SphereCollider>(), magneticField.GetComponent<SphereCollider>(), true);
         detector = FindObjectOfType<Detector>();
         hintArrow = FindObjectOfType<HintArrow>();
-        renderer = GetComponent<Renderer>();
-        renderer.enabled = true;
+        _renderer = GetComponent<Renderer>();
+        _renderer.enabled = true;
         ChangeMaterial(0);
 
         _collider = GetComponent<Collider>();
@@ -307,7 +307,7 @@ public class Atom : MonoBehaviour
 
     public void ChangeMaterial(int i)
     {
-        renderer.sharedMaterial = materials[i];
+        _renderer.sharedMaterial = materials[i];
     }
 
     public void SetSolved(bool flag)
