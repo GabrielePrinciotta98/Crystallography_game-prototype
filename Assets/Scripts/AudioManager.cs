@@ -68,6 +68,7 @@ public class AudioManager : MonoBehaviour
     {
         Sound s = Array.Find(sounds, sound => sound.Name == name);
         s.Source.Stop();
+        
     }
 
     public void StopAll(SoundType soundType)

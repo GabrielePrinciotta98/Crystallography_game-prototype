@@ -39,7 +39,7 @@ public class TextManager : MonoBehaviour
     
     public void SetRotationText(float rotation)
     {
-        this.rotation.text = rotation.ToString("F2");
+        this.rotation.text = rotation.ToString("F0");
     }
 
     public void SetLambdaTextReference(Text text)

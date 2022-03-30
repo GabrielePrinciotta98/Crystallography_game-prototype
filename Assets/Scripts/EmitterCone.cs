@@ -17,6 +17,7 @@ public class EmitterCone : MonoBehaviour
     private bool PowerOn = false;
     private float PowerLevel;
     public Tripod tripod;
+    private HUDManager hudManager;
     
     private void Start()
     {
@@ -87,9 +88,12 @@ public class EmitterCone : MonoBehaviour
 
     private void OnMouseDown()
     {
+        if (PowerOn) return;
         PowerOn = true;
         _renderer.enabled = true;
         tripod.Click();
+        hudManager = FindObjectOfType<HUDManager>();
+        hudManager.CheckEmittersOn();
     }
 
     private void OnMouseEnter()

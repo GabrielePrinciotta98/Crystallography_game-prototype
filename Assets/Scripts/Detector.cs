@@ -6,12 +6,10 @@ using UnityEngine;
 public class Detector : MonoBehaviour
 {
     public Material[] materials;
-    private bool swapped;
     private bool isDirty = true;
     private Renderer _renderer;
     private AtomsManager atomsManager;
     private SolutionManager solutionManager;
-    private LevelManager _levelManager;
     private EmitterCone emitter;
     private Vector4[] positions;
     private readonly Vector4[] centers = new Vector4[100];
@@ -38,9 +36,6 @@ public class Detector : MonoBehaviour
 
     private void Awake()
     {
-        //atomsManager = FindObjectOfType<AtomsManager>();
-        //solutionManager = FindObjectOfType<SolutionManager>();
-        _levelManager = FindObjectOfType<LevelManager>();
         emitter = FindObjectOfType<EmitterCone>();
         arrows = GameObject.Find("Arrows");
     }
@@ -85,11 +80,8 @@ public class Detector : MonoBehaviour
         //uso i metodi del solutionManager per avere i vettori a,c corretti della soluzione
         a = solutionManager.GetCellRight() * atomsManager.GetK();
         c = solutionManager.GetCellForward() * atomsManager.GetK();
-
-        
-        
-        Debug.Log("A: " + a);
-        Debug.Log("C: " + c);
+        //Debug.Log("A: " + a);
+        //Debug.Log("C: " + c);
         
         Shader.SetGlobalVectorArray(AtomsPos, positions);
         Shader.SetGlobalInt(NAtoms, atomsManager.GetAtoms().Count);
@@ -157,21 +149,12 @@ public class Detector : MonoBehaviour
     {
         this.atomsManager = am;
     }
-
-    public void Compare()
-    {
-        if (swapped)
-            UnSwap();
-        else
-            Swap();
-    }
-
+    
     public void Swap()
     {
         _renderer.sharedMaterial = materials[1];
         arrows.SetActive(true);
         emitter.gameObject.SetActive(false);
-        swapped = true;
     }
     
     public void UnSwap()
@@ -179,7 +162,6 @@ public class Detector : MonoBehaviour
         _renderer.sharedMaterial = materials[0];
         arrows.SetActive(false);
         emitter.gameObject.SetActive(true);
-        swapped = false;
 
     }
 

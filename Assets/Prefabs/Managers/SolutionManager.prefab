@@ -52,5 +52,6 @@ MonoBehaviour:
   - {fileID: 3048076628391050855, guid: 023c62a7853acef4299cf569ac3f203e, type: 3}
   N: 9
   M: 27
-  K: 6
+  K: 5
   R: 3
+  antiRotation: {x: 0, y: 0, z: 0, w: 0}

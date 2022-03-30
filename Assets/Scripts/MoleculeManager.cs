@@ -1,8 +1,5 @@
-using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Numerics;
 using UnityEngine;
 using UnityEngine.UI;
 using Quaternion = UnityEngine.Quaternion;
@@ -31,9 +28,6 @@ public class MoleculeManager : MonoBehaviour
 
     private List<Vertex>[] atomsMST;
     
-    private readonly Vector3 pivotPos = new Vector3(22, 6.6f, 10);
-    private readonly Vector3 pivotPosSol = new Vector3(22, 6.6f, -20);
-    private bool active;
     private bool firstActivation = true;
 
     public bool Activated { get; private set; }
@@ -50,6 +44,7 @@ public class MoleculeManager : MonoBehaviour
 
     private void ParentingMolecule()
     {
+        //IMPOSTO PARENTELE NELLA MOLECOLA DI DESTRA
         for (int i = 0; i < atomsMST.Length; i++)
         {
             GameObject curFather = atoms[i];
@@ -66,6 +61,35 @@ public class MoleculeManager : MonoBehaviour
                         atoms[atomsMST[i][j].V].GetComponent<Atom>().molecularParent.transform.position);
             }
         }
+
+        //IMPOSTO PARENTELE NELLA MOLECOLA DELLA SOLUZIONE 
+        for (int i = 0; i < atomsMST.Length; i++)
+        {
+            GameObject curFather = solutionAtoms[i];
+            for (int j = 0; j < atomsMST[i].Count; j++)
+            {
+                // aggiungi figli a ogni atomo eccetto il pivot
+                if (i > 0) curFather.GetComponent<SolutionAtom>().molecularChildren.Add(solutionAtoms[atomsMST[i][j].V].GetComponent<SolutionAtom>());
+                // aggiungi il padre a ogni atomo 
+                solutionAtoms[atomsMST[i][j].V].GetComponent<SolutionAtom>().molecularParent = solutionAtoms[atomsMST[i][j].Parent];
+                // aggiungi la distanza dal padre a ogni atomo
+                solutionAtoms[atomsMST[i][j].V].GetComponent<SolutionAtom>().distanceToMolecularParent =
+                    Vector3.Distance(solutionAtoms[atomsMST[i][j].V].transform.position,
+                        solutionAtoms[atomsMST[i][j].V].GetComponent<SolutionAtom>().molecularParent.transform.position);
+            }
+        }
+        
+        /*
+        for (int i = 0; i < solutionMST.Length; i++)
+        {
+            // aggiungi il padre a ogni atomo 
+            solutionAtoms[solutionMST[i].V].GetComponent<SolutionAtom>().molecularParent = solutionAtoms[solutionMST[i].Parent];
+            // aggiungi la distanza dal padre a ogni atomo
+            solutionAtoms[solutionMST[i].V].GetComponent<SolutionAtom>().distanceToMolecularParent =
+                Vector3.Distance(solutionAtoms[solutionMST[i].V].transform.position,
+                    solutionAtoms[solutionMST[i].V].GetComponent<SolutionAtom>().molecularParent.transform.position);
+        }
+        */
     }
 
     private void DisplayMoleculeBonds()
@@ -116,11 +140,7 @@ public class MoleculeManager : MonoBehaviour
         solutionBonds = CreateAtomsGraph(SolutionManager.GetAtomSpawnPositions());
         solutionMST = GetMST(BondListToWeightedMatrix(solutionBonds, distancesGraph));
         markedNodesSolMST = new bool[solutionMST.Length];
-        foreach (Vertex u in solutionMST)
-        {
-            if (u.Parent < 0) continue;
-            //Debug.Log($"From father Vertex {u.Parent} to Vertex {u.V}, distance is: {u.Key}");
-        }
+        
     }
     
     private List<int[]> CreateAtomsGraph(Vector3[] atomsPositons)
@@ -224,17 +244,6 @@ public class MoleculeManager : MonoBehaviour
             }
         }
 
-        foreach (var father in ris)
-        {
-            
-            foreach (var child in father)
-            {
-                
-                Debug.Log($"Father {child.Parent}, child {child.V}, distance {child.Key}");
-
-            }
-        }
-        
         return ris;
     }
     
@@ -281,11 +290,11 @@ public class MoleculeManager : MonoBehaviour
             p = AtomsManager.GetAtoms()[v.Parent - 1].transform.localPosition;
 
         Vector3 d = Vector3.Normalize(f - p);
-        Debug.Log(v.Key);
+        //Debug.Log(v.Key);
         Vector3 newF = p + d * ((float) v.Key / 10);
         AtomsManager.GetAtoms()[v.V - 1].transform.localPosition = newF;
         allAtomsPositions[v.V] = newF;
-        Debug.Log("enforce");
+        //Debug.Log("enforce");
     }
 
     public void ActivateMolecule(Button molecule, Button moleculeDisabled)
@@ -342,7 +351,6 @@ public class MoleculeManager : MonoBehaviour
         }
         else
         {
-            Debug.Log("second");
             Dfs(solutionMST[0]);
             DisplayMoleculeBonds();
         }

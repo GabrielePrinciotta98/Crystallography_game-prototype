@@ -63,7 +63,6 @@ public class Cell : MonoBehaviour
     {
         float distance = Vector3.Distance(transform.position, atomPosition);
         float newAlpha = (float) (0.4f - Math.Pow(distance / 1000, 0.25f));
-        Debug.Log(newAlpha);
         Color finalColor = new Color(1, 1, 1, newAlpha);
         StartCoroutine(Fade(mat.color, finalColor, 0.1f));
     }

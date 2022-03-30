@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using UnityEditor.UIElements;
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.UI;
 
 public class HUDManager : MonoBehaviour
@@ -39,8 +40,7 @@ public class HUDManager : MonoBehaviour
     private static List<GameObject> buttonsWithSlider;
     private List<Button> allButtons = new List<Button>();
 
-    private float[] spawnPositionsY = {486, 386, 286, 186, 86, -16};
-    private const float SpawnPositionX = -905;
+    private int clicksOnHint = 0;
 
     private void Awake()
     {
@@ -82,7 +82,18 @@ public class HUDManager : MonoBehaviour
         {
             hint.gameObject.SetActive(true);
             hintForbidden.gameObject.SetActive(false);
-            hint.onClick.AddListener(delegate { hintArrow.Activate(); });
+            if (PowerUpsManger.MoleculeUnlocked)
+            {
+                hint.onClick.AddListener(delegate { dialogueBox.StartAlertMoleculeModeImpossibleAfterHint(); });
+                hint.onClick.AddListener(ActivateWithMoleculeUnlocked);
+                
+            }
+            else
+            {
+                hint.onClick.AddListener(delegate { hintArrow.Activate(); });
+                hint.onClick.AddListener(delegate { audioManager.Play("HintArrowActivation"); });
+            }
+            hint.onClick.AddListener(delegate { audioManager.Play("MenuButtonSelection"); });
             
         }
         
@@ -236,6 +247,7 @@ public class HUDManager : MonoBehaviour
                 {
                     moleculeManager.ActivateMolecule(molecule, moleculeDisabled);
                 });
+                molecule.onClick.AddListener(ActivateWithMoleculeUnlocked);
                 molecule.onClick.AddListener(delegate { audioManager.Play("MenuButtonSelection"); });
 
                 moleculeDisabled.onClick.RemoveAllListeners();
@@ -264,11 +276,33 @@ public class HUDManager : MonoBehaviour
             crystalDisabled.onClick.AddListener(delegate { atomsManager.TriggerCrystalDeactivation(crystal, crystalDisabled); });
             crystalDisabled.gameObject.SetActive(false);
         }
+        
+        DisablePowerUps();
     }
 
-    private Vector3 Position()
+    private void ActivateWithMoleculeUnlocked()
     {
-        return new Vector3(SpawnPositionX, spawnPositionsY[PowerUpsManger.boughtPowerUpsCounter], 0);
+        hint.onClick.AddListener(IncreaseClicksOnHintCounter);
+        if (clicksOnHint < 0) return;
+        hint.onClick.RemoveAllListeners();
+        hint.onClick.AddListener(ForbidMoleculeMode);
+        hint.onClick.AddListener(delegate { hintArrow.Activate(); });
+        hint.onClick.AddListener(delegate { audioManager.Play("HintArrowActivation"); });
+    }
+    
+    private void IncreaseClicksOnHintCounter()
+    {
+        clicksOnHint++;
+    }
+
+    private void ForbidMoleculeMode()
+    {
+        moleculeForbidden.gameObject.SetActive(true);
+        moleculeForbidden.onClick.AddListener(delegate { dialogueBox.StartMoleculeModeImpossibleAfterHint(); });
+        moleculeForbidden.onClick.AddListener(delegate { audioManager.Play("MenuError"); });
+
+        molecule.gameObject.SetActive(false);
+        moleculeDisabled.gameObject.SetActive(false);
     }
 
 
@@ -300,17 +334,33 @@ public class HUDManager : MonoBehaviour
         {
             button.interactable = false;
         }
+        
+        const float textPosXMin = 160;
+        foreach (var b in buttonsWithSlider)
+        {
+            b.transform.GetChild(0).gameObject.SetActive(false);
+            var textPos = b.transform.GetChild(1).transform.GetChild(0).localPosition;
+            textPos = new Vector3(textPosXMin, textPos.y, textPos.z);
+            b.transform.GetChild(1).transform.GetChild(0).localPosition = textPos;
+        }
     }
     
     public void EnablePowerUps()
     {
         foreach (var button in allButtons)
         {
+            if (button == hint && hintArrow.activated) continue;
             button.interactable = true;
         }
     }
 
-    
+    public void CheckEmittersOn()
+    {
+        if (emitterCone.GetPowerOn() && emitterConeSol.GetPowerOn())
+        {
+            EnablePowerUps();
+        }
+    }
 
 
 

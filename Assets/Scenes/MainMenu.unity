@@ -240,7 +240,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5039190512143395423, guid: eb661283e4b98b840907c1544502b5bb, type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: eb661283e4b98b840907c1544502b5bb, type: 3}
@@ -1348,7 +1348,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1039579584
 RectTransform:
   m_ObjectHideFlags: 0
@@ -1365,8 +1365,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 680.25977, y: 435.9243}
-  m_SizeDelta: {x: 3340.519, y: 556.7534}
+  m_AnchoredPosition: {x: 2.7802, y: 436.3877}
+  m_SizeDelta: {x: 1980, y: 330.9268}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1039579585
 MonoBehaviour:
@@ -2017,8 +2017,8 @@ MonoBehaviour:
     pitch: 1
   - soundType: 1
     name: Victory
-    clip: {fileID: 8300000, guid: e73677b1deb14d848a4511c6efd4b248, type: 3}
-    volume: 1
+    clip: {fileID: 8300000, guid: beee25b8ac3e1a642afddd3289343a65, type: 3}
+    volume: 0.5
     pitch: 1
   - soundType: 0
     name: GameplayTheme
@@ -2028,8 +2028,8 @@ MonoBehaviour:
   - soundType: 1
     name: EmitterOn
     clip: {fileID: 8300000, guid: 4633106024eb76f48a5cd2211ceb26dd, type: 3}
-    volume: 0.4
-    pitch: 1.3
+    volume: 0.3
+    pitch: 1.6
   - soundType: 1
     name: Selling
     clip: {fileID: 8300000, guid: e7b4a3515168bce42af1885f251ec856, type: 3}
@@ -2038,6 +2038,16 @@ MonoBehaviour:
   - soundType: 1
     name: MenuError
     clip: {fileID: 8300000, guid: 2e54677a9cd860f46ab218b7e6109f55, type: 3}
+    volume: 1
+    pitch: 1
+  - soundType: 1
+    name: HintArrowActivation
+    clip: {fileID: 8300000, guid: 47714e5b0d1002d4c9d5de3efc70e793, type: 3}
+    volume: 1
+    pitch: 1
+  - soundType: 1
+    name: Snap
+    clip: {fileID: 8300000, guid: e73677b1deb14d848a4511c6efd4b248, type: 3}
     volume: 1
     pitch: 1
 --- !u!4 &1949036992

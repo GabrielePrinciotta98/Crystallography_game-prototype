@@ -85,8 +85,6 @@ public static class LevelData
 
             // LV 10 CRISTALLO LIVELLO FINALE 
             levels.Add(new Level(3,27,2,true, Desc10, XYZ));
-            Vector3[] lvPositions = {new Vector3(Random.Range(-2f, 2f), Random.Range(-2f, 2f), Random.Range(-2f, 2f))};
-            levels[9].SolPositions = lvPositions;
 
             /*
             // LV 12 CRISTALLO 5x5x5 PROVA
@@ -101,6 +99,8 @@ public static class LevelData
             */
         }
     }
+
+    
 
     /*private static Vector3[] RandomPositions(string plane, int n)
     {

@@ -9,7 +9,10 @@ public class SolutionAtom : MonoBehaviour
     private Vector3 curPos;
     private float rotationAngle;
     public Vector3 PositionFromPivot { get; set; }
-    
+    public float distanceToMolecularParent;
+    public GameObject molecularParent;
+    public List<SolutionAtom> molecularChildren;
+
     // Start is called before the first frame update
     void Awake()
     {

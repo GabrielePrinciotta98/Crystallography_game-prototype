@@ -7,6 +7,7 @@ using Vector3 = UnityEngine.Vector3;
 
 public class Atom : MonoBehaviour
 {
+    private GameObject magneticField;
     public Material[] materials;
     private ControlGizmo controlGizmo;
     private DottedLine dottedLineHoriz;
@@ -17,8 +18,8 @@ public class Atom : MonoBehaviour
     private Vector3 controlPlanePosition;
     new Renderer renderer;
     private AtomsManager atomsManager;
-    private SolutionManager solutionManager;
     private MoleculeManager moleculeManager;
+    private LevelManager levelManager;
     private Collider _collider;
     private Detector detector;
     public Vector3 PositionFromPivot { get; set; }
@@ -37,12 +38,16 @@ public class Atom : MonoBehaviour
     public bool solved;
     private bool dragged;
 
+    private HintArrow hintArrow;
     private static readonly int _EmissionColor = Shader.PropertyToID("_EmissionColor");
 
 
     private void Start()
     {
+        magneticField = transform.GetChild(1).gameObject;
+        Physics.IgnoreCollision(GetComponent<SphereCollider>(), magneticField.GetComponent<SphereCollider>(), true);
         detector = FindObjectOfType<Detector>();
+        hintArrow = FindObjectOfType<HintArrow>();
         renderer = GetComponent<Renderer>();
         renderer.enabled = true;
         ChangeMaterial(0);
@@ -51,8 +56,8 @@ public class Atom : MonoBehaviour
         _collider.enabled = false;
         
         atomsManager = FindObjectOfType<AtomsManager>();
-        solutionManager = FindObjectOfType<SolutionManager>();
         moleculeManager = FindObjectOfType<MoleculeManager>();
+        levelManager = FindObjectOfType<LevelManager>();
 
         
         controlGizmo = FindObjectOfType<ControlGizmo>();
@@ -94,28 +99,33 @@ public class Atom : MonoBehaviour
             atomsManager.SetMyPosition(this);
             EnforceInsideWorkspace();
         }
-
     }
     
 
     private void OnMouseOver()
     {
-        if (!dragged)
-            ChangeMaterial(2);
+        if (dragged) return;
+        bool hintArrowActivated = hintArrow.activated && this == hintArrow.chosenAtom;
+        ChangeMaterial(hintArrowActivated ? 6 : 2); 
     }
 
     private void OnMouseExit()
     {
-        if (!solved)
-          ChangeMaterial(0);
-
-        
+        if (solved)
+        {
+            ChangeMaterial(3);
+            return;
+        }
+        bool hintArrowActivated = hintArrow.activated && this == hintArrow.chosenAtom;
+        ChangeMaterial(hintArrowActivated ? 4 : 0);
     }
 
     private void OnMouseDown()
     {
         if (solved) return;
         atomsManager.SetDraggingAtom(this);
+        //magneticField.GetComponent<SphereCollider>().isTrigger = true;
+        //magneticField.GetComponent<Rigidbody>().isKinematic = false;
 
         //blocca la posizione di tutti gli atomi eccetto quello che si sta trascinando
         atomsManager.FreezeAtoms();
@@ -128,7 +138,8 @@ public class Atom : MonoBehaviour
             foreach (var c in cells)
                 c.ChangeAlpha(transform.position);
 
-        ChangeMaterial(2);
+        bool hintArrowActivated = hintArrow.activated && this == hintArrow.chosenAtom;
+        ChangeMaterial(hintArrowActivated ? 6 : 2);
         SetSelected(true);
     }
 
@@ -142,16 +153,16 @@ public class Atom : MonoBehaviour
     private void OnMouseDrag()
     {
         if (solved) return;
-        
-        ChangeMaterial(1);
+        bool hintArrowActivated = hintArrow.activated && this == hintArrow.chosenAtom;
+        ChangeMaterial(hintArrowActivated ? 5 : 1);
         dragged = true;
+        levelManager.anAtomWasDragged = true;
         Vector3 newPos;
         
         
         bool fail;
         if (ModifierActive())
         {
-
             if (moleculeManager.Activated)
             {
                 newPos = controlGizmo.PositionUnderMouseLineAndSphere(out fail);
@@ -208,7 +219,34 @@ public class Atom : MonoBehaviour
         
         detector.SetDirty();
     }
+    
+    
+    private void OnMouseUp()
+    {
+        SetSelected(false);
+        dragged = false;
+        dottedLineVert.SetAtom(null, false);
+        dottedLineVertRenderer.enabled = false;
+        dottedLineHorizRenderer.enabled = false;
 
+        controlGizmo.DisableElements();
+
+        //magneticField.GetComponent<SphereCollider>().isTrigger = false;
+        //magneticField.GetComponent<Rigidbody>().isKinematic = true;
+        //SBLOCCA LA POSIZIONE DI TUTTI GLI ATOMI PERCHè SI HA SMESSO DI TRASCINARE
+        atomsManager.UnFreezeAtoms();
+        
+        if (!solved)
+        {
+            bool hintArrowActivated = hintArrow.activated && this == hintArrow.chosenAtom;
+            ChangeMaterial(hintArrowActivated ? 4 : 0);
+        }
+        
+        if (!atomsManager.crystalActivated) return;
+        foreach (var c in cells)
+            c.ResetAlpha();
+    }
+    
     //fa muovere l'intero sotto-albero di un atomo
     private void AddOffsetToChildren(Vector3 offset)
     {
@@ -224,16 +262,17 @@ public class Atom : MonoBehaviour
         foreach (var replica in crystalReplicas)
         {
             if (replica != gameObject)
-                replica.transform.position = replica.transform.position + offset;
+                replica.transform.position += offset;
         }
     }
+    
 
     private void EnforceInsideWorkspace()
     {
         Vector3 pos = transform.localPosition;
         pos = new Vector3(Mathf.Clamp(pos.x, -8, 8),
-                            Mathf.Clamp(pos.y, -8, 8),
-                            Mathf.Clamp(pos.z, -8, 8));
+            Mathf.Clamp(pos.y, -8, 8),
+            Mathf.Clamp(pos.z, -8, 8));
         transform.localPosition = pos;
     }
 
@@ -249,37 +288,12 @@ public class Atom : MonoBehaviour
         Vector3 cellPosition = cell.transform.localPosition;
         Vector3 pos = transform.localPosition;
         pos = new Vector3(Mathf.Clamp(pos.x, cellPosition.x - 2, cellPosition.x + 2),
-                            Mathf.Clamp(pos.y, cellPosition.y - 2, cellPosition.y + 2),
-                            Mathf.Clamp(pos.z, cellPosition.z - 2, cellPosition.z + 2));
+            Mathf.Clamp(pos.y, cellPosition.y - 2, cellPosition.y + 2),
+            Mathf.Clamp(pos.z, cellPosition.z - 2, cellPosition.z + 2));
         transform.localPosition = pos;
     }
-
     
     
-
-    private void OnMouseUp()
-    {
-        SetSelected(false);
-        dragged = false;
-        dottedLineVert.SetAtom(null, false);
-        dottedLineVertRenderer.enabled = false;
-        dottedLineHorizRenderer.enabled = false;
-
-        controlGizmo.DisableElements();
-
-        //SBLOCCA LA POSIZIONE DI TUTTI GLI ATOMI PERCHè SI HA SMESSO DI TRASCINARE
-        atomsManager.UnFreezeAtoms();
-
-
-        if (!solved)
-            ChangeMaterial(0);
-        
-        if (!atomsManager.crystalActivated) return;
-        foreach (var c in cells)
-            c.ResetAlpha();
-    }
-
-
     public void SetSelected(bool flag)
     {
         selected = flag;
@@ -301,7 +315,10 @@ public class Atom : MonoBehaviour
         solved = flag;
     }
 
-    
 
-
+    private void OnTriggerEnter(Collider other)
+    {
+        if (magneticField.CompareTag(other.tag) && CompareTag("MagneticField"))
+            Debug.Log("collisione");
+    }
 }

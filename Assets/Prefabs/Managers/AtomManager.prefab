@@ -54,8 +54,12 @@ MonoBehaviour:
   - {fileID: 6964083292426311379, guid: 758e26d329e1b4441a22370ac9152ebe, type: 3}
   N: 9
   M: 27
-  K: 6
+  K: 5
   R: 3
   pivotRep: {fileID: 1628565725700111226, guid: e7667a72b27d94d448192585a8009f70, type: 3}
   atomRep: {fileID: 4968323987487669519, guid: 4a1533c4e38bbd641a2e4ab2eba72b01, type: 3}
   selectedAtomRep: {fileID: 2100000, guid: cfc1795efa0336843bb1d4d647e36a2b, type: 2}
+  cells: []
+  centralCellAtom: {fileID: 0}
+  newAtoms: []
+  atomRelatedCellPositions: 

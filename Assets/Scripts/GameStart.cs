@@ -27,10 +27,10 @@ public class GameStart : MonoBehaviour
     public bool rotationUnlocked;
     public bool swapUnlocked;
     public bool moleculeUnlocked;
-
+    
     void Awake()
     {
-        print("build 1.3");
+        print("build 1.5");
         // Inizializza i livelli
         if (LevelLoader.LoadedData == false)
         {
@@ -40,7 +40,6 @@ public class GameStart : MonoBehaviour
         }
 
         audioManager = FindObjectOfType<AudioManager>();
-
         LevelLoader.LoadedData = true;
         if (quitButton)
         {

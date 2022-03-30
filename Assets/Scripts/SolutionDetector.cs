@@ -71,8 +71,8 @@ public class SolutionDetector : MonoBehaviour
         positions = solutionManager.GetPositions();
         a = solutionManager.GetCellRight() * solutionManager.GetK();
         c = solutionManager.GetCellForward() * solutionManager.GetK();
-        Debug.Log("solutionA: " + a);
-        Debug.Log("solutionC: " + c);
+        //Debug.Log("solutionA: " + a);
+        //Debug.Log("solutionC: " + c);
         Shader.SetGlobalVectorArray(AtomsPoss, positions);
         Shader.SetGlobalInt(NAToms, solutionManager.GetAtoms().Count);
         Shader.SetGlobalFloat(_Zoom, zoom);

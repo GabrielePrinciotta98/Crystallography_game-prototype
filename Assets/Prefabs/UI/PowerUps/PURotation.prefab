@@ -58,7 +58,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0, g: 0.6117647, b: 1, a: 1}
+  m_Color: {r: 0.4392157, g: 0, b: 1, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -364,6 +364,10 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 9036660121389705759, guid: f57039cfd03c91d40a84f1d6a58eff29, type: 3}
+      propertyPath: m_WholeNumbers
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 9036660121389705759, guid: f57039cfd03c91d40a84f1d6a58eff29, type: 3}
       propertyPath: m_OnValueChanged.m_PersistentCalls.m_Calls.Array.size
       value: 0
       objectReference: {fileID: 0}
@@ -380,6 +384,18 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 9036660122695601208, guid: f57039cfd03c91d40a84f1d6a58eff29, type: 3}
+      propertyPath: m_Color.b
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 9036660122695601208, guid: f57039cfd03c91d40a84f1d6a58eff29, type: 3}
+      propertyPath: m_Color.g
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 9036660122695601208, guid: f57039cfd03c91d40a84f1d6a58eff29, type: 3}
+      propertyPath: m_Color.r
+      value: 0.4392157
+      objectReference: {fileID: 0}
+    - target: {fileID: 9036660122695601208, guid: f57039cfd03c91d40a84f1d6a58eff29, type: 3}
       propertyPath: m_RaycastTarget
       value: 0
       objectReference: {fileID: 0}
@@ -387,6 +403,22 @@ PrefabInstance:
       propertyPath: m_AnchorMax.y
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 9036660122886979822, guid: f57039cfd03c91d40a84f1d6a58eff29, type: 3}
+      propertyPath: m_Color.b
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 9036660122886979822, guid: f57039cfd03c91d40a84f1d6a58eff29, type: 3}
+      propertyPath: m_Color.g
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 9036660122886979822, guid: f57039cfd03c91d40a84f1d6a58eff29, type: 3}
+      propertyPath: m_Color.r
+      value: 0.4370861
+      objectReference: {fileID: 0}
+    - target: {fileID: 9036660122886979822, guid: f57039cfd03c91d40a84f1d6a58eff29, type: 3}
+      propertyPath: m_FontData.m_Font
+      value: 
+      objectReference: {fileID: 10102, guid: 0000000000000000e000000000000000, type: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: f57039cfd03c91d40a84f1d6a58eff29, type: 3}
 --- !u!1 &6106750215774582802 stripped

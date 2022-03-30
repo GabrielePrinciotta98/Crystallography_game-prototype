@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Net;
-using UnityEditor.UIElements;
 using UnityEngine;
 using UnityEngine.UI;
 using Random = UnityEngine.Random;
@@ -50,7 +48,6 @@ public class AtomsManager : MonoBehaviour
     public List<int> atomRelatedCellPositions = new List<int>(); 
     
 
-    // Start is called before the first frame update
     void Start()
     {
         moleculeSpace = GameObject.Find("MoleculeSpace");
@@ -86,17 +83,7 @@ public class AtomsManager : MonoBehaviour
                         Center.y + atomsSpawnPositions[i].y,
                         Center.z + atomsSpawnPositions[i].z),
                     Quaternion.identity, moleculeSpace.transform);
-            /*
-            Instantiate(platforms[1]);
-            // SPAWN CELLA CENTRALE
-            centralCell = Instantiate(centralCell, centralCellSpawnPos, Quaternion.identity);
-            if (K >= 5)
-                centralCell.transform.localScale *= K; // scalo la dimensione del modulo centrale
-            else
-                centralCell.transform.localScale *= 5;
-
-            SpawnRepeatedCells();
-            */
+            
             
         }
         else
@@ -163,12 +150,15 @@ public class AtomsManager : MonoBehaviour
     }
 
 
-    public void FreezeAtoms()
+    public void FreezeAtoms() 
     {
         foreach (var atom in atoms)
         {
             if (atom != draggingAtom)
+            {
                 atom.GetComponent<Rigidbody>().constraints = RigidbodyConstraints.FreezeAll;
+                atom.transform.GetChild(1).GetComponent<Rigidbody>().constraints = RigidbodyConstraints.FreezeAll;
+            }
             else
             {
                 if (LevelType.Equals("YZ"))
@@ -256,16 +246,7 @@ public class AtomsManager : MonoBehaviour
     {
         return K;
     }
-
-    public Vector3 GetCellForward()
-    {
-        return centralCell.transform.forward;
-    }
-
-    public Vector3 GetCellRight()
-    {
-        return centralCell.transform.right;
-    }
+    
     
 
     public void Rotate(float degrees)
@@ -356,21 +337,26 @@ public class AtomsManager : MonoBehaviour
     {
         return pivot;
     }
-
-    /*
-    public void UpdateCells()
+    
+    public bool CheckDistanceBetweenAtoms(float haussdorfThreshold)
     {
-        foreach (var cell in cells)
+        for (int i = 0; i < atoms.Count; i++)
         {
-            cell.GetComponent<Cell>().DestroyAtoms();
-            Destroy(cell);
+            for (int j = 0; j < atoms.Count; j++)
+            {
+                if (i == j) continue;
+                //Debug.Log($"distanza tra i({i}) e j({j}) : {Vector3.Distance(positions[i], positions[j])}");
+                if (Vector3.Distance(positions[i], positions[j]) <= 2*haussdorfThreshold)
+                    return false;
+            }
         }
 
-        cells = new List<GameObject>();
-        CalculateCellsPositions();
-        SpawnRepeatedCells();
+        return true;
     }
-    */
+    
+    
+    //------------------------------------------------------------------
+    
 
     public void TriggerCrystalActivation(Button crystal, Button crystalDisabled)
     {
@@ -457,9 +443,7 @@ public class AtomsManager : MonoBehaviour
         crystalActivated = true;
         GameStart = true; //riattivo il trascinamento degli atomi
     }
-
     
-
 
     private Vector3 FindBarycenterToCenterVector(bool[] isOccupied)
     {
@@ -684,156 +668,5 @@ public class AtomsManager : MonoBehaviour
 
         yield return null;
     }
-     
-    
-    //------------------------------------------------------------------
-
-    /*
-    private IEnumerator Whistle()
-    {
-        
-        solutionManager = FindObjectOfType<SolutionManager>();
-        GameObject[] targetAtoms = solutionManager.AllAtoms.ToArray();
-
-        List<Atom> centralCellAtoms = GetCentralCellAtoms(targetAtoms);
-        
-        //MoveAtomsInCrystalPositions(targetAtoms);
-        //changeatomstype deve partire solo quando tutti gli atomi sono in posizione
-        yield return StartCoroutine(ChangeAtomsType(targetAtoms, centralCellAtoms));
-        
-        
-        //il numero di atomi nella lista Atoms deve passare da 53 a 1, l'unico atomo della cella centrale
-        atoms = centralCellAtoms;
-        
-        //passare allo shader i parametri della modalita cristallo
-        detector.TransitionHappened = true;
-        detector.SetDirty();
-        
-        //spawn delle celle attorno agli atomi
-        var centralCellTemp = Instantiate(centralCell, centralCellSpawnPos, Quaternion.identity, moleculeSpace.transform);
-        centralCellTemp.transform.localScale *= K;
-        SpawnRepeatedCells(centralCellTemp);
-        
-        crystalActivated = true;
-        GameStart = true; //riattivo il trascinamento degli atomi
-
-    }
-    
-    private IEnumerator ChangeAtomsType(GameObject[] targetAtoms, List<Atom> centralCellAtoms)
-    {
-        yield return StartCoroutine(MoveAtomsInCrystalPositions(targetAtoms));
-        yield return new WaitUntil(() => atomInPositionCrystalCounter == 53);
-        Debug.Log("finito gli spostamenti");
-        for (var i = 0; i < atoms.Count; i++)
-        {
-            var a = atoms[i];
-            var t = targetAtoms[i];
-
-            if (t.GetComponent<PivotAtomRepSol>() != null)
-                ChangeToPivotAtomRep(a.gameObject);
-
-            if (t.GetComponent<AtomRepSolution>() != null)
-                ChangeToAtomRep(a.gameObject, centralCellAtoms);
-            
-        }
-
-        yield return null;
-    }
-
-    private IEnumerator MoveAtomsInCrystalPositions(GameObject[] targetAtoms)
-    {
-        for (var i = 0; i < atoms.Count; i++)
-        {
-            var a = atoms[i];
-            var t = targetAtoms[i];
-
-            //SPOSTA GLI ATOMI IN POSIZIONE
-            Vector3 endAtomsPosition = t.transform.position + new Vector3(0, 0, 30);
-            //Vector3 endAtomsPosition = new Vector3(Random.Range(20f, 24f), Random.Range(4.6f, 6.6f), Random.Range(8f, 12f));
-            Vector3 endPivotsPosition = t.transform.position + new Vector3(0, 0, 30);
-
-            if (t.GetComponent<SolutionAtom>() != null)
-            {
-                //a.transform.position = endAtomsPosition;
-                StartCoroutine(MoveToTargetPosition(a, a.transform.position, endAtomsPosition, 2f));
-            }
-
-            if (t.GetComponent<PivotAtomRepSol>() != null)
-            {
-                //a.transform.position = endPivotsPosition;
-                StartCoroutine(MoveToTargetPosition(a, a.transform.position, endPivotsPosition, 2f));
-            }
-
-            if (t.GetComponent<AtomRepSolution>() != null)
-            {
-                //a.transform.position = endAtomsPosition;
-                StartCoroutine(MoveToTargetPosition(a, a.transform.position, endAtomsPosition, 2f));
-            }
-
-        }
-        yield return null;
-
-    }
-
-    
-    
-    IEnumerator MoveToTargetPosition(Atom a, Vector3 start, Vector3 end, float duration)
-    {
-        for (float t = 0; t <= duration; t += Time.deltaTime)
-        {
-            float normalizedTime = t / duration;
-            a.transform.position = Vector3.Lerp(start, end, normalizedTime);
-            detector.SetDirty();
-            yield return null;
-        }
-
-        a.transform.position = end;
-        detector.SetDirty();
-        atomInPositionCrystalCounter++;
-    }
-
-    private List<Atom> GetCentralCellAtoms(GameObject[] targetAtoms)
-    {
-        List<Atom> centralAtoms = new List<Atom>();
-
-        for (var i = 0; i < atoms.Count; i++)
-        {
-            var a = atoms[i];
-            var t = targetAtoms[i];
-            
-            if (t.GetComponent<SolutionAtom>() != null)
-                centralAtoms.Add(a);
-        }
-
-        return centralAtoms;
-    }
-
-    private void ChangeToPivotAtomRep(GameObject a)
-    {
-        // - Tolgo script Atom
-        Destroy(a.GetComponent<Atom>());
-        // - Tolgo rigidbody
-        Destroy(a.GetComponent<Rigidbody>());
-        // - Cambio materiale da Red Atom a Pivot Atom Rep
-        a.GetComponent<Renderer>().sharedMaterial = pivotRep.GetComponent<Renderer>().sharedMaterial;
-    }
-    
-    private void ChangeToAtomRep(GameObject a, List<Atom> centralAtoms)
-    {
-        // - Tolgo script Atom e metto script Atom Rep
-        Destroy(a.GetComponent<Atom>());
-        a.AddComponent<AtomRep>().materials = new []{atomRep.GetComponent<Renderer>().sharedMaterial, selectedAtomRep};
-        
-        // - Tolgo rigidbody e collider
-        Destroy(a.GetComponent<Rigidbody>());
-        Destroy(a.GetComponent<SphereCollider>());
-        // - Cambio materiale da Red Atom a Atom Rep
-        a.GetComponent<Renderer>().sharedMaterial = atomRep.GetComponent<Renderer>().sharedMaterial;
-        // - assegno il padre corrispondente nella cella centrale
-        a.transform.parent = centralAtoms[0].transform; //(per ora assumo un unico atomo nella cella centrale)
-        a.GetComponent<AtomRep>().Parent = centralAtoms[0].GetComponent<Atom>();
-
-    }
-    */
     
 }
