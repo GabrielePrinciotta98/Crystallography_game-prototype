@@ -27,6 +27,7 @@ Transform:
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 21.539862, y: 7, z: 9.9365}
   m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 0
@@ -51,7 +52,6 @@ MonoBehaviour:
   moleculeDisabled: {fileID: 3614252748492943199, guid: ac3fccc787aa52f45be459d0b582d37c, type: 3}
   moleculeForbidden: {fileID: 3614252748492943199, guid: 861a76ef01793954fb6872bef0c3d5b4, type: 3}
   swap: {fileID: 3184064519747410915, guid: a41479023419fbd4cba90175a13630f9, type: 3}
-  crystal: {fileID: 7795036844934560492, guid: 7ff41de1643a6544d99d3b3853d3a032, type: 3}
-  crystalDisabled: {fileID: 3202582221204184640, guid: 021a8e47effe00b47a5d04a7a1d24c93, type: 3}
+  crystal: {fileID: 99740897630080198, guid: 1623ff3ab1f16d84eac56611ccb1880c, type: 3}
   textManager: {fileID: 6273631944732598851, guid: bde7273f3efb4064db2d49c8e5cb5f0c, type: 3}
   dialogueBox: {fileID: 0}

@@ -82,10 +82,10 @@ public class HintArrow : MonoBehaviour
         Debug.Log("target: " + target);
         
 
-        /*Debug.Log("markedTarget = " + String.Join(", ",
+        Debug.Log("markedTarget = " + String.Join(", ",
             new List<bool>(markedTargets)
                 .ConvertAll(i => i.ToString())
-                .ToArray()));*/
+                .ToArray()));
         
         if (target == Vector3.zero) return;
         transform.position = (chosenAtom.transform.position + target) / 2;
@@ -106,7 +106,6 @@ public class HintArrow : MonoBehaviour
             chosenAtom.GetComponent<Atom>().SetSolved(true);
             chosenAtom.GetComponent<Atom>().ChangeMaterial(3);
             //Debug.Log("done");
-                    
         }
         EnableArrowRendering(false);
         activated = false;
@@ -122,13 +121,12 @@ public class HintArrow : MonoBehaviour
         do
         {
             range = Random.Range(0, atomsManager.GetAtoms().Count);
-        } while (markedChosenAtoms[range] || !CheckSolvedParent(range));
+        } while (markedChosenAtoms[range]);
 
-        //Debug.Log("i-esimo atomo scelto: " + range);
+        Debug.Log("i-esimo atomo scelto: " + range);
         chosenAtom = atomsManager.GetAtoms()[range];
         chosenAtom.ChangeMaterial(4);
         markedChosenAtoms[range] = true;
-        //Debug.Log("sol: " + CheckSolvedParent(range));
 
     }
     
@@ -143,14 +141,11 @@ public class HintArrow : MonoBehaviour
 
     private void ChooseTarget()
     {
-        //float minDistance = float.MaxValue;
-        //float minDistance1 = float.MaxValue;
-        //float minDistance2 = float.MaxValue; 
         for (int i = 0; i < levelManager.SolAtomPos.Length; i++)
         {
             if (markedTargets[i]) continue;
 
-            
+            /*
             if (moleculeManager.Activated)
             {
                 int nMolecularChildrenChosen = chosenAtom.molecularChildren.Count;
@@ -167,44 +162,25 @@ public class HintArrow : MonoBehaviour
                 else
                     continue;
             }
+            */
  
             //IL CHECK SULLA VICINANZA DI UN ALTRO ATOMO HA SENSO SOLO SENZA MOLECULE MODE
-            if (!moleculeManager.Activated)
+            targetCloseToAnotherAtom = false;
+            for (int k = 0; k < atomsManager.GetAtoms().Count; k++)
             {
-                targetCloseToAnotherAtom = false;
-                for (int k = 0; k < atomsManager.GetAtoms().Count; k++)
+                if (atomsManager.GetAtoms()[k] == chosenAtom) continue;
+                float distance1 = Vector3.Distance(solutionManager.GetPositions()[i], atomsManager.GetPositions()[k]);
+                float distance2 = Vector3.Distance(-solutionManager.GetPositions()[i], atomsManager.GetPositions()[k]);
+                if (distance1 <= 1f || distance2 <= 1f)
                 {
-                    if (atomsManager.GetAtoms()[k] == chosenAtom) continue;
-                    float distance1 = Vector3.Distance(solutionManager.GetPositions()[i], atomsManager.GetPositions()[k]);
-                    float distance2 = Vector3.Distance(-solutionManager.GetPositions()[i], atomsManager.GetPositions()[k]);
-                    if (distance1 <= 1f || distance2 <= 1f)
-                    {
-                        targetCloseToAnotherAtom = true;
-                        break;
-                    }
+                    targetCloseToAnotherAtom = true;
+                    break;
                 }
-            
-                if (targetCloseToAnotherAtom) continue;
             }
-            /*
-            float d1 = Vector3.Distance(solutionManager.GetPositions()[i], chosenAtom.transform.localPosition);
-            float d2 = Vector3.Distance(-solutionManager.GetPositions()[i], chosenAtom.transform.localPosition);
+        
+            if (targetCloseToAnotherAtom) continue;
             
-            
-            if (d1 < minDistance)
-            {
-                minDistance1 = d1;
-            }
-                
-            if (d2 < minDistance2)
-            {
-                minDistance2 = d2;
-            }
-                
-            float minDistanceTemp = minDistance1 < minDistance2 ? minDistance1 : minDistance2;
-
-            //if (!(minDistanceTemp < minDistance)) continue;
-            minDistance = minDistanceTemp;*/
+           
             j = i;
             //Debug.Log("target changed: " + i);
         }
@@ -242,23 +218,6 @@ public class HintArrow : MonoBehaviour
     {
         _rendererTail.enabled = flag;
         _rendererHead.enabled = flag;
-    }
-
-
-    private void OnDrawGizmos()
-    {
-        //Debug.Log("atomsChosed: " + atomsChosed);
-        if (atomsChosed)
-        {
-            Gizmos.color = Color.green;
-            //Gizmos.DrawWireSphere(chosenAtom.transform.position, 1f);
-            //Gizmos.DrawLine(chosenAtom.transform.position, target);
-            //Gizmos.color = Color.blue;
-
-            Gizmos.DrawWireSphere(target, 1f);
-
-        }
-            
     }
 
 

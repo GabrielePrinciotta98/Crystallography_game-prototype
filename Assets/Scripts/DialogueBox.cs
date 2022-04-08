@@ -1,47 +1,37 @@
-using System;
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
 public class DialogueBox : MonoBehaviour
 {
     private MoleculeManager moleculeManager;
+    private HintArrow hintArrow;
     private new bool tag;
     private bool keyDown;
     
     private Text dialogue;
     private HUDManager hudManager;
-    // Start is called before the first frame update
+    
     void Start()
     {
         moleculeManager = FindObjectOfType<MoleculeManager>();
+        hintArrow = FindObjectOfType<HintArrow>();
         hudManager = FindObjectOfType<HUDManager>();
         dialogue = GetComponentInChildren<Text>();
         dialogue.text = string.Empty;
         ShowDialogBox(false);
-        Debug.Log("dialogue box started");
     }
     
     public void StartShiftButtonTutorial()
     {
-        Debug.Log(TutorialData.firstTimeLevel7);
-        Debug.Log("StartShift started");
-        Debug.Log(gameObject);
-        Debug.Log("pippo");
         if (!TutorialData.firstTimeLevel7) return;
         ShowDialogBox(true);
-        Debug.Log("ciao");
         StartCoroutine(BuildText(TutorialData.ShiftButtonTutorial));
         TutorialData.firstTimeLevel7 = false;
     }
     
     public void StartFinalLevelInterference()
     {
-        if (gameObject == null)
-            Debug.Log("NULLO");
-        ShowDialogBox(true);
-        Debug.Log("ciao");
         StartCoroutine(BuildText(TutorialData.FinalLevelInterference));
     }
     
@@ -50,12 +40,24 @@ public class DialogueBox : MonoBehaviour
         ShowDialogBox(true);
         StartCoroutine(BuildText(TutorialData.MoleculeModeImpossibleAfterHint));
     }
+    public void StartHintImpossibleAfterMoleculeMode()
+    {
+        ShowDialogBox(true);
+        StartCoroutine(BuildText(TutorialData.HintImpossibleWhileMoleculeMode));
+    }
 
     public void StartAlertMoleculeModeImpossibleAfterHint()
     {
         if (moleculeManager.Activated) return;
         ShowDialogBox(true);
         StartCoroutine(BuildText(TutorialData.AlertMoleculeModeImpossibleAfterHint));
+    }
+    
+    public void StartAlertHintImpossibleAfterMoleculeMode()
+    {
+        if (hintArrow.activated) return;
+        ShowDialogBox(true);
+        StartCoroutine(BuildText(TutorialData.AlertHintImpossibleAfterMoleculeMode));
     }
     
     /*  VERSIONE LETTERA PER LETTERA
@@ -90,7 +92,6 @@ public class DialogueBox : MonoBehaviour
     */
     private IEnumerator BuildText(string[] dialogues)
     {
-        Debug.Log("BuildText started");
         hudManager.DisablePowerUps();
         foreach (var sentence in dialogues)
         {
@@ -100,7 +101,7 @@ public class DialogueBox : MonoBehaviour
             yield return new WaitWhile(() => !keyDown);
         }
         
-        gameObject.SetActive(false);
+        ShowDialogBox(false);
         hudManager.EnablePowerUps();
     }
 

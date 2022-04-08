@@ -1,13 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Numerics;
-using UnityEditor;
+﻿using System.Collections.Generic;
 using UnityEngine;
 using Vector3 = UnityEngine.Vector3;
 
 public class Atom : MonoBehaviour
 {
-    private GameObject magneticField;
     public Material[] materials;
     private ControlGizmo controlGizmo;
     private DottedLine dottedLineHoriz;
@@ -22,7 +18,7 @@ public class Atom : MonoBehaviour
     private LevelManager levelManager;
     private Collider _collider;
     private Detector detector;
-    public Vector3 PositionFromPivot { get; set; }
+    public Vector3 PositionFromPivot { get; private set; }
 
     private Vector3 lastMousePos;
     private bool selected;
@@ -39,13 +35,11 @@ public class Atom : MonoBehaviour
     private bool dragged;
 
     private HintArrow hintArrow;
-    private static readonly int _EmissionColor = Shader.PropertyToID("_EmissionColor");
+    private static readonly int EmissionColor = Shader.PropertyToID("_EmissionColor");
 
 
     private void Start()
     {
-        magneticField = transform.GetChild(1).gameObject;
-        Physics.IgnoreCollision(GetComponent<SphereCollider>(), magneticField.GetComponent<SphereCollider>(), true);
         detector = FindObjectOfType<Detector>();
         hintArrow = FindObjectOfType<HintArrow>();
         _renderer = GetComponent<Renderer>();
@@ -70,7 +64,7 @@ public class Atom : MonoBehaviour
         dottedLineVert = GameObject.Find("DottedLineVert").GetComponent<DottedLine>();
         dottedLineVertRenderer = dottedLineVert.GetComponent<Renderer>();
         dottedLineVertMaterial = dottedLineVertRenderer.material;
-        dottedLineVertMaterial.SetColor(_EmissionColor, Color.red);
+        dottedLineVertMaterial.SetColor(EmissionColor, Color.red);
 
         dottedLineVertRenderer.enabled = false;
 
@@ -124,8 +118,6 @@ public class Atom : MonoBehaviour
     {
         if (solved) return;
         atomsManager.SetDraggingAtom(this);
-        //magneticField.GetComponent<SphereCollider>().isTrigger = true;
-        //magneticField.GetComponent<Rigidbody>().isKinematic = false;
 
         //blocca la posizione di tutti gli atomi eccetto quello che si sta trascinando
         atomsManager.FreezeAtoms();
@@ -193,9 +185,10 @@ public class Atom : MonoBehaviour
         }
         
         if (fail) return;
-        
-        Vector3 offset = newPos - transform.position;
-        transform.position = newPos;
+
+        var atomTransform = transform;
+        Vector3 offset = newPos - atomTransform.position;
+        atomTransform.position = newPos;
 
         
         if (atomsManager.crystalActivated)
@@ -230,9 +223,7 @@ public class Atom : MonoBehaviour
         dottedLineHorizRenderer.enabled = false;
 
         controlGizmo.DisableElements();
-
-        //magneticField.GetComponent<SphereCollider>().isTrigger = false;
-        //magneticField.GetComponent<Rigidbody>().isKinematic = true;
+        
         //SBLOCCA LA POSIZIONE DI TUTTI GLI ATOMI PERCHè SI HA SMESSO DI TRASCINARE
         atomsManager.UnFreezeAtoms();
         
@@ -252,7 +243,7 @@ public class Atom : MonoBehaviour
     {
         foreach (var child in molecularChildren)
         {
-            child.transform.position = child.transform.position + offset;
+            child.transform.position += offset;
             child.AddOffsetToChildren(offset);
         }
     }
@@ -314,11 +305,5 @@ public class Atom : MonoBehaviour
     {
         solved = flag;
     }
-
-
-    private void OnTriggerEnter(Collider other)
-    {
-        if (magneticField.CompareTag(other.tag) && CompareTag("MagneticField"))
-            Debug.Log("collisione");
-    }
+    
 }

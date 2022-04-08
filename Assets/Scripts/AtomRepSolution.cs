@@ -1,19 +1,14 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class AtomRepSolution : MonoBehaviour
 {
     private SolutionManager solutionManager;
-    private CentralCellSolution centralCellSolution;
     private Transform atomFather;
 
     private void Start()
     {
         atomFather = transform.parent;
         solutionManager = FindObjectOfType<SolutionManager>();
-        centralCellSolution = FindObjectOfType<CentralCellSolution>();
         solutionManager.AddAtomPositionToAll(gameObject);
 
     }

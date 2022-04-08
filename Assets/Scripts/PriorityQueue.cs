@@ -1,7 +1,5 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using UnityEngine;
 
 public class PriorityQueue<T>
 {
@@ -12,10 +10,10 @@ public class PriorityQueue<T>
     }
 
     //object array
-    List<Node> queue = new List<Node>();
+    private readonly List<Node> queue = new List<Node>();
     int heapSize = -1;
-    bool _isMinPriorityQueue;
-    public int Count { get { return queue.Count; } }
+    private readonly bool isMinPriorityQueue;
+    public int Count => queue.Count;
 
     /// <summary>
     /// If min queue or max queue
@@ -23,7 +21,7 @@ public class PriorityQueue<T>
     /// <param name="isMinPriorityQueue"></param>
     public PriorityQueue(bool isMinPriorityQueue = false)
     {
-        _isMinPriorityQueue = isMinPriorityQueue;
+        this.isMinPriorityQueue = isMinPriorityQueue;
     }
 
 
@@ -34,11 +32,11 @@ public class PriorityQueue<T>
     /// <param name="obj"></param>
     public void Enqueue(int priority, T obj)
     {
-        Node node = new Node() { Priority = priority, Object = obj };
+        Node node = new Node { Priority = priority, Object = obj };
         queue.Add(node);
         heapSize++;
         //Maintaining heap
-        if (_isMinPriorityQueue)
+        if (isMinPriorityQueue)
             BuildHeapMin(heapSize);
         else
             BuildHeapMax(heapSize);
@@ -57,7 +55,7 @@ public class PriorityQueue<T>
             queue.RemoveAt(heapSize);
             heapSize--;
             //Maintaining lowest or highest at root based on min or max queue
-            if (_isMinPriorityQueue)
+            if (isMinPriorityQueue)
                 MinHeapify(0);
             else
                 MaxHeapify(0);
@@ -78,10 +76,10 @@ public class PriorityQueue<T>
         for (; i <= heapSize; i++)
         {
             Node node = queue[i];
-            if (object.ReferenceEquals(node.Object, obj))
+            if (ReferenceEquals(node.Object, obj))
             {
                 node.Priority = priority;
-                if (_isMinPriorityQueue)
+                if (isMinPriorityQueue)
                 {
                     BuildHeapMin(i);
                     MinHeapify(i);
@@ -94,18 +92,7 @@ public class PriorityQueue<T>
             }
         }
     }
-    /// <summary>
-    /// Searching an object
-    /// </summary>
-    /// <param name="obj"></param>
-    /// <returns></returns>
-    public bool IsInQueue(T obj)
-    {
-        foreach (Node node in queue)
-            if (object.ReferenceEquals(node.Object, obj))
-                return true;
-        return false;
-    }
+    
 
     /// <summary>
     /// Maintain max heap

@@ -1,14 +1,13 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class CentralCellSolution : MonoBehaviour
 {
+    private Material mat;
     private SolutionManager solutionManager;
     public GameObject pivot;
     public SolutionAtom atom;
     private Vector3 pivotPos;
-    private SolutionAtom[] centralCellAtoms = new SolutionAtom[9];
+    private readonly SolutionAtom[] centralCellAtoms = new SolutionAtom[9];
     private float rotationAngle;
     private GameObject moleculeSpace;
     
@@ -27,11 +26,13 @@ public class CentralCellSolution : MonoBehaviour
 
     void Start()
     {
+        mat = GetComponent<Renderer>().material;
+        mat.color = new Color(1, 1, 1, 0); 
         pivot = Instantiate(pivot, pivotPos, Quaternion.identity, moleculeSpace.transform);
         InstantiateAtoms();
     }
 
-    public void InstantiateAtoms()
+    private void InstantiateAtoms()
     {
         atomSpawnPositions = solutionManager.GetAtomSpawnPositions();
         for (int i = 0; i < solutionManager.GetN()-1; i++)
@@ -41,22 +42,11 @@ public class CentralCellSolution : MonoBehaviour
         }
     }
     
-    private void Update()
-    {
-        //if (solutionManager.GetStop()) return;
-        //Quaternion rotation = Quaternion.Euler(0, rotationAngle, 0);
-        //transform.rotation = rotation;
-
-    }
 
     public SolutionAtom[] GetAtoms()
     {
         return centralCellAtoms;
     }
-
-    public GameObject GetPivot()
-    {
-        return pivot;
-    }
+    
     
 }

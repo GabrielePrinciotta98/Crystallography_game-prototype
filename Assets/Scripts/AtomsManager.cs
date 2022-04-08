@@ -157,7 +157,6 @@ public class AtomsManager : MonoBehaviour
             if (atom != draggingAtom)
             {
                 atom.GetComponent<Rigidbody>().constraints = RigidbodyConstraints.FreezeAll;
-                atom.transform.GetChild(1).GetComponent<Rigidbody>().constraints = RigidbodyConstraints.FreezeAll;
             }
             else
             {
@@ -358,14 +357,26 @@ public class AtomsManager : MonoBehaviour
     //------------------------------------------------------------------
     
 
-    public void TriggerCrystalActivation(Button crystal, Button crystalDisabled)
+    public void TriggerCrystalActivation(GameObject crystal)
     {
         
         GameStart = false; //disattivo la possibilita di trascinare gli atomi durante l'animazione
-        //StartCoroutine(Whistle());
+        if (!PowerUpsManager.CrystalUnlocked)
+        {
+            ScoreManager.Score -= 10000;
+            PlayerPrefs.SetInt("Score", ScoreManager.Score);
+            GameObject score = GameObject.Find("Score");
+            score.GetComponent<ScoreDisplay>().DisplayScore();
+            PowerUpsManager.CrystalUnlocked = true;
+            PlayerPrefs.SetInt("CrystalUnlocked", PowerUpsManager.CrystalUnlocked ? 1 : 0);
+            PlayerPrefs.Save();
+        }
+        
+
         StartCoroutine(ActivateCrystal());
         crystal.gameObject.SetActive(false);
-        crystalDisabled.gameObject.SetActive(true);
+        
+        //crystalDisabled.gameObject.SetActive(true);
     }
     
     public void TriggerCrystalDeactivation(Button crystal, Button crystalDisabled)
@@ -441,6 +452,7 @@ public class AtomsManager : MonoBehaviour
         detector.SetDirty();
         
         crystalActivated = true;
+        
         GameStart = true; //riattivo il trascinamento degli atomi
     }
     

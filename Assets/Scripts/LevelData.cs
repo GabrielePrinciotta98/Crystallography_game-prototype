@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using UnityEngine;
 
 public static class LevelData
 {
@@ -18,38 +17,8 @@ public static class LevelData
     private const string Desc8 = "Livello  8\n3 atomi nello spazio XYZ";
     private const string Desc9 = "Livello  9\n4 atomi nello spazio XYZ";
     private const string Desc10 = "Livello  10\n Boss Finale";
-    private const string Desc11 = "Livello 11\n6 atomi sul piano XY";
 
-    private const string DescCry1 = "Livello  10\nCristallo";
-    private const string DescCry2 = "Livello  11\nCristallo";
-    private const string DescCry3 = "Livello  12\nCristallo";
 
-    /*
-    
-    private static readonly Vector3[] spawnPosXY = {
-        new Vector3(0,-1.5f, -1.5f),
-        new Vector3(0, -1.5f, 0),
-        new Vector3(0, -1.5f, 1.5f),
-        new Vector3(0, 0, -1.5f),
-        new Vector3(0, 0, 1.5f),
-        new Vector3(0, 1.5f, -1.5f),
-        new Vector3(0, 1.5f, 0),
-        new Vector3(0, 1.5f, 1.5f),
-        
-    };
-    
-    private static readonly Vector3[] spawnPosXZ = {
-        new Vector3(-1.5f,0, -1.5f),
-        new Vector3(-1.5f, 0, 0),
-        new Vector3(-1.5f, 0, 1.5f),
-        new Vector3(0, 0, -1.5f),
-        new Vector3(0, 0, 1.5f),
-        new Vector3(1.5f, 0, -1.5f),
-        new Vector3(1.5f, 0, 0),
-        new Vector3(1.5f, 0, 1.5f),
-        
-    };
-    */
 
     public static List<Level> Levels
     {
@@ -85,56 +54,8 @@ public static class LevelData
 
             // LV 10 CRISTALLO LIVELLO FINALE 
             levels.Add(new Level(3,27,2,true, Desc10, XYZ));
-
-            /*
-            // LV 12 CRISTALLO 5x5x5 PROVA
-            levels.Add(new Level(5, 125, 2, true, Desc1, XYZ));
-            lvPositions = new[] {new Vector3(-0.5f, 1.3f, 1.1f)};
-            levels[10].SolPositions = lvPositions;
             
-            // LV 13 CRISTALLO 7x7x7 PROVA
-            levels.Add(new Level(7, 343, 2, true, Desc1, XYZ));
-            lvPositions = new[] {new Vector3(-0.5f, 1.3f, 1.1f)};
-            levels[11].SolPositions = lvPositions;
-            */
         }
     }
-
     
-
-    /*private static Vector3[] RandomPositions(string plane, int n)
-    {
-        Vector3[] ris = new Vector3[n];
-
-        for (int i = 0; i < n; i++)
-        {
-            bool isEqual = false;
-            bool isPivot = false;
-            Vector3 newPos = plane switch
-            {
-                "YZ" => new Vector3(0, Random.Range(-5f, 5f), Random.Range(-5f, 5f)),
-                "XZ" => new Vector3(Random.Range(-5f, 5f), 0, Random.Range(-5f, 5f)),
-                "XYZ" => new Vector3(Random.Range(-5f, 5f), Random.Range(-5f, 5f), Random.Range(-5f, 5f)),
-                _ => Vector3.zero
-            };
-            for (int j = 0; j < i; j++)
-            {
-                if (ris[j] != newPos) continue;
-                isEqual = true;
-                break;
-            }
-            
-            if (Vector3.Distance(newPos, Vector3.zero) <= 1)
-                isPivot = true;
-            
-            if (isEqual || isPivot)
-            {
-                i--;
-                continue;
-            }
-            ris[i] = newPos;
-        }
-
-        return ris;
-    }*/
 }

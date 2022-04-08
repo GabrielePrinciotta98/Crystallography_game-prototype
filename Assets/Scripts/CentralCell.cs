@@ -1,10 +1,5 @@
-using System;
 using System.Collections;
-using System.Collections.Generic;
-using System.Drawing;
-using UnityEditor;
 using UnityEngine;
-using UnityEngine.UI;
 using Color = UnityEngine.Color;
 
 public class CentralCell : MonoBehaviour

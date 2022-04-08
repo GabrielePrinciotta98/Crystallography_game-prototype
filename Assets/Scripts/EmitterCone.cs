@@ -1,7 +1,4 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Runtime.CompilerServices;
 using UnityEngine;
 
 public class EmitterCone : MonoBehaviour
@@ -13,9 +10,9 @@ public class EmitterCone : MonoBehaviour
     private static readonly int EmissionColor = Shader.PropertyToID("_EmissionColor");
     private Renderer _renderer;
     private Collider _collider;
-    private static readonly int _Color = Shader.PropertyToID("_Color");
-    private bool PowerOn = false;
-    private float PowerLevel;
+    private static readonly int Color = Shader.PropertyToID("_Color");
+    private bool powerOn;
+    private float powerLevel;
     public Tripod tripod;
     private HUDManager hudManager;
     
@@ -53,43 +50,44 @@ public class EmitterCone : MonoBehaviour
             _collider.enabled = true;
         }
         
-        if (!PowerOn) return;
-        if (Math.Abs(PowerLevel - 0.5f) > 0.0001f)
+        if (!powerOn) return;
+        if (Math.Abs(powerLevel - 0.5f) > 0.0001f)
         {
-            PowerLevel += 0.002f;
+            powerLevel += 0.002f;
         }
 
-        
-        newScale = transform.localScale;
+
+        var emitterConeTransform = transform;
+        newScale = emitterConeTransform.localScale;
         
 
         newScale.x = 0.4f + 0.4f / 9f * (zoom - 1f);
         newScale.z = 0.4f + 0.4f / 9f * (zoom - 1f);
 
 
-        transform.localScale = newScale;
+        emitterConeTransform.localScale = newScale;
         
-
-        SetEmissionColor(PowerLevel);
+ 
+        SetEmissionColor(powerLevel);
 
     }
 
     private void SetEmissionColor(float alpha)
     {
         Material mat = _renderer.material;
-        mat.SetColor(_Color, 
-            Color.HSVToRGB(0.75f/1.7f*(lambda-0.3f), 0.2f+alpha, 1f, true));
+        mat.SetColor(Color, 
+            UnityEngine.Color.HSVToRGB(0.75f/1.7f*(lambda-0.3f), 0.2f+alpha, 1f, true));
         mat.SetColor(EmissionColor, 
-            Color.HSVToRGB(0.75f/1.7f*(lambda-0.3f), 0.4f+alpha, 1f, true));
+            UnityEngine.Color.HSVToRGB(0.75f/1.7f*(lambda-0.3f), 0.4f+alpha, 1f, true));
         var color = mat.color;
-        mat.SetColor(_Color,
+        mat.SetColor(Color,
             new Color(color.r, color.g, color.b, 0.4f + 0.6f*(power-1)/9));
     }
 
     private void OnMouseDown()
     {
-        if (PowerOn) return;
-        PowerOn = true;
+        if (powerOn) return;
+        powerOn = true;
         _renderer.enabled = true;
         tripod.Click();
         hudManager = FindObjectOfType<HUDManager>();
@@ -109,6 +107,6 @@ public class EmitterCone : MonoBehaviour
 
     public bool GetPowerOn()
     {
-        return PowerOn;
+        return powerOn;
     }
 }

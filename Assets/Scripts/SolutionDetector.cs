@@ -1,6 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
 public class SolutionDetector : MonoBehaviour
 {
@@ -39,13 +37,10 @@ public class SolutionDetector : MonoBehaviour
         _renderer = GetComponent<Renderer>();
         _renderer.enabled = false;
         crt = (CustomRenderTexture) _renderer.material.GetTexture(MainTexx);
-        //solutionManager = FindObjectOfType<SolutionManager>();
-        //Debug.Log(solutionManager);
     }
     
     private void Update()
     {
-        //Debug.Log("solmanag:" + solutionManager);
         if (!emitter.GetPowerOn()) return;
         _renderer.enabled = true; 
         if (pwr < 0 && !pwrSetted)
@@ -71,16 +66,11 @@ public class SolutionDetector : MonoBehaviour
         positions = solutionManager.GetPositions();
         a = solutionManager.GetCellRight() * solutionManager.GetK();
         c = solutionManager.GetCellForward() * solutionManager.GetK();
-        //Debug.Log("solutionA: " + a);
-        //Debug.Log("solutionC: " + c);
         Shader.SetGlobalVectorArray(AtomsPoss, positions);
         Shader.SetGlobalInt(NAToms, solutionManager.GetAtoms().Count);
         Shader.SetGlobalFloat(_Zoom, zoom);
         Shader.SetGlobalInt(_K, solutionManager.GetK());
-        if (solutionManager.GetCrystal())
-            Shader.SetGlobalFloat(_Pwr, Mathf.Pow(2, pwr + 2));
-        else
-            Shader.SetGlobalFloat(_Pwr, Mathf.Pow(2, pwr));
+        Shader.SetGlobalFloat(_Pwr, solutionManager.GetCrystal() ? Mathf.Pow(2, pwr + 2) : Mathf.Pow(2, pwr));
         Shader.SetGlobalVector(_A, a);
         Shader.SetGlobalVector(_C, c);
         Shader.SetGlobalInt(_R, solutionManager.GetR());

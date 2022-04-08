@@ -1,7 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-
 public static class TutorialData
 {
     public static bool firstTimeLevel7 = true;
@@ -23,11 +19,21 @@ public static class TutorialData
         "Non puoi attivare o disattivare la <color=#1758BA>modalità molecola</color> dopo aver usato i <color=#10D3CE>suggerimenti</color>!"
     };
     
+    public static readonly string[] HintImpossibleWhileMoleculeMode = 
+    {
+        "Non puoi usare i <color=#10D3CE>suggerimenti</color> mentre la <color=#1758BA>modalità molecola</color> è attiva!"
+    };
+    
     public static readonly string[] AlertMoleculeModeImpossibleAfterHint = 
     {
         "Attenzione! Una volta usati i <color=#10D3CE>suggerimenti</color> la <color=#1758BA>modalità molecola</color> non sarà attivabile!",
-        "È possibile attivarla prima di chiedere i <color=#10D3CE>suggerimenti</color>.",
         "Per attivare comunque i <color=#10D3CE>suggerimenti</color> prova ad usarli ancora!"
+    };
+    
+    public static readonly string[] AlertHintImpossibleAfterMoleculeMode = 
+    {
+        "Attenzione! Mentre la <color=#1758BA>modalità molecola</color> è attiva i <color=#10D3CE>suggerimenti</color> non sono utilizzabili!",
+        "Per attivare comunque la <color=#1758BA>modalità molecola</color> prova ad usarla ancora!"
     };
 
 }

@@ -1,23 +1,14 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class Workspace : MonoBehaviour
 {
-    private Vector3 curPos;
 
-    public float RotationAngle { get; set; }
+    private float RotationAngle { get; set; }
 
     private AtomsManager atomsManager;
 
     private SolutionManager solutionManager;
-    // Start is called before the first frame update
-    void Start()
-    {
-        curPos = transform.localPosition;
-    }
-
-    // Update is called once per frame
+    
     void Update()
     {
         if (!solutionManager && !atomsManager) return;

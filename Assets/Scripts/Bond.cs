@@ -1,6 +1,3 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class Bond : MonoBehaviour
@@ -19,13 +16,16 @@ public class Bond : MonoBehaviour
         
         //SCALA
         float distance = Vector3.Distance(startPosition, endPosition);
-        transform.localScale = new Vector3(
-            transform.localScale.x,
+        var bondTransform = transform;
+        var localScale = bondTransform.localScale;
+        localScale = new Vector3(
+            localScale.x,
             distance / 2, 
-            transform.localScale.z 
+            localScale.z  
         );
-        
+        bondTransform.localScale = localScale;
+
         //ROTAZIONE
-        transform.rotation = Quaternion.FromToRotation(Vector3.up, Vector3.Normalize(endPosition - startPosition));
+        bondTransform.rotation = Quaternion.FromToRotation(Vector3.up, Vector3.Normalize(endPosition - startPosition));
     }
 }

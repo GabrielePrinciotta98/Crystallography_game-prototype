@@ -1,23 +1,9 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
-using UnityEngine.PlayerLoop;
 using UnityEngine.UI;
 
 public class RotationSlider : MonoBehaviour, IPointerUpHandler, IPointerDownHandler
 {
-    private AudioManager audioManager;
-    private AtomsManager atomsManager;
-    private SolutionManager solutionManager;
-
-    private void Start()
-    {
-        audioManager = FindObjectOfType<AudioManager>();
-        atomsManager = FindObjectOfType<AtomsManager>();
-        solutionManager = FindObjectOfType<SolutionManager>();
-    }
 
     //OnPointerDown is also required to receive OnPointerUp callbacks
     public void OnPointerDown(PointerEventData eventData)
@@ -44,7 +30,6 @@ public class RotationSlider : MonoBehaviour, IPointerUpHandler, IPointerDownHand
         }
     }
 
-
     public void ChangeHandleColor45()
     {
         float curValue = GetComponent<Slider>().value;
@@ -54,6 +39,4 @@ public class RotationSlider : MonoBehaviour, IPointerUpHandler, IPointerDownHand
         else
             transform.GetChild(2).transform.GetChild(0).GetComponent<Image>().color = Color.white;
     }
-
-    
 }

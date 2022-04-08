@@ -1,9 +1,7 @@
 using System;
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
-using UnityEngine.SceneManagement;
 using Random = UnityEngine.Random;
 
 public class LevelManager : MonoBehaviour
@@ -35,15 +33,11 @@ public class LevelManager : MonoBehaviour
     private Vector3[] solAtomPos;
 
     
-    public Vector3[] SolAtomPos
-    {
-        get => solAtomPos;
-        set => solAtomPos = value;
-    }
+    public Vector3[] SolAtomPos => solAtomPos;
 
     private bool[] markedSolAtomPos;
     private int n;
-    private bool over = false;
+    private bool over;
     public bool anAtomWasDragged; 
     private bool isSymmetric;
     private float haussdorfThreshold = 0.8f;
@@ -228,6 +222,10 @@ public class LevelManager : MonoBehaviour
             }
             if (FindObjectOfType<CheatCode>().AlreadyActivated != true)
                 LevelsUnlocked.NumberOfLevelsUnlocked++;
+            PlayerPrefs.SetInt("LevelsUnlocked", LevelsUnlocked.NumberOfLevelsUnlocked);
+            Debug.Log("levels unlocked: " + PlayerPrefs.GetInt("LevelsUnlocked"));  
+
+            PlayerPrefs.Save();
             print("hai vinto");
         }
     }
@@ -287,11 +285,10 @@ public class LevelManager : MonoBehaviour
     {
         
         float t = 0;
-        float ease, newPosX;
         while (t <= 1f)
         {
-            ease = EaseOutQuartic(t);
-            newPosX = Mathf.Lerp(-1916, 0, ease);
+            var ease = EaseOutQuartic(t);
+            var newPosX = Mathf.Lerp(-1916, 0, ease);
             this.levelIndicatorText.transform.localPosition = new Vector3(newPosX, levelIndicatorText.transform.localPosition.y);    
             t += 0.015f;
             yield return new WaitForFixedUpdate();
@@ -305,11 +302,10 @@ public class LevelManager : MonoBehaviour
         yield return EnterLevelIndicator(levelIndicatorText);
         yield return new WaitForSeconds(0.5f);
         float t = 0;
-        float ease, newPosX;
         while (t <= 1f)
         {
-            ease = EaseInQuartic(t);
-            newPosX = Mathf.Lerp(0, 1916, ease);
+            var ease = EaseInQuartic(t);
+            var newPosX = Mathf.Lerp(0, 1916, ease);
             this.levelIndicatorText.transform.localPosition = new Vector3(newPosX, levelIndicatorText.transform.localPosition.y);    
             t += 0.02f;
             yield return new WaitForFixedUpdate();
@@ -324,10 +320,10 @@ public class LevelManager : MonoBehaviour
         hudManager.DisablePowerUps();
         yield return SnapAll();
         curtain.GetComponent<Curtain>().ShowSolution();
-
+        if (LevelLoader.LevelCounter == 10) solutionManager.ShowCrystal();
         yield return new WaitForSeconds(1.5f);
         
-        
+
         youWonBackGroundUI.SetActive(true);
         if (hintArrow.used)
         {
@@ -552,9 +548,10 @@ public class LevelManager : MonoBehaviour
         
         int j = -1;
         float minDist = float.MaxValue;
-        float posX = atom.transform.localPosition.x;
-        float posY = atom.transform.localPosition.y;
-        float posZ = atom.transform.localPosition.z;
+        var localPosition = atom.transform.localPosition;
+        float posX = localPosition.x;
+        float posY = localPosition.y;
+        float posZ = localPosition.z;
         
 
         for (int i = 0; i < solAtomPos.Length; i++)
@@ -565,7 +562,6 @@ public class LevelManager : MonoBehaviour
             j = i;
         }
         float t = 0;
-        float ease, newPosX, newPosY, newPosZ;
         Vector3 targetPosFromPivot = new Vector3(solutionManager.GetPositions()[j].x, solutionManager.GetPositions()[j].y, solutionManager.GetPositions()[j].z);
         Vector3 targetPos;
         Atom father = atom.transform.parent.GetComponent<Atom>();
@@ -585,10 +581,10 @@ public class LevelManager : MonoBehaviour
         Vector3 offset;
         while (t <= 1f)
         {
-            ease = moleculeManager.Activated ? EaseInQuartic(t) : EaseInCubic(t);
-            newPosX = Mathf.Lerp(posX, targetPos.x, ease);
-            newPosY = Mathf.Lerp(posY, targetPos.y, ease);
-            newPosZ = Mathf.Lerp(posZ, targetPos.z, ease);
+            var ease = moleculeManager.Activated ? EaseInQuartic(t) : EaseInCubic(t);
+            var newPosX = Mathf.Lerp(posX, targetPos.x, ease);
+            var newPosY = Mathf.Lerp(posY, targetPos.y, ease);
+            var newPosZ = Mathf.Lerp(posZ, targetPos.z, ease);
             Vector3 newPos = new Vector3(newPosX, newPosY, newPosZ);
             offset = newPos - atom.transform.localPosition;
             
@@ -613,13 +609,11 @@ public class LevelManager : MonoBehaviour
     IEnumerator ShowYouWon(GameObject youWonUI)
     {
         float t = 0;
-        float ease;
-        float newScaleX, newScaleY;
         while (t <= 1f)
         {
-            ease = EaseOutBounce(t);
-            newScaleX = Mathf.Lerp(0.4f, 4f, ease);
-            newScaleY = Mathf.Lerp(0.4f, 4f, ease);
+            var ease = EaseOutBounce(t);
+            var newScaleX = Mathf.Lerp(0.4f, 4f, ease);
+            var newScaleY = Mathf.Lerp(0.4f, 4f, ease);
             youWonUI.transform.localScale = new Vector3(newScaleX, newScaleY, 0.4f);                
             t += 0.02f;
             yield return new WaitForFixedUpdate();
@@ -630,14 +624,12 @@ public class LevelManager : MonoBehaviour
     IEnumerator ShowAddedScore(GameObject addedScore)
     {
         float t = 0;
-        float ease;
-        float newScaleX, newScaleY;
         while (t <= 1f)
         {
-            ease = ZoomInZoomOut(t);
-            newScaleX = Mathf.Lerp(1f, 2f, ease);
-            newScaleY = Mathf.Lerp(1f, 2f, ease);
-            addedScore.transform.localScale = new Vector3(newScaleX, newScaleY, 1f);;                 
+            var ease = ZoomInZoomOut(t);
+            var newScaleX = Mathf.Lerp(1f, 2f, ease);
+            var newScaleY = Mathf.Lerp(1f, 2f, ease);
+            addedScore.transform.localScale = new Vector3(newScaleX, newScaleY, 1f);               
             t += 0.02f;
             yield return new WaitForFixedUpdate();
         }
@@ -647,14 +639,12 @@ public class LevelManager : MonoBehaviour
     {
         
         float t = 0;
-        float ease;
-        float newScaleX, newScaleY;
         while (t <= 1f)
         {
-            ease = ZoomInZoomOut(t);
-            newScaleX = Mathf.Lerp(1f, 1.6f, ease);
-            newScaleY = Mathf.Lerp(1f, 1.6f, ease);
-            hintScore.transform.localScale = new Vector3(newScaleX, newScaleY, 1f);;                 
+            var ease = ZoomInZoomOut(t);
+            var newScaleX = Mathf.Lerp(1f, 1.6f, ease);
+            var newScaleY = Mathf.Lerp(1f, 1.6f, ease);
+            hintScore.transform.localScale = new Vector3(newScaleX, newScaleY, 1f);          
             t += 0.02f;
             yield return new WaitForFixedUpdate();
         }
@@ -664,14 +654,12 @@ public class LevelManager : MonoBehaviour
     {
         yield return ShowAddedScore(addedScoreText);
         float t = 0;
-        float ease;
-        float newScaleX, newScaleY;
         while (t <= 1f)
         {
-            ease = ZoomInZoomOut(t);
-            newScaleX = Mathf.Lerp(1f, 2f, ease);
-            newScaleY = Mathf.Lerp(1f, 2f, ease);
-            addedBonusScore.transform.localScale = new Vector3(newScaleX, newScaleY, 1f);;                 
+            var ease = ZoomInZoomOut(t);
+            var newScaleX = Mathf.Lerp(1f, 2f, ease);
+            var newScaleY = Mathf.Lerp(1f, 2f, ease);
+            addedBonusScore.transform.localScale = new Vector3(newScaleX, newScaleY, 1f);                
             t += 0.02f;
             yield return new WaitForFixedUpdate();
         }
@@ -719,23 +707,7 @@ public class LevelManager : MonoBehaviour
     {
         return x * x * x * x;
     }
-    
-    public float easeInOutBack(float x)
-    {
-        const float c1 = 1.70158f;
-        const float c2 = c1 * 1.525f;
 
-        return x < 0.5
-            ? (Mathf.Pow(2 * x, 2) * ((c2 + 1) * 2 * x - c2)) / 2
-            : (Mathf.Pow(2 * x - 2, 2) * ((c2 + 1) * (x * 2 - 2) + c2) + 2) / 2;
-        
-    }
-    
-    public bool GetOver()
-    {
-        return over;
-    }
-    
     private static Vector3[] RandomPositions(string plane, int n)
     {
         Vector3[] ris = new Vector3[n];

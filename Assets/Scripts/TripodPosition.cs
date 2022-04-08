@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class TripodPosition : MonoBehaviour
@@ -7,16 +5,20 @@ public class TripodPosition : MonoBehaviour
 
     private float zoom = 4f;
     private Vector3 newPos;
-    
-    // Update is called once per frame
+    private Transform tripodTransform;
+
+    private void Start()
+    {
+        tripodTransform = transform;
+    }
+
     void Update()
     {
-        newPos = transform.localPosition;
+        newPos = tripodTransform.localPosition;
 
         //[1,10] -> [46, 41]
         newPos.x = 46f + -5f / 9f * (zoom - 1f);
-
-        transform.localPosition = newPos;
+        tripodTransform.localPosition = newPos;
     }
     
     public void SetZoom(float z)

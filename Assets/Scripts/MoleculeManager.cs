@@ -18,11 +18,11 @@ public class MoleculeManager : MonoBehaviour
     private GameObject[] atoms;
     private GameObject[] solutionAtoms;
 
-    private List<GameObject> bonds = new List<GameObject>();
-    private List<GameObject> bondShadows = new List<GameObject>(); 
+    private readonly List<GameObject> bonds = new List<GameObject>();
+    private readonly List<GameObject> bondShadows = new List<GameObject>(); 
     
     private List<int[]> solutionBonds; 
-    private List<float> distancesGraph = new List<float>();
+    private readonly List<float> distancesGraph = new List<float>();
     private Vertex[] solutionMST; // i vertici appartenenti all'MST come lista di vertici
     private bool[] markedNodesSolMST;
 
@@ -79,17 +79,6 @@ public class MoleculeManager : MonoBehaviour
             }
         }
         
-        /*
-        for (int i = 0; i < solutionMST.Length; i++)
-        {
-            // aggiungi il padre a ogni atomo 
-            solutionAtoms[solutionMST[i].V].GetComponent<SolutionAtom>().molecularParent = solutionAtoms[solutionMST[i].Parent];
-            // aggiungi la distanza dal padre a ogni atomo
-            solutionAtoms[solutionMST[i].V].GetComponent<SolutionAtom>().distanceToMolecularParent =
-                Vector3.Distance(solutionAtoms[solutionMST[i].V].transform.position,
-                    solutionAtoms[solutionMST[i].V].GetComponent<SolutionAtom>().molecularParent.transform.position);
-        }
-        */
     }
 
     private void DisplayMoleculeBonds()

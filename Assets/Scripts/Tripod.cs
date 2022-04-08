@@ -1,13 +1,10 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class Tripod : MonoBehaviour
 {
     public Material[] materials;
     private Renderer _renderer;
-    private bool clicked = false;
+    private bool clicked;
     private AudioManager audioManager;
     
     private void Start()

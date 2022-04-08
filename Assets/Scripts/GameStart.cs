@@ -1,5 +1,3 @@
-using System;
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -11,7 +9,6 @@ public class GameStart : MonoBehaviour
 {
     private AudioManager audioManager;
     public Button startGameButton;
-    public Button quitButton;
     public Button musicButton;
     public Button musicButtonDisabled;
     public Button sfxButton;
@@ -27,25 +24,27 @@ public class GameStart : MonoBehaviour
     public bool rotationUnlocked;
     public bool swapUnlocked;
     public bool moleculeUnlocked;
+    public bool deleteData;
     
     void Awake()
     {
         print("build 1.5");
         // Inizializza i livelli
+        if (deleteData)
+        {
+            PlayerPrefs.DeleteAll();
+        }
         if (LevelLoader.LoadedData == false)
         {
             LevelData.Levels = new List<Level>();
             ShopItemsData.ShopItems = new List<ShopItem>();
+            LoadGameData();
             Debug.Log("loaded");
         }
 
         audioManager = FindObjectOfType<AudioManager>();
         LevelLoader.LoadedData = true;
-        if (quitButton)
-        {
-            quitButton.onClick.AddListener(LevelLoader.QuitGame);
-            quitButton.onClick.AddListener(delegate { audioManager.Play("MenuButtonSelection"); });
-        }
+        
 
         switch (debugLevelCounter)
         {
@@ -85,12 +84,27 @@ public class GameStart : MonoBehaviour
             return;
         }
 
-        PowerUpsManger.ZoomUnlocked = zoomUnlocked;
-        PowerUpsManger.LambdaUnlocked = lambdaUnlocked;
-        PowerUpsManger.PowerUnlocked = powerUnlocked;
-        PowerUpsManger.RotationUnlocked = rotationUnlocked;
-        PowerUpsManger.SwapUnlocked = swapUnlocked;
-        PowerUpsManger.MoleculeUnlocked = moleculeUnlocked;
+        PowerUpsManager.ZoomUnlocked = zoomUnlocked;
+        PowerUpsManager.LambdaUnlocked = lambdaUnlocked;
+        PowerUpsManager.PowerUnlocked = powerUnlocked;
+        PowerUpsManager.RotationUnlocked = rotationUnlocked;
+        PowerUpsManager.SwapUnlocked = swapUnlocked;
+        PowerUpsManager.MoleculeUnlocked = moleculeUnlocked;
+    }
+
+    private void LoadGameData()
+    {
+        LevelLoader.LevelCounter = PlayerPrefs.GetInt("LevelsUnlocked", 1);
+        LevelsUnlocked.LoadLevelsUnlocked(PlayerPrefs.GetInt("LevelsUnlocked", 1));
+
+        ScoreManager.Score = PlayerPrefs.GetInt("Score", 5000);
+        PowerUpsManager.LambdaUnlocked = IntToBool(PlayerPrefs.GetInt("LambdaUnlocked", 0));
+        PowerUpsManager.ZoomUnlocked = IntToBool(PlayerPrefs.GetInt("ZoomUnlocked", 0));
+        PowerUpsManager.SwapUnlocked = IntToBool(PlayerPrefs.GetInt("SwapUnlocked", 0));
+        PowerUpsManager.PowerUnlocked = IntToBool(PlayerPrefs.GetInt("PowerUnlocked", 0));
+        PowerUpsManager.RotationUnlocked = IntToBool(PlayerPrefs.GetInt("RotationUnlocked", 0));
+        PowerUpsManager.MoleculeUnlocked = IntToBool(PlayerPrefs.GetInt("MoleculeUnlocked", 0));
+        PowerUpsManager.CrystalUnlocked = IntToBool(PlayerPrefs.GetInt("CrystalUnlocked", 0));
     }
 
     private void Start()
@@ -149,5 +163,10 @@ public class GameStart : MonoBehaviour
     private void ExitCredits()
     {
         creditsBG.SetActive(false);
+    }
+
+    private bool IntToBool(int val)
+    {
+        return val != 0;
     }
 }

@@ -1,6 +1,3 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class BondShadow : MonoBehaviour
@@ -19,14 +16,18 @@ public class BondShadow : MonoBehaviour
 
         //SCALA
         float distance = Vector3.Distance(startPosition, endPosition);
-        transform.localScale = new Vector3(
-            transform.localScale.x,
+        var bondShadowTransform = transform;
+        var localScale = bondShadowTransform.localScale;
+        localScale = new Vector3(
+            localScale.x,
             distance / 2,
-            transform.localScale.z
+            localScale.z 
         );
+        bondShadowTransform.localScale = localScale;
 
         //ROTAZIONE
-        transform.rotation = Quaternion.FromToRotation(Vector3.up, Vector3.Normalize(endPosition - startPosition));
-        transform.localEulerAngles = new Vector3(90, transform.localEulerAngles.y, transform.localEulerAngles.z);
+        bondShadowTransform.rotation = Quaternion.FromToRotation(Vector3.up, Vector3.Normalize(endPosition - startPosition));
+        var localEulerAngles = bondShadowTransform.localEulerAngles;
+        bondShadowTransform.localEulerAngles = new Vector3(90, localEulerAngles.y, localEulerAngles.z);
     }
 }

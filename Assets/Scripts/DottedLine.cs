@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class DottedLine : MonoBehaviour
@@ -12,38 +10,40 @@ public class DottedLine : MonoBehaviour
     private Renderer _renderer;
     private Atom atom;
     private bool atomFlag;
-
-    private float timer = 0f;
-    // Start is called before the first frame update
+    private Transform dottedLineTransform;
+    private float timer;
+    
     void Start()
     {
-        originPos = transform.position;
-        transform.rotation *= Quaternion.Euler(90, 0, 90);
-        originRot = transform.rotation;
+        dottedLineTransform = transform;
+        originPos = dottedLineTransform.position;
+        var rotation = dottedLineTransform.rotation;
+        rotation *= Quaternion.Euler(90, 0, 90);
+        transform.rotation = rotation;
+        originRot = rotation; 
         _renderer = GetComponent<Renderer>();
     }
 
-    // Update is called once per frame
     void Update()
     {
         if (!Vertical)
         {
             if (atomFlag)
             {
-                this.transform.parent = atom.transform;
-                transform.localPosition = Vector3.zero;
+                dottedLineTransform.parent = atom.transform;
+                dottedLineTransform.localPosition = Vector3.zero;
                 timer = 0;
             }
             else
-            {
+            { 
                 timer += Time.deltaTime;
             }
 
             Vector3 curPosition = transform.position;
             Quaternion curRotation = originRot;
             curPosition.x = originPos.x;
-            transform.position = curPosition;
-            transform.rotation = curRotation;
+            dottedLineTransform.position = curPosition;
+            dottedLineTransform.rotation = curRotation;
 
             if (!(timer >= 0.01f)) return;
             _renderer.enabled = false;
@@ -52,8 +52,8 @@ public class DottedLine : MonoBehaviour
         {
             if (atomFlag)
             {
-                this.transform.parent = atom.transform;
-                transform.localPosition = new Vector3(0, -10, 0);
+                dottedLineTransform.parent = atom.transform;
+                dottedLineTransform.localPosition = new Vector3(0, -10, 0);
                 timer = 0;
             }
             else
@@ -61,11 +61,10 @@ public class DottedLine : MonoBehaviour
                 timer += Time.deltaTime;
             }
 
-            Vector3 curPosition = transform.position;
+            Vector3 curPosition = dottedLineTransform.position;
             Quaternion curRotation = originRot;
-            //curPosition.x = originPos.x;
-            transform.position = curPosition;
-            transform.rotation = curRotation;
+            dottedLineTransform.position = curPosition;
+            dottedLineTransform.rotation = curRotation;
 
             if (!(timer >= 0.5f)) return;
             _renderer.enabled = false;

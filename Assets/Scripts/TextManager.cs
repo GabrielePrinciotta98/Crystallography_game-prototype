@@ -1,10 +1,7 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 public class TextManager : MonoBehaviour
 {
-    // Start is called before the first frame update
     private Text zoom;
     private Text power;
     private Text rotation;
@@ -52,16 +49,6 @@ public class TextManager : MonoBehaviour
         lambda.text = l.ToString("F2");
     }
 
-    public void SetRepetitionsTextReference(Text text)
-    {
-        repetitions = text;
-    }
-    
-    public void SetRepetitionsText(float r)
-    {
-        repetitions.text = r.ToString("F0");
-    }
-    
-    
+
 
 }

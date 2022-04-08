@@ -47,12 +47,12 @@ public static class ShopItemsData
         {
             shopitems = value;
             
-            shopitems.Add(new ShopItem(0, ZoomDescription, 1500, ZoomInfo));
-            shopitems.Add(new ShopItem(1, LambdaDescription, 2000, LambdaInfo));
-            shopitems.Add(new ShopItem(2, PowerDescription, 1000, PowerInfo));
-            shopitems.Add(new ShopItem(3, RotationDescription, 3000, RotationInfo));
-            shopitems.Add(new ShopItem(4, SwapDescription, 500, SwapInfo));
-            shopitems.Add(new ShopItem(5, MoleculeDescription, 4000, MoleculeInfo));
+            shopitems.Add(new ShopItem(0, ZoomDescription, 1500, ZoomInfo, PowerUpsManager.ZoomUnlocked));
+            shopitems.Add(new ShopItem(1, LambdaDescription, 2000, LambdaInfo, PowerUpsManager.LambdaUnlocked));
+            shopitems.Add(new ShopItem(2, PowerDescription, 1000, PowerInfo, PowerUpsManager.PowerUnlocked));
+            shopitems.Add(new ShopItem(3, RotationDescription, 3000, RotationInfo, PowerUpsManager.RotationUnlocked));
+            shopitems.Add(new ShopItem(4, SwapDescription, 500, SwapInfo, PowerUpsManager.SwapUnlocked));
+            shopitems.Add(new ShopItem(5, MoleculeDescription, 4000, MoleculeInfo, PowerUpsManager.MoleculeUnlocked));
         }
     }
 }

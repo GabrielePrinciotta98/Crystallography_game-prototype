@@ -78,6 +78,7 @@ TextureImporter:
   streamingMipmaps: 0
   streamingMipmapsPriority: 0
   vTOnly: 0
+  ignoreMasterTextureLimit: 0
   grayScaleToAlpha: 0
   generateCubemap: 6
   cubemapConvolution: 0
@@ -87,11 +88,11 @@ TextureImporter:
   textureSettings:
     serializedVersion: 2
     filterMode: 1
-    aniso: -1
-    mipBias: -100
+    aniso: 1
+    mipBias: 0
     wrapU: 1
     wrapV: 1
-    wrapW: -1
+    wrapW: 0
   nPOTScale: 0
   lightmap: 0
   compressionQuality: 50
@@ -544,6 +545,25 @@ TextureImporter:
     edges: []
     weights: []
     secondaryTextures: []
+    nameFileIdTable:
+      powerUpButtons_1: 8861330478100948973
+      powerUpButtons_14: -6481174290296314360
+      powerUpButtons_12: 5918979931757277226
+      powerUpButtons_13: 9039792895274502312
+      powerUpButtons_3: 3469882454036781333
+      powerUpButtons_11: -6264198896479752997
+      powerUpButtons_5: 224683601653821304
+      powerUpButtons_2: 5495005310652481551
+      powerUpButtons_0: -6621491648885419013
+      powerUpButtons_10: -3234225103710254962
+      powerUpButtons_6: -3771919662006707915
+      powerUpButtons_15: 8205155949138787242
+      powerUpButtons_7: 4347885540131503904
+      powerUpButtons_8: 7645048600386880783
+      powerUpButtons_16: 7013499247320840505
+      powerUpButtons_17: 1568310486307659060
+      powerUpButtons_9: 5467345681560212667
+      powerUpButtons_4: -6154992797748009761
   spritePackingTag: 
   pSDRemoveMatte: 0
   pSDShowRemoveMatteOption: 0

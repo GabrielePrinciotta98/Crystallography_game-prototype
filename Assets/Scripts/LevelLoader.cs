@@ -1,26 +1,12 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
 public static class LevelLoader
 {
-    private static int levelCounter = 0;
+    private static int levelCounter;
     private static int prevScene;
 
-    public static int PrevScene
-    {
-        get => prevScene;
-        set => prevScene = value;
-    }
-
-    private static bool loadedData;
-
-    public static bool LoadedData
-    {
-        get => loadedData;
-        set => loadedData = value;
-    }
+    public static bool LoadedData { get; set; }
 
     public static int LevelCounter
     {
@@ -63,10 +49,4 @@ public static class LevelLoader
         prevScene = SceneManager.GetActiveScene().buildIndex;
         SceneManager.LoadScene(3);
     }
-
-    public static void QuitGame()
-    {
-        Application.Quit();
-        Debug.Log("exit");
-    } 
 }

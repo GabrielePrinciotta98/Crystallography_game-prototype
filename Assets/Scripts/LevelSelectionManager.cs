@@ -1,11 +1,9 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
 public class LevelSelectionManager : MonoBehaviour
 {
-    //private int levelButtonsNumber = 20;
 
     private AudioManager audioManager;
     private GameObject canvas;
@@ -14,7 +12,7 @@ public class LevelSelectionManager : MonoBehaviour
     private GameObject backButton;
     private GameObject shopButton;
     private GameObject score;
-    private List<GameObject> levelButtons = new List<GameObject>();
+    private readonly List<GameObject> levelButtons = new List<GameObject>();
     public int LevelButtonsCounter { get; private set; }
 
     public List<string> LevelDescriptions { get; } = new List<string>();

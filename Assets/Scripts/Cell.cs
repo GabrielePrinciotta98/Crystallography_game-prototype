@@ -1,13 +1,12 @@
 using System;
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class Cell : MonoBehaviour
 {
     private Material mat;
     private static readonly int EmissionColor = Shader.PropertyToID("_EmissionColor");
-    private Color startingAlpha = new Color(1, 1, 1, 0.1176471f);
+    private readonly Color startingAlpha = new Color(1, 1, 1, 0.1176471f);
 
     private void Start()
     {

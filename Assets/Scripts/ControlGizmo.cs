@@ -1,8 +1,4 @@
-using System.Collections;
-using System.Collections.Generic;
-using System.Numerics;
 using UnityEngine;
-using UnityEngine.UIElements;
 using Plane = UnityEngine.Plane;
 using Quaternion = UnityEngine.Quaternion;
 using Vector3 = UnityEngine.Vector3;
@@ -125,8 +121,9 @@ public class ControlGizmo : MonoBehaviour
         p[axis] = atom.transform.localPosition[axis];
         if (atomsManager.crystalActivated)
         {
-            p[0] = atom.cell.transform.localPosition[0];
-            p[2] = atom.cell.transform.localPosition[2];
+            var localPosition = atom.cell.transform.localPosition;
+            p[0] = localPosition[0];
+            p[2] = localPosition[2];
         }
         frontPlane.transform.localPosition = p;
         backPlane.transform.localPosition = p;
@@ -138,8 +135,9 @@ public class ControlGizmo : MonoBehaviour
     public void RefreshPositionLine()
     {
         Vector3 p = Vector3.zero;
-        p[(axis+1)%3] = atom.transform.localPosition[(axis+1)%3];
-        p[(axis+2)%3] = atom.transform.localPosition[(axis+2)%3];
+        var localPosition = atom.transform.localPosition;
+        p[(axis+1)%3] = localPosition[(axis+1)%3];
+        p[(axis+2)%3] = localPosition[(axis+2)%3];
         if (atomsManager.crystalActivated)
         {
             p[1] = atom.cell.transform.localPosition[1];
@@ -152,23 +150,25 @@ public class ControlGizmo : MonoBehaviour
         backLine.transform.Rotate(0, 180, 0,Space.Self);
     }
 
-    public void RefreshPositionSphere()
+    private void RefreshPositionSphere()
     {
         if (atom.molecularParent)
         {
-            frontSphere.transform.position = atom.molecularParent.transform.position;
-            backSphere.transform.position = atom.molecularParent.transform.position;
+            var position = atom.molecularParent.transform.position;
+            frontSphere.transform.position = position;
+            backSphere.transform.position = position;
             
-            float distance = Vector3.Distance(atom.transform.position, atom.molecularParent.transform.position) * 2;
+            float distance = Vector3.Distance(atom.transform.position, position) * 2;
             frontSphere.transform.localScale = new Vector3(distance,distance,distance);
             backSphere.transform.localScale = new Vector3(distance,distance,distance);
         }
         else
         {
-            frontSphere.transform.position = moleculeSpace.transform.position;
-            backSphere.transform.position = moleculeSpace.transform.position;
+            var position = moleculeSpace.transform.position;
+            frontSphere.transform.position = position;
+            backSphere.transform.position = position;
             
-            float distance = Vector3.Distance(atom.transform.position, moleculeSpace.transform.position) * 2;
+            float distance = Vector3.Distance(atom.transform.position, position) * 2;
             frontSphere.transform.localScale = new Vector3(distance,distance,distance);
             backSphere.transform.localScale = new Vector3(distance,distance,distance);
         }
@@ -198,29 +198,29 @@ public class ControlGizmo : MonoBehaviour
     
     public void RefreshPositionSlice()
     {
-        Transform frontDottedSlice = this.frontDottedSlice;
-        Transform backDottedSlice = this.backDottedSlice;
+        Transform frontDottedSliceLocal = frontDottedSlice;
+        Transform backDottedSliceLocal = backDottedSlice;
         
-        frontDottedSlice.localRotation = Quaternion.FromToRotation(Vector3.forward, sliceNormal);
-        backDottedSlice.localRotation = Quaternion.FromToRotation(Vector3.back, sliceNormal);
+        frontDottedSliceLocal.localRotation = Quaternion.FromToRotation(Vector3.forward, sliceNormal);
+        backDottedSliceLocal.localRotation = Quaternion.FromToRotation(Vector3.back, sliceNormal);
         float r = atom.distanceToMolecularParent * 2;
-        frontDottedSlice.transform.localScale =
-            backDottedSlice.transform.localScale = new Vector3(r, r, r);
+        frontDottedSliceLocal.transform.localScale =
+            backDottedSliceLocal.transform.localScale = new Vector3(r, r, r);
 
-        frontDottedSlice.transform.localPosition =
-            backDottedSlice.transform.localPosition = atom.molecularParent.transform.localPosition;
+        frontDottedSliceLocal.transform.localPosition =
+            backDottedSliceLocal.transform.localPosition = atom.molecularParent.transform.localPosition;
 
     }
 
 
-    public Vector3 Normal()
+    private Vector3 Normal()
     {
         Vector3 p = Vector3.zero;
         p[axis] = 1;
         return p;
     }
-    
-    public Vector3 WorldNormal()
+
+    private Vector3 WorldNormal()
     {
         return moleculeSpace.transform.localRotation * Normal();
     }
@@ -228,7 +228,7 @@ public class ControlGizmo : MonoBehaviour
 
     public void SetAtom(Atom a)
     {
-        this.atom = a;
+        atom = a;
         RefreshPositionPlane();
         RefreshPositionLine();
         if (isSphere)
@@ -243,16 +243,9 @@ public class ControlGizmo : MonoBehaviour
         levelType = s;
     }
     
-    public int BestPlaneAxis()
-    {
-        Vector3 viewDir = Camera.main.transform.forward;
-        Vector3 molDir = moleculeSpace.transform.forward;
-        return (Mathf.Abs(Vector3.Dot(viewDir, molDir)) < 0.8f) ? 0 : 2;
-    }
     
     public Vector3 PositionUnderMousePlane(out bool fail)
     {
-
         fail = false;
         if (!Camera.main) return transform.position;
         Ray r = Camera.main.ScreenPointToRay(new Vector3(Input.mousePosition.x, Input.mousePosition.y, 0));
@@ -264,21 +257,21 @@ public class ControlGizmo : MonoBehaviour
         p.Raycast(r, out var d);
         Vector3 hit = r.GetPoint(d);
         return hit;
-
     }
 
     public Vector3 PositionUnderMousePlaneAndSphere(out bool fail)
     {
         fail = false;
         Vector3 result = PositionUnderMousePlane(out fail);
-        Vector3 d = result - atom.molecularParent.transform.position;
+        var position = atom.molecularParent.transform.position;
+        Vector3 d = result - position;
         float targetDistance = atom.distanceToMolecularParent;
         float dot = Vector3.Dot(WorldNormal(), d);
         Vector3 dn = WorldNormal() * dot; //component along plane normal
         Vector3 dp = d - dn; //component on plane  (d = dn + dp)
         float targetDp = Mathf.Sqrt(Mathf.Abs(targetDistance * targetDistance - dot * dot));
         dp = dp.normalized * targetDp;
-        return atom.molecularParent.transform.position + dp + dn;
+        return position + dp + dn;
     }
 
     public Vector3 PositionUnderMouseLine(out bool fail)
@@ -330,7 +323,7 @@ public class ControlGizmo : MonoBehaviour
         return father + (p - father).normalized * r;
     }
 
-    public void UpdateSliceNormal()
+    private void UpdateSliceNormal()
     {
         sliceNormal = Vector3.Cross(WorldNormal(), atom.transform.position - atom.molecularParent.transform.position);
         if (sliceNormal.sqrMagnitude == 0) sliceNormal = Vector3.Cross(WorldNormal(), Vector3.right);

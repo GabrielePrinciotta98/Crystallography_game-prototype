@@ -1,6 +1,4 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 [Serializable] public enum SoundType
@@ -15,7 +13,7 @@ using UnityEngine;
     [SerializeField] private string name;
     [SerializeField] private AudioClip clip;
     
-    [Range(0f, 1f)]
+    [Range(0f, 2f)]
     [SerializeField] private float volume;
     [Range(0.1f, 3f)]
     [SerializeField] private float pitch;

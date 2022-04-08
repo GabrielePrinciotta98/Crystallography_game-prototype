@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
 public class Detector : MonoBehaviour
 {
@@ -12,7 +9,6 @@ public class Detector : MonoBehaviour
     private SolutionManager solutionManager;
     private EmitterCone emitter;
     private Vector4[] positions;
-    private readonly Vector4[] centers = new Vector4[100];
     private float zoom = 4f;
     private float pwr = -3f;
     private bool pwrSetted;
@@ -61,13 +57,11 @@ public class Detector : MonoBehaviour
             pwr += 0.02f;
             UpdatePattern();
         }
-        //Debug.Log("move: " + atomsManager.AnAtomIsMoving);
         if (isDirty) UpdatePattern();
-        //Debug.Log("update");
         isDirty = false;
     }
-    
-    public void UpdatePattern()
+
+    private void UpdatePattern()
     {
         Diffraction();
         crt.Update();
@@ -80,8 +74,6 @@ public class Detector : MonoBehaviour
         //uso i metodi del solutionManager per avere i vettori a,c corretti della soluzione
         a = solutionManager.GetCellRight() * atomsManager.GetK();
         c = solutionManager.GetCellForward() * atomsManager.GetK();
-        //Debug.Log("A: " + a);
-        //Debug.Log("C: " + c);
         
         Shader.SetGlobalVectorArray(AtomsPos, positions);
         Shader.SetGlobalInt(NAtoms, atomsManager.GetAtoms().Count);
@@ -102,7 +94,6 @@ public class Detector : MonoBehaviour
 
         Shader.SetGlobalVector(A, a);
         Shader.SetGlobalVector(C, c);
-        //Debug.Log("R: " + atomsManager.GetR());
         Shader.SetGlobalFloat(Lambda, lambda);
     }
 
@@ -121,22 +112,13 @@ public class Detector : MonoBehaviour
         zoom = z;
         UpdatePattern();
     }
-
-    public float GetZoom()
-    {
-        return this.zoom;
-    }
+    
 
     public void SetPwr(float p)
     {
         pwr = p;
         pwrSetted = true;
         UpdatePattern();
-    }
-
-    public float GetPwr()
-    {
-        return this.pwr;
     }
 
     public void SetLambda(float l)
@@ -147,7 +129,7 @@ public class Detector : MonoBehaviour
 
     public void SetAtomsManager(AtomsManager am)
     {
-        this.atomsManager = am;
+        atomsManager = am;
     }
     
     public void Swap()

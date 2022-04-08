@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -11,7 +9,6 @@ public class Timer : MonoBehaviour
     
     public static float Time { get; set; }
 
-    // Start is called before the first frame update
     void Start()
     {
         timerValue = transform.GetChild(0).GetComponent<Text>();
@@ -19,22 +16,15 @@ public class Timer : MonoBehaviour
     }
 
 
-    // Update is called once per frame
     void Update()
     {
-        timerValue.text = string.Format("{0:00}", Time);
-        if (Time >= 200)
+        timerValue.text = $"{Time:00}";
+        hourglassImage.sprite = Time switch
         {
-            hourglassImage.sprite = hourglassesSprites[0];
-        }
-        else if (Time >= 100)
-        {
-            hourglassImage.sprite = hourglassesSprites[1];
-        }
-        else if (Time >= 0)
-        {
-            hourglassImage.sprite = hourglassesSprites[2];
-        }
-        
+            >= 200 => hourglassesSprites[0],
+            >= 100 => hourglassesSprites[1],
+            >= 0 => hourglassesSprites[2],
+            _ => hourglassImage.sprite
+        };
     }
 }

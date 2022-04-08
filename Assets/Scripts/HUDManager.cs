@@ -1,7 +1,5 @@
 using System.Collections.Generic;
-using UnityEditor.UIElements;
 using UnityEngine;
-using UnityEngine.Events;
 using UnityEngine.UI;
 
 public class HUDManager : MonoBehaviour
@@ -32,15 +30,16 @@ public class HUDManager : MonoBehaviour
     [SerializeReference] private Button moleculeDisabled;
     [SerializeReference] private Button moleculeForbidden;
     [SerializeReference] private Button swap;
-    [SerializeReference] private Button crystal;
-    [SerializeReference] private Button crystalDisabled;
+    [SerializeReference] private GameObject crystal;
+    //[SerializeReference] private Button crystalDisabled;
     [SerializeReference] private TextManager textManager;
     public DialogueBox dialogueBox;
 
     private static List<GameObject> buttonsWithSlider;
-    private List<Button> allButtons = new List<Button>();
+    private readonly List<Button> allButtons = new List<Button>();
 
-    private int clicksOnHint = 0;
+    private int clicksOnHint;
+    private bool firstTimeMolecule = true, firstTimeHint = true;
 
     private void Awake()
     {
@@ -68,27 +67,25 @@ public class HUDManager : MonoBehaviour
     {
         buttonsWithSlider = new List<GameObject>();
         textManager = Instantiate(textManager);
-        if (dialogueBox == null)
-        {
-            Debug.Log("HUD dialog null");
-        }
+        
         if (atomsManager.isCrystal)
         {
             hint.gameObject.SetActive(false);
             hintForbidden.gameObject.SetActive(true);
             hintForbidden.onClick.AddListener(delegate { dialogueBox.StartFinalLevelInterference(); });
             hintForbidden.onClick.AddListener(delegate { audioManager.Play("MenuError"); });
-
         }
         else
         {
             hint.gameObject.SetActive(true);
             hintForbidden.gameObject.SetActive(false);
-            if (PowerUpsManger.MoleculeUnlocked)
+            if (PowerUpsManager.MoleculeUnlocked)
             {
-                hint.onClick.AddListener(delegate { dialogueBox.StartAlertMoleculeModeImpossibleAfterHint(); });
+                if (firstTimeHint)
+                {
+                    hint.onClick.AddListener(delegate { dialogueBox.StartAlertMoleculeModeImpossibleAfterHint(); });
+                }
                 hint.onClick.AddListener(ActivateWithMoleculeUnlocked);
-                
             }
             else
             {
@@ -102,7 +99,7 @@ public class HUDManager : MonoBehaviour
         allButtons.Add(hint);
         allButtons.Add(hintForbidden);
         //INSTANZIO I BOTTONI E I RELATIVI LISTENER
-        if (PowerUpsManger.ZoomUnlocked)
+        if (PowerUpsManager.ZoomUnlocked)
         {
             //zoom = Instantiate(zoom, Position(), Quaternion.identity, canvas.transform);
             zoom = Instantiate(zoom, canvas.transform);
@@ -133,7 +130,7 @@ public class HUDManager : MonoBehaviour
 
         }
 
-        if (PowerUpsManger.LambdaUnlocked)
+        if (PowerUpsManager.LambdaUnlocked)
         {
             lambda = Instantiate(lambda, canvas.transform);
             //lambda = Instantiate(lambda, Position(), Quaternion.identity, canvas.transform);
@@ -158,7 +155,7 @@ public class HUDManager : MonoBehaviour
 
         }
        
-        if (PowerUpsManger.PowerUnlocked)
+        if (PowerUpsManager.PowerUnlocked)
         {
             power = Instantiate(power, canvas.transform);
             //power = Instantiate(power, Position(), Quaternion.identity, canvas.transform);
@@ -183,7 +180,7 @@ public class HUDManager : MonoBehaviour
 
         }
 
-        if (PowerUpsManger.RotationUnlocked)
+        if (PowerUpsManager.RotationUnlocked)
         {
             rotation = Instantiate(rotation, canvas.transform);
             //rotation = Instantiate(rotation, Position(), Quaternion.identity, canvas.transform);
@@ -208,7 +205,7 @@ public class HUDManager : MonoBehaviour
 
         }
         
-        if (PowerUpsManger.SwapUnlocked)
+        if (PowerUpsManager.SwapUnlocked)
         {
             swap = Instantiate(swap, canvas.transform);
             //swap = Instantiate(swap, Position(), Quaternion.identity, canvas.transform);
@@ -218,7 +215,7 @@ public class HUDManager : MonoBehaviour
             
         }
 
-        if (PowerUpsManger.MoleculeUnlocked)
+        if (PowerUpsManager.MoleculeUnlocked)
         {
             //Vector3 moleculeButtonPos = Position();
             //molecule = Instantiate(molecule, moleculeButtonPos, Quaternion.identity, canvas.transform);
@@ -245,18 +242,15 @@ public class HUDManager : MonoBehaviour
                 moleculeForbidden.gameObject.SetActive(false);
                 
                 molecule.onClick.RemoveAllListeners();
-                molecule.onClick.AddListener(delegate
+                if (firstTimeMolecule)
                 {
-                    moleculeManager.ActivateMolecule(molecule, moleculeDisabled);
-                });
-                molecule.onClick.AddListener(ActivateWithMoleculeUnlocked);
-                molecule.onClick.AddListener(delegate { audioManager.Play("MenuButtonSelection"); });
+                    molecule.onClick.AddListener(delegate { dialogueBox.StartAlertHintImpossibleAfterMoleculeMode(); });
+                }
+                molecule.onClick.AddListener(ActivateMoleculeMode);
 
                 moleculeDisabled.onClick.RemoveAllListeners();
-                moleculeDisabled.onClick.AddListener(delegate
-                {
-                    moleculeManager.DeactivateMolecule(molecule, moleculeDisabled);
-                });
+                moleculeDisabled.onClick.AddListener(delegate { moleculeManager.DeactivateMolecule(molecule, moleculeDisabled); });
+                moleculeDisabled.onClick.AddListener(EnableHint);
                 moleculeDisabled.onClick.AddListener(delegate { audioManager.Play("MenuButtonSelection"); });
                 moleculeDisabled.gameObject.SetActive(false);
             }
@@ -267,16 +261,23 @@ public class HUDManager : MonoBehaviour
         if (atomsManager.isCrystal)
         {
             crystal = Instantiate(crystal, canvas.transform);
-            allButtons.Add(crystal);
-            crystalDisabled = Instantiate(crystalDisabled, canvas.transform);
-            allButtons.Add(crystalDisabled);
-            crystal.onClick.RemoveAllListeners();
-
-            crystal.onClick.AddListener(delegate { atomsManager.TriggerCrystalActivation(crystal, crystalDisabled); });
+            Button crystalButton = crystal.GetComponentInChildren<Button>();
+            if (PowerUpsManager.CrystalUnlocked)
+                crystal.transform.GetChild(2).gameObject.SetActive(false);
+            allButtons.Add(crystalButton);
             
-            crystalDisabled.onClick.RemoveAllListeners();
-            crystalDisabled.onClick.AddListener(delegate { atomsManager.TriggerCrystalDeactivation(crystal, crystalDisabled); });
-            crystalDisabled.gameObject.SetActive(false);
+            //crystalDisabled = Instantiate(crystalDisabled, canvas.transform);
+            //allButtons.Add(crystalDisabled);
+            crystalButton.onClick.RemoveAllListeners();
+
+            crystalButton.onClick.AddListener(delegate { atomsManager.TriggerCrystalActivation(crystal); });
+            crystalButton.onClick.AddListener(delegate { audioManager.Play("MenuButtonSelection"); });
+            crystalButton.onClick.AddListener(delegate { audioManager.Play("CrystalActivation"); });
+            //todo audio attivazione cristallo
+            
+            //crystalDisabled.onClick.RemoveAllListeners();
+            //crystalDisabled.onClick.AddListener(delegate { atomsManager.TriggerCrystalDeactivation(crystal, crystalDisabled); });
+            //crystalDisabled.gameObject.SetActive(false);
         }
         
         DisablePowerUps();
@@ -291,10 +292,26 @@ public class HUDManager : MonoBehaviour
         hint.onClick.AddListener(delegate { hintArrow.Activate(); });
         hint.onClick.AddListener(delegate { audioManager.Play("HintArrowActivation"); });
     }
+    private void ActivateMoleculeMode()
+    {
+        
+        molecule.onClick.AddListener(ResetClicksOnHintCounter);
+        if (clicksOnHint < 0) return;
+        molecule.onClick.RemoveAllListeners();
+        molecule.onClick.AddListener(ForbidHint);
+        molecule.onClick.AddListener(delegate { moleculeManager.ActivateMolecule(molecule, moleculeDisabled); }); 
+        molecule.onClick.AddListener(delegate { audioManager.Play("MenuButtonSelection"); });
+
+    }
     
     private void IncreaseClicksOnHintCounter()
     {
         clicksOnHint++;
+    }
+
+    private void ResetClicksOnHintCounter()
+    {
+        clicksOnHint--;
     }
 
     private void ForbidMoleculeMode()
@@ -305,6 +322,22 @@ public class HUDManager : MonoBehaviour
 
         molecule.gameObject.SetActive(false);
         moleculeDisabled.gameObject.SetActive(false);
+    }
+    private void ForbidHint()
+    {
+        hintForbidden.gameObject.SetActive(true);
+        hintForbidden.onClick.AddListener(delegate { dialogueBox.StartHintImpossibleAfterMoleculeMode(); });
+        hintForbidden.onClick.AddListener(delegate { audioManager.Play("MenuError"); });
+
+        hint.gameObject.SetActive(false);
+    }
+    private void EnableHint()
+    {
+        hint.gameObject.SetActive(true);
+        hint.onClick.RemoveAllListeners();
+        hint.onClick.AddListener(delegate { dialogueBox.StartAlertMoleculeModeImpossibleAfterHint(); });
+        hint.onClick.AddListener(ActivateWithMoleculeUnlocked);
+        hintForbidden.gameObject.SetActive(false);
     }
 
 

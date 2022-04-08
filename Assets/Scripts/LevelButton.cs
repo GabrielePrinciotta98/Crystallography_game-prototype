@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -10,14 +8,13 @@ public class LevelButton : MonoBehaviour
     private int levelNumber;
     private int availableLevels;
     [SerializeReference] private Sprite completedLevel;
-    
-    public int LevelNumber
+
+    private int LevelNumber
     {
         get => levelNumber;
         set => levelNumber = value;
     }
 
-    // Start is called before the first frame update
     protected void Start()
     {
         audioManager = FindObjectOfType<AudioManager>();
@@ -52,13 +49,5 @@ public class LevelButton : MonoBehaviour
         GetComponent<Button>().colors = cb;
 
     }
-
-    // Update is called once per frame
-    void Update()
-    {   
-        //SERVE PER NON FARE VEDERE IL LUCCHETTO QUANDO SI ATTIVA IL CHEAT CODE
-        //if (LevelNumber <= availableLevels)
-            //transform.GetChild(1).gameObject.SetActive(!GetComponent<Button>().interactable);
-        
-    }
+    
 }

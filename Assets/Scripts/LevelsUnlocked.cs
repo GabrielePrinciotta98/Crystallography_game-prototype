@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public static class LevelsUnlocked
@@ -14,8 +12,12 @@ public static class LevelsUnlocked
             if (levelsUnlocked != LevelLoader.LevelCounter &&
                 !GameObject.Find("CheatCode").GetComponent<CheatCode>().AlreadyActivated) return;
             levelsUnlocked = value;
-            Debug.Log("hai sbloccato il livello " + levelsUnlocked);
 
         }
+    }
+
+    public static void LoadLevelsUnlocked(int loadedValue)
+    {
+        levelsUnlocked = loadedValue;
     }
 }

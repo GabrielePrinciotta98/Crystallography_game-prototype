@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Collections.Generic;
 using UnityEngine;
 
 public class SolutionManager : MonoBehaviour
@@ -17,14 +14,13 @@ public class SolutionManager : MonoBehaviour
     [SerializeField] int M = 1;
     [SerializeField] int K = 5;
     [SerializeField] int R = 4;
-    private List<Vector3> cellsSpawnPositions = new List<Vector3>();
+    private readonly List<Vector3> cellsSpawnPositions = new List<Vector3>();
     private Vector3 centralCellSpawnPos;
     private Vector3[] atomSpawnPositions = new Vector3[8];
-    List<SolutionAtom> atoms = new List<SolutionAtom>();
-    private List<GameObject> cells = new List<GameObject>();
-    Vector4[] positions = new Vector4[60];
+    private readonly List<SolutionAtom> atoms = new List<SolutionAtom>();
+    private readonly List<GameObject> cells = new List<GameObject>();
+    private readonly Vector4[] positions = new Vector4[60];
     
-    private GameObject workspace;
     public Quaternion antiRotation;
 
     public List<GameObject> AllAtoms { get; } = new List<GameObject>(); //tutti gli atomi (anche cristallo) meno IL pivot
@@ -36,14 +32,11 @@ public class SolutionManager : MonoBehaviour
     private void Awake()
     {
         centralCellSpawnPos = pivot.transform.position;
-        
-        
     }
     
     // Start is called before the first frame update
     void Start()
     {
-        workspace = GameObject.Find("WorkspaceSol");
         moleculeSpace = GameObject.Find("MoleculeSpaceSolution");
         
         
@@ -64,7 +57,7 @@ public class SolutionManager : MonoBehaviour
         
         if (isCrystal)
         {
-            workspace = Instantiate(platforms[1], moleculeSpace.transform);
+            Instantiate(platforms[1], moleculeSpace.transform);
             centralCell = Instantiate(centralCell, centralCellSpawnPos, Quaternion.identity, moleculeSpace.transform);
             if (K >= 5)
                 centralCell.transform.localScale *= K; // scalo la dimensione del modulo centrale
@@ -77,7 +70,7 @@ public class SolutionManager : MonoBehaviour
         }
         else
         {
-            workspace = Instantiate(Plane.Equals("YZ") ? platforms[0] : platforms[1] , moleculeSpace.transform);
+            Instantiate(Plane.Equals("YZ") ? platforms[0] : platforms[1] , moleculeSpace.transform);
             //centralCellSpawnPos ha la posizione del pivot
             pivot = Instantiate(pivot, centralCellSpawnPos, Quaternion.identity, moleculeSpace.transform);
             for (int i = 0; i < N - 1; i++)
@@ -135,6 +128,13 @@ public class SolutionManager : MonoBehaviour
         }
     }
 
+    public void ShowCrystal()
+    {
+        foreach (var c in cells)
+        {
+            c.GetComponent<CellSolution>().ShowCell();
+        }
+    }
     
 
     public void AddAtom(SolutionAtom atom)
